@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1098035251669",
+    "project_id": "scrapapp-4a486",
+    "storage_bucket": "scrapapp-4a486.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1098035251669:android:0d91c9444e3ae13f61155c",
+        "android_client_info": {
+          "package_name": "com.scrapapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1098035251669-j4gopt4e5ce00kc8jd16hh3ua6mlg75h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2_ohxVMAQUqFNUBpbgtgAMswC3fbRCg8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1098035251669-j4gopt4e5ce00kc8jd16hh3ua6mlg75h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
