@@ -7,7 +7,11 @@ import LoginUserDto from '@core/domain/dto/LoginUserDto';
 import {loggedOut, tokenReceived} from '@store/actions/auth';
 import {ApplicationError} from '@core/domain/ApplicationError';
 import {ServiceProviderTypes} from '@core/serviceProviderTypes';
-import {isErrorWithMessage, isValidationError} from '@utils/error-handling';
+import {
+  isErrorWithMessage,
+  isFetchBaseQueryError,
+  isValidationError,
+} from '@utils/error-handling';
 import {
   RootState,
   LoginResponse,
@@ -78,19 +82,39 @@ const laravelBaseQuery: BaseQueryFn<
   if (result.error) {
     const err = result.error;
 
+    let non_field_error = '';
+
     // you can access all properties of `FetchBaseQueryError` here
-    let non_field_error =
-      'error' in err
-        ? err.error
-        : isErrorWithMessage(err.data)
-        ? !!err.data.message
-          ? err.data.message
-          : 'Something went wrong'
-        : typeof err.data === 'string'
-        ? (err.data as string)
-        : 'Server gave invalid error format';
+    if (
+      err.status === 'FETCH_ERROR' ||
+      err.status === 'PARSING_ERROR' ||
+      err.status === 'CUSTOM_ERROR'
+    ) {
+      non_field_error = err.error;
+    } else if (typeof err.data === 'string') {
+      non_field_error = err.data;
+    } else if (isErrorWithMessage(err.data)) {
+      non_field_error = err.data.message;
+    } else if (isErrorWithMessage(err)) {
+      non_field_error = err.message;
+    } else {
+      non_field_error = 'Something went wrong';
+    }
+
+    // // you can access all properties of `FetchBaseQueryError` here
+    // non_field_error =
+    //   'error' in err
+    //     ? err.error
+    //     : isErrorWithMessage(err.data)
+    //     ? !!err.data.message
+    //       ? err.data.message
+    //       : 'Something went wrong'
+    //     : typeof err.data === 'string'
+    //     ? (err.data as string)
+    //     : 'Server gave invalid error format';
 
     let field_errors: Record<string, string> = {};
+
     if (err.data && isValidationError(err.data)) {
       field_errors = Object.entries(err.data.errors ?? err.data.error!).reduce(
         (acc, [fieldName, [errorMessage]]) => {

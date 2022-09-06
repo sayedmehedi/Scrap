@@ -1,23 +1,23 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Colors from '../constants/Colors';
 import {
   View,
   Text,
-  StyleSheet,
   Image,
   Modal,
+  StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import { CheckBox } from 'react-native-elements';
+import Entypo from 'react-native-vector-icons/Entypo';
+import { useNavigation } from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useNavigation} from '@react-navigation/native';
-import {AuthStackRoutes, RootStackRoutes} from '../constants/routes';
-import Entypo from 'react-native-vector-icons/Entypo';
-import {CheckBox} from 'react-native-elements';
-const Header = ({from}) => {
-  const [modalVisible, setModalVisible] = useState(false);
+import { AuthStackRoutes, RootStackRoutes } from '../constants/routes';
+
+const Header = ({ from }: { from: string }) => {
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
 
   if (modalVisible) {
     return (
@@ -41,14 +41,14 @@ const Header = ({from}) => {
                 <Entypo name="cross" size={25} color={'#222222'} />
               </TouchableOpacity>
 
-              <View style={{alignItems: 'center'}}>
-                <Text style={{fontFamily: 'Inter-SemiBold', fontSize: 16}}>
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{ fontFamily: 'Inter-SemiBold', fontSize: 16 }}>
                   Sort By
                 </Text>
               </View>
 
-              <View style={{padding: 20}}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{ padding: 20 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <CheckBox
                     center
                     checkedIcon="dot-circle-o"
@@ -63,7 +63,7 @@ const Header = ({from}) => {
                   <Text>Newest</Text>
                 </View>
 
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <CheckBox
                     center
                     checkedIcon="dot-circle-o"
@@ -77,7 +77,7 @@ const Header = ({from}) => {
 
                   <Text>Price-Low to Hight</Text>
                 </View>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <CheckBox
                     center
                     checkedIcon="dot-circle-o"
@@ -91,7 +91,7 @@ const Header = ({from}) => {
 
                   <Text>Price-High to low</Text>
                 </View>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <CheckBox
                     center
                     checkedIcon="dot-circle-o"
@@ -105,7 +105,7 @@ const Header = ({from}) => {
 
                   <Text>Oldest</Text>
                 </View>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <CheckBox
                     center
                     checkedIcon="dot-circle-o"
@@ -134,7 +134,7 @@ const Header = ({from}) => {
           <MaterialIcons name="keyboard-backspace" color={'white'} size={22} />
         </TouchableOpacity>
 
-        <Text style={{fontFamily: 'Inter-Bold', fontSize: 18, color: 'white'}}>
+        <Text style={{ fontFamily: 'Inter-Bold', fontSize: 18, color: 'white' }}>
           My Account
         </Text>
         <View></View>
@@ -148,7 +148,7 @@ const Header = ({from}) => {
           <MaterialIcons name="keyboard-backspace" color={'white'} size={22} />
         </TouchableOpacity>
 
-        <Text style={{fontFamily: 'Inter-Bold', fontSize: 18, color: 'white'}}>
+        <Text style={{ fontFamily: 'Inter-Bold', fontSize: 18, color: 'white' }}>
           Account Setting
         </Text>
         <View></View>
@@ -162,7 +162,7 @@ const Header = ({from}) => {
           <MaterialIcons name="keyboard-backspace" color={'white'} size={22} />
         </TouchableOpacity>
 
-        <Text style={{fontFamily: 'Inter-Bold', fontSize: 18, color: 'white'}}>
+        <Text style={{ fontFamily: 'Inter-Bold', fontSize: 18, color: 'white' }}>
           Offers/Bids
         </Text>
         <View></View>
@@ -177,7 +177,7 @@ const Header = ({from}) => {
           <MaterialIcons name="keyboard-backspace" color={'white'} size={22} />
         </TouchableOpacity>
 
-        <Text style={{fontFamily: 'Inter-Bold', fontSize: 18, color: 'white'}}>
+        <Text style={{ fontFamily: 'Inter-Bold', fontSize: 18, color: 'white' }}>
           Purchases
         </Text>
         <View></View>
@@ -188,7 +188,7 @@ const Header = ({from}) => {
   if (from == 'saveProduct') {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={{padding: 10}}>
+        <TouchableOpacity style={{ padding: 10 }}>
           <MaterialIcons name="keyboard-backspace" color={'white'} size={22} />
         </TouchableOpacity>
 
@@ -201,7 +201,7 @@ const Header = ({from}) => {
           }}>
           Save Product
         </Text>
-        <TouchableOpacity style={{padding: 5}}>
+        <TouchableOpacity style={{ padding: 5 }}>
           <MaterialIcons name="category" size={25} color={'white'} />
         </TouchableOpacity>
       </View>
@@ -211,7 +211,7 @@ const Header = ({from}) => {
   if (from == 'publicProfile') {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={{padding: 10}}>
+        <TouchableOpacity style={{ padding: 10 }}>
           <MaterialIcons name="keyboard-backspace" color={'white'} size={22} />
         </TouchableOpacity>
         <Text
@@ -224,7 +224,7 @@ const Header = ({from}) => {
           Profile
         </Text>
 
-        <TouchableOpacity style={{padding: 5}}>
+        <TouchableOpacity style={{ padding: 5 }}>
           <MaterialIcons name="category" size={25} color={'white'} />
         </TouchableOpacity>
       </View>
@@ -240,10 +240,10 @@ const Header = ({from}) => {
   if (from == 'locationPickup') {
     return (
       <View style={styles.container}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={{padding: 10}}>
+            style={{ padding: 10 }}>
             <MaterialIcons
               name="keyboard-backspace"
               color={'white'}
@@ -262,17 +262,17 @@ const Header = ({from}) => {
           </Text>
         </View>
 
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity
             onPress={() => navigation.navigate(RootStackRoutes.SEARCH_PRODUCT)}
-            style={{padding: 5}}>
+            style={{ padding: 5 }}>
             <AntDesign name="search1" size={25} color={'white'} />
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => setModalVisible(!modalVisible)}
-            style={{padding: 5}}>
-            <View style={{flexDirection: 'row', paddingHorizontal: 10}}>
+            style={{ padding: 5 }}>
+            <View style={{ flexDirection: 'row', paddingHorizontal: 10 }}>
               <Image
                 source={require('../assets/Images/Arrow.png')}
                 style={{
@@ -285,10 +285,10 @@ const Header = ({from}) => {
 
           <TouchableOpacity
             onPress={() => navigation.navigate(AuthStackRoutes.PRODUCT_FILTER)}
-            style={{padding: 5}}>
+            style={{ padding: 5 }}>
             <Image
               source={require('../assets/Images/filter.png')}
-              style={{height: 20, width: 20}}
+              style={{ height: 20, width: 20 }}
             />
           </TouchableOpacity>
         </View>
@@ -298,10 +298,10 @@ const Header = ({from}) => {
   if (from == 'shipping') {
     return (
       <View style={styles.container}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={{padding: 10}}>
+            style={{ padding: 10 }}>
             <MaterialIcons
               name="keyboard-backspace"
               color={'white'}
@@ -320,17 +320,17 @@ const Header = ({from}) => {
           </Text>
         </View>
 
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity
             onPress={() => navigation.navigate(RootStackRoutes.SEARCH_PRODUCT)}
-            style={{padding: 5}}>
+            style={{ padding: 5 }}>
             <AntDesign name="search1" size={25} color={'white'} />
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => setModalVisible(!modalVisible)}
-            style={{paddingHorizontal: 10}}>
-            <View style={{flexDirection: 'row', padding: 5}}>
+            style={{ paddingHorizontal: 10 }}>
+            <View style={{ flexDirection: 'row', padding: 5 }}>
               <Image
                 source={require('../assets/Images/Arrow.png')}
                 style={{
@@ -343,10 +343,10 @@ const Header = ({from}) => {
 
           <TouchableOpacity
             onPress={() => navigation.navigate(AuthStackRoutes.PRODUCT_FILTER)}
-            style={{padding: 5}}>
+            style={{ padding: 5 }}>
             <Image
               source={require('../assets/Images/filter.png')}
-              style={{height: 20, width: 20}}
+              style={{ height: 20, width: 20 }}
             />
           </TouchableOpacity>
         </View>
@@ -356,10 +356,10 @@ const Header = ({from}) => {
   if (from == 'allCategories') {
     return (
       <View style={styles.container}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={{padding: 10}}>
+            style={{ padding: 10 }}>
             <MaterialIcons
               name="keyboard-backspace"
               color={'white'}
@@ -378,17 +378,17 @@ const Header = ({from}) => {
           </Text>
         </View>
 
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity
             onPress={() => navigation.navigate(RootStackRoutes.SEARCH_PRODUCT)}
-            style={{padding: 5}}>
+            style={{ padding: 5 }}>
             <AntDesign name="search1" size={25} color={'white'} />
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
-            style={{padding: 5}}>
-            <View style={{flexDirection: 'row', paddingHorizontal: 10}}>
+            style={{ padding: 5 }}>
+            <View style={{ flexDirection: 'row', paddingHorizontal: 10 }}>
               <Image
                 source={require('../assets/Images/Arrow.png')}
                 style={{
@@ -401,10 +401,10 @@ const Header = ({from}) => {
 
           <TouchableOpacity
             onPress={() => navigation.navigate(AuthStackRoutes.PRODUCT_FILTER)}
-            style={{padding: 5}}>
+            style={{ padding: 5 }}>
             <Image
               source={require('../assets/Images/filter.png')}
-              style={{height: 20, width: 20}}
+              style={{ height: 20, width: 20 }}
             />
           </TouchableOpacity>
         </View>
@@ -414,8 +414,8 @@ const Header = ({from}) => {
   if (from == 'productDetails') {
     return (
       <View style={styles.container}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <TouchableOpacity style={{padding: 10}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity style={{ padding: 10 }}>
             <MaterialIcons
               name="keyboard-backspace"
               color={'white'}
@@ -434,12 +434,12 @@ const Header = ({from}) => {
           </Text>
         </View>
 
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <TouchableOpacity style={{padding: 5}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity style={{ padding: 5 }}>
             <AntDesign name="sharealt" size={25} color={'white'} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={{padding: 5}}>
+          <TouchableOpacity style={{ padding: 5 }}>
             <AntDesign name="hearto" size={25} color={'white'} />
           </TouchableOpacity>
         </View>
@@ -449,10 +449,10 @@ const Header = ({from}) => {
   if (from == 'individualCategory') {
     return (
       <View style={styles.container}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={{padding: 10}}>
+            style={{ padding: 10 }}>
             <MaterialIcons
               size={22}
               color={'white'}
@@ -471,17 +471,17 @@ const Header = ({from}) => {
           </Text>
         </View>
 
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TouchableOpacity
             onPress={() => navigation.navigate(RootStackRoutes.SEARCH_PRODUCT)}
-            style={{padding: 5}}>
+            style={{ padding: 5 }}>
             <AntDesign name="search1" size={25} color={'white'} />
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => setModalVisible(!modalVisible)}
-            style={{padding: 5}}>
-            <View style={{flexDirection: 'row', paddingHorizontal: 10}}>
+            style={{ padding: 5 }}>
+            <View style={{ flexDirection: 'row', paddingHorizontal: 10 }}>
               <Image
                 source={require('../assets/Images/Arrow.png')}
                 style={{
@@ -494,10 +494,10 @@ const Header = ({from}) => {
 
           <TouchableOpacity
             onPress={() => navigation.navigate(AuthStackRoutes.PRODUCT_FILTER)}
-            style={{padding: 5}}>
+            style={{ padding: 5 }}>
             <Image
               source={require('../assets/Images/filter.png')}
-              style={{height: 20, width: 20}}
+              style={{ height: 20, width: 20 }}
             />
           </TouchableOpacity>
         </View>
@@ -506,18 +506,20 @@ const Header = ({from}) => {
   }
   if (from == 'askQuestion') {
     return (
-      <View style={[styles.container, {height: '9%'}]}>
+      <View style={[styles.container, { height: '9%' }]}>
         <TouchableOpacity>
           <MaterialIcons name="keyboard-backspace" color={'white'} size={22} />
         </TouchableOpacity>
 
-        <Text style={{fontFamily: 'Inter-Bold', fontSize: 18, color: 'white'}}>
+        <Text style={{ fontFamily: 'Inter-Bold', fontSize: 18, color: 'white' }}>
           Ask Question
         </Text>
         <View></View>
       </View>
     );
   }
+
+  return null
 };
 
 export default Header;

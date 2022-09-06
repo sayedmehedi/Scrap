@@ -1,40 +1,45 @@
 import React from 'react'
-import { FlatList, Dimensions } from 'react-native'
+import { FlatList, View, Text } from 'react-native'
+import { FilterProductQueryParams } from '@src/types'
 import EachProductItem from '@src/Component/EachProductItem'
-import { FilterProduct, FilterProductQueryParams } from '@src/types'
 import { useGetFilterProductsQuery } from '@data/laravel/services/product'
 
-const { width } = Dimensions.get("window")
-
-
 const ProductPreviewList = ({ params }: { params?: FilterProductQueryParams }) => {
-    const { data: filterProductsResponse, isLoading: isFilterProductsLoading } = useGetFilterProductsQuery(params)
+    const { data: filterProductsResponse, isLoading: isFilterProductsLoading, } = useGetFilterProductsQuery(params)
 
-    const products: Array<FilterProduct & { type: "data" } | { id: number; type: "skeleton" }> = React.useMemo(() => {
+    const products = React.useMemo(() => {
         if (isFilterProductsLoading) {
             return [{
                 id: 1,
-                type: "skeleton"
+                type: "skeleton" as const
             },
             {
                 id: 2,
-                type: "skeleton"
+                type: "skeleton" as const
             },
             {
                 id: 3,
-                type: "skeleton"
+                type: "skeleton" as const
             }]
         }
 
-        return filterProductsResponse?.products.data ?? []
+        return filterProductsResponse?.products.data.map(product => ({
+            type: "data" as const,
+            ...product
+        })) ?? []
     }, [filterProductsResponse, isFilterProductsLoading])
 
-
     return (
-        <FlatList
+        <FlatList<typeof products[0]>
             horizontal
             data={products}
+            ListEmptyComponent={() => (
+                <View>
+                    <Text>No data</Text>
+                </View>
+            )}
             showsHorizontalScrollIndicator={false}
+            // @ts-ignore
             renderItem={({ item }) => <EachProductItem item={item} />}
         />
     )

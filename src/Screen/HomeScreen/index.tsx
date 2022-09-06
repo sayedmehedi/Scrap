@@ -4,64 +4,21 @@ import {
   View,
   Image,
   Text,
-  FlatList,
   Pressable,
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
 import CategoryList from './CategoryList';
 import Colors from '../../constants/Colors';
+import ProductPreviewList from './ProductPreviewList';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import EachProductItem from '../../Component/EachProductItem';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { HomeStackRoutes, HomeTabRoutes, RootStackRoutes } from '../../constants/routes';
-import ProductPreviewList from './ProductPreviewList';
-
-
-const productData = [
-  {
-    id: '1',
-    location: 'Lufkin, TX',
-    name: 'Fasion boho chic',
-    price: '$15.90',
-    uri: require('../../assets/Images/test.png'),
-  },
-  {
-    id: '2',
-    location: 'Lufkin, TX',
-    name: 'Fasion boho chic',
-    price: '$15.90',
-    uri: require('../../assets/Images/prod2.png'),
-  },
-  {
-    id: '3',
-    location: 'Lufkin, TX',
-    name: 'Fasion boho chic',
-    price: '$15.90',
-    uri: require('../../assets/Images/prod3.png'),
-  },
-  {
-    id: '4',
-    location: 'Lufkin, TX',
-    name: 'Fasion boho chic',
-    price: '$15.90',
-    uri: require('../../assets/Images/prod4.png'),
-  },
-  {
-    id: '5',
-    location: 'Lufkin, TX',
-    name: 'Fasion boho chic',
-    price: '$15.90',
-    uri: require('../../assets/Images/prod5.png'),
-  },
-];
-
 
 const HomeScreen = () => {
-
   const navigation = useNavigation();
 
   const handleRedirectToNotificatoins = () => {
@@ -138,12 +95,7 @@ const HomeScreen = () => {
               All Categories
             </Text>
             <Pressable
-              onPress={() => navigation.navigate(RootStackRoutes.HOME, {
-                screen: HomeTabRoutes.HOME,
-                params: {
-                  screen: HomeStackRoutes.ALL_CATEGORIES
-                }
-              })}
+              onPress={() => navigation.navigate(HomeStackRoutes.ALL_CATEGORIES as never)}
               style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text
                 style={{

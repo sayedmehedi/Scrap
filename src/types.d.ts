@@ -18,7 +18,9 @@ export type HomeStackParamList = {
   [HomeStackRoutes.SHIPPING]: undefined;
   [HomeStackRoutes.LOCAL_PICKUP]: undefined;
   [HomeStackRoutes.ALL_CATEGORIES]: undefined;
-  [HomeStackRoutes.INDIVIDUAL_CATEGORIES]: undefined;
+  [HomeStackRoutes.INDIVIDUAL_CATEGORIES]: {
+    categoryId: string | number;
+  };
 };
 
 export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
@@ -196,6 +198,7 @@ export type FilterProductQueryParams = Partial<{
   distance: number;
   sort_by: 'random' | 'oldest' | 'low_price' | 'high_price';
   paginate: number;
+  page: number;
 }>;
 
 export type FilterProductsResponse = {
@@ -207,3 +210,17 @@ declare global {
     interface RootParamList extends RootStackParamList {}
   }
 }
+
+export interface SubCategory {
+  id: number;
+  title: string;
+}
+export interface AllCategoryItem {
+  id: number;
+  title: string;
+  sub_categories: SubCategory[];
+}
+
+export type AllCategoryResponse = {
+  categories: AllCategoryItem[];
+};

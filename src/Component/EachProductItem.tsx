@@ -1,13 +1,13 @@
 import React from 'react';
 import { FilterProduct } from '@src/types';
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, Image, Dimensions, Pressable } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { View, Text, Image, Dimensions, Pressable } from 'react-native';
 
 const { width } = Dimensions.get('window');
 const itemWidth = width / 3;
 
-const EachProductItem = ({ item, }: { item: FilterProduct & { type: "data" } | { type: "skeleton" } }) => {
+const EachProductItem = ({ item, }: { item: FilterProduct & { type: "data" } | { id: number; type: "skeleton" } }) => {
   const navigation = useNavigation();
 
   if (item.type === "skeleton") {

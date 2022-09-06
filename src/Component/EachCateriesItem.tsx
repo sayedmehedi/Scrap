@@ -1,21 +1,26 @@
 import React from 'react';
-import { HomeCategory } from '@src/types';
 import useAppConfig from '@hooks/useAppConfig';
+import { HomeStackRoutes, } from '@constants/routes'
 import { useNavigation } from '@react-navigation/native';
 import { View, Text, Image, Pressable } from 'react-native';
-import { RootStackRoutes, HomeStackRoutes, HomeTabRoutes } from '@constants/routes'
+import { HomeCategory, HomeStackParamList } from '@src/types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 
 const IMAGE_CONTAINER_HEIGHT = 80
 const IMAGE_CONTAINER_WIDTH = 80
 
+type HomeStackNavigationProp = NativeStackNavigationProp<HomeStackParamList>;
+
 const EachCateriesItem = ({ item }: { item: HomeCategory }) => {
-  const navigation = useNavigation();
   const appConfig = useAppConfig();
+  const navigation = useNavigation<HomeStackNavigationProp>();
 
   return (
     <Pressable
-      onPress={() => navigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES as any)}
+      onPress={() => navigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES, {
+        categoryId: item.id
+      })}
       style={{
         margin: 1,
         width: 90,
