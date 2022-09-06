@@ -1,8 +1,8 @@
-import React,{useState} from 'react';
+import React, {useState} from 'react';
 import styles from './styles';
-import Colors from '../../Constant/Colors';
+import Colors from '../../constants/Colors';
 import {Rating} from 'react-native-elements';
-import {RootStackRoutes} from '../../Constant/routes';
+import {RootStackRoutes} from '../../constants/routes';
 import Feather from 'react-native-vector-icons/Feather';
 import Octicons from 'react-native-vector-icons/Octicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -43,7 +43,6 @@ const images = [
   },
 ];
 
-
 const productData = [
   {
     id: '1',
@@ -82,28 +81,26 @@ const productData = [
   },
 ];
 
- 
-
 const renderAllProduct = ({item}) => <EachProductItem item={item} />;
 
 const ProductDetailsScreen = ({navigation}) => {
-
-  const [image,setImage] = useState('https://image.shutterstock.com/image-photo/mountains-under-mist-morning-amazing-260nw-1725825019.jpg')
- 
+  const [image, setImage] = useState(
+    'https://image.shutterstock.com/image-photo/mountains-under-mist-morning-amazing-260nw-1725825019.jpg',
+  );
 
   React.useEffect(() => {
     navigation.setOptions({
       title: 'Large Cage',
-      headerRight:()=> {
-        return(
-          <View style={{flexDirection:'row'}}>
-            <AntDesign name='sharealt' size={20} color={'white'}/>
-            <View style={{paddingHorizontal:10}}>
-            <AntDesign name='hearto' size={20} color={'white'}/>
+      headerRight: () => {
+        return (
+          <View style={{flexDirection: 'row'}}>
+            <AntDesign name="sharealt" size={20} color={'white'} />
+            <View style={{paddingHorizontal: 10}}>
+              <AntDesign name="hearto" size={20} color={'white'} />
             </View>
           </View>
-        )
-      }
+        );
+      },
     });
   }, [navigation]);
   const handlePlaceBid = () => {
@@ -112,8 +109,6 @@ const ProductDetailsScreen = ({navigation}) => {
   const handleMakeOffer = () => {
     navigation.navigate(RootStackRoutes.MAKE_BID);
   };
-
-  
 
   return (
     <>
@@ -133,14 +128,18 @@ const ProductDetailsScreen = ({navigation}) => {
             <FlatList
               data={images}
               renderItem={({item}) => {
-  
                 return (
                   <TouchableOpacity
-                  onPress={()=> setImage(item.uri)}
-                  key={item.id}>
+                    onPress={() => setImage(item.uri)}
+                    key={item.id}>
                     <Image
                       source={{uri: item.uri}}
-                      style={{height: 70, width: 70, borderRadius: 35, marginHorizontal: 8}}
+                      style={{
+                        height: 70,
+                        width: 70,
+                        borderRadius: 35,
+                        marginHorizontal: 8,
+                      }}
                     />
                   </TouchableOpacity>
                 );
@@ -160,7 +159,12 @@ const ProductDetailsScreen = ({navigation}) => {
               }}>
               Large Cage Free White
             </Text>
-            <View style={{flexDirection: 'row', alignItems: 'center',marginBottom:15}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: 15,
+              }}>
               <Feather name="map-pin" size={14} color={'#191F2B'} />
               <Text style={{fontFamily: 'Inter-Regular', color: '#667085'}}>
                 {' '}
@@ -168,7 +172,7 @@ const ProductDetailsScreen = ({navigation}) => {
               </Text>
             </View>
 
-            <View style={{marginVertical:10}}>
+            <View style={{marginVertical: 10}}>
               <Text
                 style={{
                   fontFamily: 'Inter-SemiBold',
@@ -190,7 +194,7 @@ const ProductDetailsScreen = ({navigation}) => {
               </View>
             </View>
 
-            <View style={{marginVertical:5}}>
+            <View style={{marginVertical: 5}}>
               <Text
                 style={{
                   fontFamily: 'Inter-SemiBold',
@@ -218,7 +222,7 @@ const ProductDetailsScreen = ({navigation}) => {
                 borderBottomColor: '#CBCBCB',
                 flexDirection: 'row',
                 alignItems: 'center',
-                marginBottom:10
+                marginBottom: 10,
               }}>
               <Text style={{fontFamily: 'Inter-Regular', color: '#667085'}}>
                 Time Left:
@@ -402,7 +406,7 @@ const ProductDetailsScreen = ({navigation}) => {
                 height: 1,
                 backgroundColor: '#002642',
                 marginVertical: 5,
-                marginBottom:10
+                marginBottom: 10,
               }}>
               <View
                 style={{
@@ -425,7 +429,6 @@ const ProductDetailsScreen = ({navigation}) => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 marginVertical: 28,
-                
               }}>
               <Image
                 source={require('../../assets/Images/test.png')}
@@ -454,13 +457,14 @@ const ProductDetailsScreen = ({navigation}) => {
               </View>
             </View>
 
-            <Text style={{
-              color: '#252522',
-              fontFamily: 'Inter-SemiBold',
-              fontSize: 16,
-              
-            }}
-            >Descriptions</Text>
+            <Text
+              style={{
+                color: '#252522',
+                fontFamily: 'Inter-SemiBold',
+                fontSize: 16,
+              }}>
+              Descriptions
+            </Text>
             <View
               style={{
                 width: '100%',
@@ -477,13 +481,12 @@ const ProductDetailsScreen = ({navigation}) => {
               />
             </View>
             <View>
-              <Text style={{textAlign:'left'}} >
-               Lorem Ipsum is simply dummy text of the printing and typesetting
+              <Text style={{textAlign: 'left'}}>
+                Lorem Ipsum is simply dummy text of the printing and typesetting
                 industry. Lorem Ipsum has been the industry's standard dummy
                 text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book. 
-                
-                It has survived not only five centuries, but also the leap into
+                of type and scrambled it to make a type specimen book. It has
+                survived not only five centuries, but also the leap into
                 electronic typesetting, remaining essentially unchanged. It was
                 popularised in the 1960s with the release of Letraset sheets
                 containing Lorem Ipsum passages, and more recently with desktop
@@ -492,19 +495,22 @@ const ProductDetailsScreen = ({navigation}) => {
               </Text>
             </View>
 
-            <View style={{padding: 10,marginVertical:10}}>
+            <View style={{padding: 10, marginVertical: 10}}>
               <Image
                 source={require('../../assets/Images/map.jpeg')}
                 style={{height: 200, width: '100%'}}
               />
             </View>
 
-            <Text style={{
-               color: '#252522',
-               fontFamily: 'Inter-SemiBold',
-               fontSize: 16,
-               marginTop:10
-            }}>More like this</Text>
+            <Text
+              style={{
+                color: '#252522',
+                fontFamily: 'Inter-SemiBold',
+                fontSize: 16,
+                marginTop: 10,
+              }}>
+              More like this
+            </Text>
             <View
               style={{
                 width: '100%',

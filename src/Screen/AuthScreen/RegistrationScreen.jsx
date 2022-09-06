@@ -1,7 +1,7 @@
 import React from 'react';
 import {useForm, Controller} from 'react-hook-form';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {AuthStackRoutes} from '../../Constant/routes';
+import {AuthStackRoutes} from '../../constants/routes';
 import {useNavigation} from '@react-navigation/native';
 import {Checkbox, useTheme, Text} from 'react-native-paper';
 import AppPrimaryButton from '../../Component/AppPrimaryButton';

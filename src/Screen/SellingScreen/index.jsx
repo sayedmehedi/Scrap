@@ -1,7 +1,7 @@
 import styles from './styles';
 import React, {useState} from 'react';
-import Colors from '../../Constant/Colors';
-import {BottomTabRoutes} from '../../Constant/routes';
+import Colors from '../../constants/Colors';
+import {HomeTabRoutes} from '../../constants/routes';
 import {useNavigation} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import {View, Text, SafeAreaView, TouchableOpacity} from 'react-native';
@@ -50,7 +50,7 @@ const SellingScreen = () => {
             </View>
             <TouchableOpacity
               style={styles.postItemButton}
-              onPress={() => navigation.navigate(BottomTabRoutes.POST_ITEM)}>
+              onPress={() => navigation.navigate(HomeTabRoutes.POST_ITEM)}>
               <View></View>
               <Text
                 style={{

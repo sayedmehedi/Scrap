@@ -1,6 +1,6 @@
 import React from 'react';
 import {useTheme} from 'react-native-paper';
-import {PostItemStackRoutes} from '../Constant/routes';
+import {PostItemStackRoutes} from '../constants/routes';
 import {createStackNavigator} from '@react-navigation/stack';
 import ProductImageUploadScreen from '../Screen/ProductImageUploadScreen';
 import ProductAddDetailsScreen from '../Screen/ProductAddDetailsScreen/ProductAddDetailsScreen';
@@ -9,7 +9,7 @@ import ProductAddDeliveryMethodScreen from '../Screen/ProductAddDeliveryMethodSc
 import ProductAddSuccessScreen from '../Screen/ProductAddSuccessScreen';
 
 const PostItemStack = createStackNavigator();
-const forFade = ({ current }) => ({
+const forFade = ({current}) => ({
   cardStyle: {
     opacity: current.progress,
   },

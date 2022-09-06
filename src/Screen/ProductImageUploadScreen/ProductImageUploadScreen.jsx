@@ -8,7 +8,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import AppPrimaryButton from '../../Component/AppPrimaryButton';
 import {TextInput, View, Alert, ScrollView} from 'react-native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {PostItemStackRoutes} from '../../Constant/routes';
+import {PostItemStackRoutes} from '../../constants/routes';
 
 export default function ProductImageUploadScreen() {
   const theme = useTheme();

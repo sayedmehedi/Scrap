@@ -5,16 +5,15 @@ import {useNavigation} from '@react-navigation/native';
 import LoginScreen from '../Screen/AuthScreen/LoginScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 import LocationScreen from '../Screen/AuthScreen/LocationScreen';
-import {AuthStackRoutes, RootStackRoutes} from '../Constant/routes';
+import {AuthStackRoutes, RootStackRoutes} from '../constants/routes';
 import ChooseLocationScreen from '../Screen/AuthScreen/ChooseLocationScreen';
 import RegistrationScreen from '../Screen/AuthScreen/RegistrationScreen';
 import ForgotPasswordScreen from '../Screen/AuthScreen/ForgotPasswordScreen';
 import ResetPasswordScreen from '../Screen/AuthScreen/ResetPasswordScreen';
 
-
 const Auth = createStackNavigator();
 
-const forFade = ({ current }) => ({
+const forFade = ({current}) => ({
   cardStyle: {
     opacity: current.progress,
   },
@@ -53,8 +52,6 @@ const AuthStack = () => {
         component={LoginScreen}
         name={AuthStackRoutes.LOGIN}
       />
-
-      
 
       <Auth.Screen
         options={{

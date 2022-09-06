@@ -8,7 +8,7 @@ import {
   LayoutAnimation,
 } from 'react-native';
 import React, {useState} from 'react';
-import Colors from '../../Constant/Colors';
+import Colors from '../../constants/Colors';
 import Header from '../../Component/Header';
 import CustomStatusBar from '../../Component/CustomStatusBar';
 
@@ -86,12 +86,16 @@ const AllCategoriesScreen = ({navigation}) => {
       return null;
     }
     return (
-      <View style={{paddingLeft:15}}>
+      <View style={{paddingLeft: 15}}>
         <TouchableOpacity activeOpacity={0.2}></TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate('individualCategories')}
           style={{width: '100%', marginVertical: 7}}>
-          <Text numberOfLines={2} style={{fontSize:14,fontFamily:'Inter-Light',color:'#403C39'}}>{item.name}</Text>
+          <Text
+            numberOfLines={2}
+            style={{fontSize: 14, fontFamily: 'Inter-Light', color: '#403C39'}}>
+            {item.name}
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -121,9 +125,9 @@ const AllCategoriesScreen = ({navigation}) => {
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <Text
               style={{
-                fontFamily:'Inter-Medium',
+                fontFamily: 'Inter-Medium',
                 fontSize: 14,
-                color:'#403C39'
+                color: '#403C39',
               }}>
               {item.name}
             </Text>

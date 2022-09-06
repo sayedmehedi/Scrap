@@ -1,10 +1,9 @@
-import {StyleSheet,Dimensions} from 'react-native';
-import Colors from '../../Constant/Colors';
+import {StyleSheet, Dimensions} from 'react-native';
+import Colors from '../../constants/Colors';
 
 const {width} = Dimensions.get('window');
 const itemWidth = width / 2;
 const styles = StyleSheet.create({
- 
   homeHeader: {
     height: 70,
     width: '100%',
@@ -30,10 +29,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'center',
     alignItems: 'center',
-    borderWidth:1,
-    borderColor:Colors.PRIMARY_COLOR,
-    marginVertical:20
+    borderWidth: 1,
+    borderColor: Colors.PRIMARY_COLOR,
+    marginVertical: 20,
   },
- 
 });
 export default styles;

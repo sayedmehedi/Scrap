@@ -1,6 +1,6 @@
 import {FlatList} from 'react-native';
 import React from 'react';
-import Colors from '../../Constant/Colors';
+import Colors from '../../constants/Colors';
 import Header from '../../Component/Header';
 import CustomStatusBar from '../../Component/CustomStatusBar';
 import EachItem from './EachItem';

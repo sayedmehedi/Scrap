@@ -1,7 +1,7 @@
-import React,{useState} from 'react';
+import React, {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {PostItemStackRoutes} from '../Constant/routes';
+import {PostItemStackRoutes} from '../constants/routes';
 import {useNavigation} from '@react-navigation/native';
 import SelectionModal from '../Component/SelectionModal';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
@@ -11,14 +11,14 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {TextInput, View, Alert, ScrollView, Pressable} from 'react-native';
 //import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {Image, ListItem, CheckBox} from 'react-native-elements';
-import DatePicker from 'react-native-date-picker'
-import { Switch } from 'react-native-paper';
+import DatePicker from 'react-native-date-picker';
+import {Switch} from 'react-native-paper';
 export default function ProductAddPriceScreen() {
   const theme = useTheme();
   const navigation = useNavigation();
   const [modalType, setModalType] = React.useState('');
-  const [date, setDate] = useState(new Date())
-  const [open, setOpen] = useState(false)
+  const [date, setDate] = useState(new Date());
+  const [open, setOpen] = useState(false);
   const [isSwitchOn, setIsSwitchOn] = React.useState(false);
 
   const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
@@ -46,12 +46,12 @@ export default function ProductAddPriceScreen() {
         modal
         open={open}
         date={date}
-        onConfirm={(date) => {
-          setOpen(false)
-          setDate(date)
+        onConfirm={date => {
+          setOpen(false);
+          setDate(date);
         }}
         onCancel={() => {
-          setOpen(false)
+          setOpen(false);
         }}
       />
       <Controller
@@ -60,7 +60,7 @@ export default function ProductAddPriceScreen() {
         render={({field}) => {
           return (
             <React.Fragment>
-              <Text style={{marginBottom: 10, color:'#222222'}}>
+              <Text style={{marginBottom: 10, color: '#222222'}}>
                 Starting Price
               </Text>
               <TextInput
@@ -87,7 +87,7 @@ export default function ProductAddPriceScreen() {
         render={({field}) => {
           return (
             <React.Fragment>
-              <Text style={{marginBottom: 10, color:'#222222'}}>
+              <Text style={{marginBottom: 10, color: '#222222'}}>
                 Buy now price
               </Text>
               <TextInput
@@ -121,9 +121,7 @@ export default function ProductAddPriceScreen() {
                     borderRadius: 8,
                     backgroundColor: theme.colors.white,
                   }}>
-                  <Text style={{color:'#222222'}}>
-                    Select Duration
-                  </Text>
+                  <Text style={{color: '#222222'}}>Select Duration</Text>
                   <Text>{field.value?.text}</Text>
                 </View>
               </Pressable>
@@ -165,9 +163,8 @@ export default function ProductAddPriceScreen() {
           uncheckedIcon="circle-o"
           checked={true}
           containerStyle={{
-            padding:1,
-            paddingLeft:0,
-            
+            padding: 1,
+            paddingLeft: 0,
           }}
         />
 
@@ -180,105 +177,157 @@ export default function ProductAddPriceScreen() {
           checkedIcon="dot-circle-o"
           uncheckedIcon="circle-o"
           checked={true}
-          checkedColor='#023047'
+          checkedColor="#023047"
           containerStyle={{
-            
-            padding:1
+            padding: 1,
           }}
         />
 
         <Text>Expected to begin on</Text>
       </View>
 
-      <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-around'}}>
-        <TouchableOpacity
-        onPressOut={()=>setOpen(true)}
+      <View
         style={{
-          height:40,
-          width:100,
-          backgroundColor:'white',
-          marginHorizontal:5,
-          padding:3,
-          flexDirection:'row',
-          justifyContent:'space-between',
-          borderRadius:5
-        }}
-        >
-        <Text>Date</Text>
-        <EvilIcons name='chevron-down' size={25}/>
-
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+        }}>
+        <TouchableOpacity
+          onPressOut={() => setOpen(true)}
+          style={{
+            height: 40,
+            width: 100,
+            backgroundColor: 'white',
+            marginHorizontal: 5,
+            padding: 3,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            borderRadius: 5,
+          }}>
+          <Text>Date</Text>
+          <EvilIcons name="chevron-down" size={25} />
         </TouchableOpacity>
 
         <TouchableOpacity
-        style={{
-          height:40,
-          width:100,
-          backgroundColor:'white',
-          marginHorizontal:5,
-          padding:3,
-          flexDirection:'row',
-          justifyContent:'space-between',
-          borderRadius:5
-        }}
-        >
+          style={{
+            height: 40,
+            width: 100,
+            backgroundColor: 'white',
+            marginHorizontal: 5,
+            padding: 3,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            borderRadius: 5,
+          }}>
           <Text>Hour</Text>
-          <EvilIcons name='chevron-down' size={25}/>
-
+          <EvilIcons name="chevron-down" size={25} />
         </TouchableOpacity>
 
         <TouchableOpacity
-        style={{
-          height:40,
-          width:100,
-          backgroundColor:'white',
-          marginHorizontal:5,
-          padding:3,
-          flexDirection:'row',
-          justifyContent:'space-between',
-          borderRadius:5
-        }}
-        >
+          style={{
+            height: 40,
+            width: 100,
+            backgroundColor: 'white',
+            marginHorizontal: 5,
+            padding: 3,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            borderRadius: 5,
+          }}>
           <Text>minute</Text>
-          <EvilIcons name='chevron-down' size={25}/>
-
+          <EvilIcons name="chevron-down" size={25} />
         </TouchableOpacity>
       </View>
 
-      <View style={{flexDirection:'row',alignItems:'center',marginVertical:10,justifyContent:'space-between'}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginVertical: 10,
+          justifyContent: 'space-between',
+        }}>
         <Text>Do you want to show metals current/live price</Text>
-        <Switch value={isSwitchOn} onValueChange={onToggleSwitch} color={'green'} />
-
+        <Switch
+          value={isSwitchOn}
+          onValueChange={onToggleSwitch}
+          color={'green'}
+        />
       </View>
 
-      <View style={{flexDirection:'row',flexWrap:'wrap'}}>
+      <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
         <TouchableOpacity
-        style={{backgroundColor:'#E62B56',height:40,width:100,justifyContent:'center',alignItems:'center',borderRadius:5,margin:5}}
-        >
-          <Text style={{fontFamily:'Inter-Regular',color:'white'}}>Gold</Text>
+          style={{
+            backgroundColor: '#E62B56',
+            height: 40,
+            width: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 5,
+            margin: 5,
+          }}>
+          <Text style={{fontFamily: 'Inter-Regular', color: 'white'}}>
+            Gold
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-        style={{backgroundColor:'#E62B56',height:40,width:100,justifyContent:'center',alignItems:'center',borderRadius:5,margin:5}}
-        >
-          <Text style={{fontFamily:'Inter-Regular',color:'white'}}>Copper</Text>
+          style={{
+            backgroundColor: '#E62B56',
+            height: 40,
+            width: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 5,
+            margin: 5,
+          }}>
+          <Text style={{fontFamily: 'Inter-Regular', color: 'white'}}>
+            Copper
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-        style={{backgroundColor:'#E62B56',height:40,width:100,justifyContent:'center',alignItems:'center',borderRadius:5,margin:5}}
-        >
-          <Text style={{fontFamily:'Inter-Regular',color:'white'}}>Gold</Text>
+          style={{
+            backgroundColor: '#E62B56',
+            height: 40,
+            width: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 5,
+            margin: 5,
+          }}>
+          <Text style={{fontFamily: 'Inter-Regular', color: 'white'}}>
+            Gold
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-        style={{backgroundColor:'#E62B56',height:40,width:100,justifyContent:'center',alignItems:'center',borderRadius:5,margin:5}}
-        >
-          <Text style={{fontFamily:'Inter-Regular',color:'white'}}>Gold</Text>
+          style={{
+            backgroundColor: '#E62B56',
+            height: 40,
+            width: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 5,
+            margin: 5,
+          }}>
+          <Text style={{fontFamily: 'Inter-Regular', color: 'white'}}>
+            Gold
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-        style={{backgroundColor:'#E62B56',height:40,width:100,justifyContent:'center',alignItems:'center',borderRadius:5,margin:5}}
-        >
-          <Text style={{fontFamily:'Inter-Regular',color:'white'}}>Gold</Text>
+          style={{
+            backgroundColor: '#E62B56',
+            height: 40,
+            width: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 5,
+            margin: 5,
+          }}>
+          <Text style={{fontFamily: 'Inter-Regular', color: 'white'}}>
+            Gold
+          </Text>
         </TouchableOpacity>
       </View>
 

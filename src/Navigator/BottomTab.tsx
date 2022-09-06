@@ -1,29 +1,31 @@
 import React from 'react';
 import HomeStack from './HomeStack';
-import Colors from '../Constant/Colors';
+import Colors from '../constants/Colors';
 import ProfileStack from './ProfileStack';
-import {useTheme} from 'react-native-paper';
-import ChatStackNavigator from './ChatStackNavigator';
+import { useTheme } from 'react-native-paper';
+import { useAppSelector } from '@hooks/store';
+import { HomeTabParamList } from '@src/types';
 import SellingScreen from '../Screen/SellingScreen';
+import ChatStackNavigator from './ChatStackNavigator';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import PostItemStackNavigator from './PostItemStackNavigator';
-import {View, Text, TouchableNativeFeedback} from 'react-native';
+import { View, Text, TouchableNativeFeedback } from 'react-native';
+import { selectIsAuthenticated } from '@store/slices/authSlice';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
   AuthStackRoutes,
-  BottomTabRoutes,
+  HomeTabRoutes,
   RootStackRoutes,
-} from '../Constant/routes';
-import {AuthContext} from '../Providers/AuthProvider';
+} from '../constants/routes';
 
-const Tab = createBottomTabNavigator();
+const HomeTab = createBottomTabNavigator<HomeTabParamList>();
 
-const buttonNativeFeedback = ({children, style, ...props}) => (
+const buttonNativeFeedback: React.FC<BottomTabBarButtonProps> = ({ children, style, ...props }) => (
   <TouchableNativeFeedback
     {...props}
     background={TouchableNativeFeedback.Ripple('#F5DCE7', true)}>
@@ -31,24 +33,19 @@ const buttonNativeFeedback = ({children, style, ...props}) => (
   </TouchableNativeFeedback>
 );
 
-const forFade = ({ current }) => ({
-  cardStyle: {
-    opacity: current.progress,
-  },
-});
 
 const BottomTab = () => {
   const theme = useTheme();
-  const {isAuthenticated} = React.useContext(AuthContext);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
   return (
-    <Tab.Navigator
-      screenListeners={({navigation, route}) => {
+    <HomeTab.Navigator
+      screenListeners={({ navigation, route }) => {
         console.log('navigating to route', route.name);
 
         return {
           tabPress(e) {
-            if (route.name !== BottomTabRoutes.HOME && !isAuthenticated) {
+            if (route.name !== HomeTabRoutes.HOME && !isAuthenticated) {
               e.preventDefault();
               navigation.navigate(RootStackRoutes.AUTH, {
                 screen: AuthStackRoutes.LOGIN,
@@ -66,8 +63,8 @@ const BottomTab = () => {
           fontFamily: 'Inter-Bold',
           color: theme.colors.white,
         },
-        headerTintColor: theme.colors.white,
         tabBarShowLabel: false,
+        headerTintColor: theme.colors.white,
         tabBarStyle: {
           height: 70,
           elevation: 10,
@@ -81,18 +78,17 @@ const BottomTab = () => {
             height: 5,
           },
         },
-
         tabBarHideOnKeyboard: true,
         tabBarButton: buttonNativeFeedback,
-        cardStyleInterpolator: forFade,
       }}>
-      <Tab.Screen
+
+      <HomeTab.Screen
         component={HomeStack}
-        name={BottomTabRoutes.HOME}
+        name={HomeTabRoutes.HOME}
         options={{
           headerShown: false,
           // cardStyleInterpolator: forFade,
-          tabBarIcon: ({focused}) => (
+          tabBarIcon: ({ focused }) => (
             <View
               style={{
                 justifyContent: 'center',
@@ -116,14 +112,14 @@ const BottomTab = () => {
           ),
         }}
       />
-      <Tab.Screen
-        name={BottomTabRoutes.CHAT}
+      <HomeTab.Screen
+        name={HomeTabRoutes.CHAT}
         component={ChatStackNavigator}
         options={{
           headerShown: false,
-          tabBarIcon: ({focused}) => (
+          tabBarIcon: ({ focused }) => (
             <View
-              style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+              style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
               <AntDesign
                 size={22}
                 name="message1"
@@ -142,8 +138,8 @@ const BottomTab = () => {
         }}
       />
 
-      <Tab.Screen
-        name={BottomTabRoutes.POST_ITEM}
+      <HomeTab.Screen
+        name={HomeTabRoutes.POST_ITEM}
         component={PostItemStackNavigator}
         options={{
           headerShown: false,
@@ -173,17 +169,15 @@ const BottomTab = () => {
         }}
       />
 
-      <Tab.Screen
+      <HomeTab.Screen
         component={SellingScreen}
-        name={BottomTabRoutes.SELLING}
+        name={HomeTabRoutes.SELLING}
         options={{
-         
-          
           title: 'Selling',
           // cardStyleInterpolator: forFade,
-          tabBarIcon: ({focused}) => (
+          tabBarIcon: ({ focused }) => (
             <View
-              style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+              style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
               <Ionicons
                 name="pricetag"
                 size={22}
@@ -199,23 +193,26 @@ const BottomTab = () => {
               </Text>
             </View>
           ),
-          headerRight: ()=> (
-            <View style={{paddingRight:10}}>
-              <MaterialIcons name='notifications-none' size={20} color={'white'}/>
-
+          headerRight: () => (
+            <View style={{ paddingRight: 10 }}>
+              <MaterialIcons
+                name="notifications-none"
+                size={20}
+                color={'white'}
+              />
             </View>
-          )
+          ),
         }}
       />
 
-      <Tab.Screen
-        name={BottomTabRoutes.PROFILE}
+      <HomeTab.Screen
         component={ProfileStack}
+        name={HomeTabRoutes.PROFILE}
         options={{
           headerShown: false,
-          tabBarIcon: ({focused}) => (
+          tabBarIcon: ({ focused }) => (
             <View
-              style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+              style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
               <EvilIcons
                 name="user"
                 size={30}
@@ -233,7 +230,7 @@ const BottomTab = () => {
           ),
         }}
       />
-    </Tab.Navigator>
+    </HomeTab.Navigator>
   );
 };
 

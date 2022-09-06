@@ -1,10 +1,10 @@
-import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {TextInput, View} from 'react-native';
 import {Avatar} from 'react-native-elements';
 import {Text, useTheme} from 'react-native-paper';
+import {RootStackRoutes} from '../constants/routes';
+import {useNavigation} from '@react-navigation/native';
 import AppPrimaryButton from '../Component/AppPrimaryButton';
-import {RootStackRoutes} from '../Constant/routes';
 
 export default function MakeBidScreen() {
   const theme = useTheme();

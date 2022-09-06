@@ -9,67 +9,17 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
-import Colors from '../../Constant/Colors';
-import {ScrollView} from 'react-native-gesture-handler';
+import CategoryList from './CategoryList';
+import Colors from '../../constants/Colors';
+import { useNavigation } from '@react-navigation/native';
+import { ScrollView } from 'react-native-gesture-handler';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import EachProductItem from '../../Component/EachProductItem';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
-import EachCateriesItem from '../../Component/EachCateriesItem';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {RootStackRoutes} from '../../Constant/routes';
+import { HomeStackRoutes, HomeTabRoutes, RootStackRoutes } from '../../constants/routes';
+import ProductPreviewList from './ProductPreviewList';
 
-const categories = [
-  {
-    id: '1',
-    name: 'Electronics & Media',
-    uri: (
-      <Image
-        source={require('../../assets/Images/electronics.png')}
-        style={{width: 20, height: 35}}
-      />
-    ),
-  },
-  {
-    id: '2',
-    name: 'Home & Garden',
-    uri: (
-      <Image
-        source={require('../../assets/Images/category2.png')}
-        style={{height: 31, width: 25}}
-      />
-    ),
-  },
-  {
-    id: '3',
-    name: 'Clothing Shoes',
-    uri: (
-      <Image
-        source={require('../../assets/Images/category3.png')}
-        style={{height: 31, width: 36}}
-      />
-    ),
-  },
-  {
-    id: '4',
-    name: 'Vehicles',
-    uri: (
-      <Image
-        source={require('../../assets/Images/category4.png')}
-        style={{height: 25, width: 31}}
-      />
-    ),
-  },
-  {
-    id: '5',
-    name: 'Electronic',
-    uri: (
-      <Image
-        source={require('../../assets/Images/electronics.png')}
-        style={{width: 20, height: 35}}
-      />
-    ),
-  },
-];
 
 const productData = [
   {
@@ -109,19 +59,21 @@ const productData = [
   },
 ];
 
-const renderAllCategories = ({item}) => <EachCateriesItem item={item} />;
-const renderAllProduct = ({item}) => <EachProductItem item={item} />;
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = () => {
+
+  const navigation = useNavigation();
+
   const handleRedirectToNotificatoins = () => {
     navigation.navigate(RootStackRoutes.NOTIFICATIONS);
   };
 
+
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{flex: 1, backgroundColor: '#F7F7F7'}}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#F7F7F7' }}>
         <View style={styles.homeHeader}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Image
               source={require('../../assets/Images/logo.png')}
               style={{
@@ -136,41 +88,40 @@ const HomeScreen = ({navigation}) => {
                 color: '#FFFFFF',
                 marginLeft: 10,
               }}>
-              Scrap App
+              Scrap Apps
             </Text>
           </View>
 
           <MaterialIcons
-            onPress={handleRedirectToNotificatoins}
-            name="notifications-none"
             color={'white'}
             size={22}
+            name="notifications-none"
+            onPress={handleRedirectToNotificatoins}
           />
         </View>
 
-       <ScrollView
-       showsVerticalScrollIndicator={false}
-       contentContainerStyle={{
-        paddingHorizontal: 10,
-        paddingBottom:15
-        
-      }}
-       >
-       <Pressable
-          style={styles.searchButton}
-          onPress={() => navigation.navigate(RootStackRoutes.SEARCH_PRODUCT)}>
-          <EvilIcons name="search" size={20} color={'#252522'} />
-          <Text
-            style={{
-              color: '#1D1D1B',
-              fontFamily: 'Inter-Regular',
-              fontSize: 12,
-              marginLeft: 10,
-            }}>
-            Search
-          </Text>
-        </Pressable>
-       
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingHorizontal: 10,
+            paddingBottom: 15,
+          }}>
+
+          <Pressable
+            style={styles.searchButton}
+            onPress={() => navigation.navigate(RootStackRoutes.SEARCH_PRODUCT)}>
+            <EvilIcons name="search" size={20} color={'#252522'} />
+            <Text
+              style={{
+                color: '#1D1D1B',
+                fontFamily: 'Inter-Regular',
+                fontSize: 12,
+                marginLeft: 10,
+              }}>
+              Search
+            </Text>
+          </Pressable>
+
           <View
             style={{
               flexDirection: 'row',
@@ -187,8 +138,13 @@ const HomeScreen = ({navigation}) => {
               All Categories
             </Text>
             <Pressable
-              onPress={() => navigation.navigate('allCategories')}
-              style={{flexDirection: 'row', alignItems: 'center'}}>
+              onPress={() => navigation.navigate(RootStackRoutes.HOME, {
+                screen: HomeTabRoutes.HOME,
+                params: {
+                  screen: HomeStackRoutes.ALL_CATEGORIES
+                }
+              })}
+              style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text
                 style={{
                   fontFamily: 'Inter-Regular',
@@ -205,20 +161,14 @@ const HomeScreen = ({navigation}) => {
             </Pressable>
           </View>
           <View>
-            <FlatList
-              horizontal
-              data={categories}
-              keyExtractor={item => item.id}
-              renderItem={renderAllCategories}
-              showsHorizontalScrollIndicator={false}
-            />
+            <CategoryList />
           </View>
           <View
             style={{
+              marginVertical: 15,
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
-              marginVertical: 15,
             }}>
             <Text
               style={{
@@ -228,9 +178,14 @@ const HomeScreen = ({navigation}) => {
               }}>
               Local Pickup
             </Text>
-            <Pressable style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Pressable style={{ flexDirection: 'row', alignItems: 'center' }}>
               <TouchableOpacity
-                onPress={() => navigation.navigate('localPickup')}>
+                onPress={() => navigation.navigate(RootStackRoutes.HOME, {
+                  screen: HomeTabRoutes.HOME,
+                  params: {
+                    screen: HomeStackRoutes.LOCAL_PICKUP
+                  }
+                })}>
                 <Text
                   style={{
                     fontFamily: 'Inter-Regular',
@@ -248,13 +203,9 @@ const HomeScreen = ({navigation}) => {
             </Pressable>
           </View>
           <View>
-            <FlatList
-              horizontal
-              data={productData}
-              renderItem={renderAllProduct}
-              keyExtractor={item => item.id}
-              showsHorizontalScrollIndicator={false}
-            />
+            <ProductPreviewList params={{
+              is_locale: "1"
+            }} />
           </View>
 
           <View
@@ -273,8 +224,13 @@ const HomeScreen = ({navigation}) => {
               Shipping
             </Text>
 
-            <Pressable style={{flexDirection: 'row', alignItems: 'center'}}>
-              <TouchableOpacity onPress={() => navigation.navigate('shipping')}>
+            <Pressable style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TouchableOpacity onPress={() => navigation.navigate(RootStackRoutes.HOME, {
+                screen: HomeTabRoutes.HOME,
+                params: {
+                  screen: HomeStackRoutes.SHIPPING
+                }
+              })}>
                 <Text
                   style={{
                     fontFamily: 'Inter-Regular',
@@ -292,16 +248,11 @@ const HomeScreen = ({navigation}) => {
             </Pressable>
           </View>
           <View>
-            <FlatList
-              horizontal
-              data={productData}
-              renderItem={renderAllProduct}
-              keyExtractor={item => item.id}
-              showsHorizontalScrollIndicator={false}
-            />
+            <ProductPreviewList params={{
+              is_shipping: "1"
+            }} />
           </View>
-      
-       </ScrollView>
+        </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
   );

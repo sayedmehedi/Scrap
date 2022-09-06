@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import Colors from '../../Constant/Colors';
+import Colors from '../../constants/Colors';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.10,
+    shadowOpacity: 0.1,
     shadowRadius: 3.84,
 
     elevation: 5,

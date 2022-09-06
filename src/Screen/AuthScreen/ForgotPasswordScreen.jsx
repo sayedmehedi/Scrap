@@ -1,6 +1,6 @@
 import React from 'react';
 import {useForm, Controller} from 'react-hook-form';
-import {AuthStackRoutes} from '../../Constant/routes';
+import {AuthStackRoutes} from '../../constants/routes';
 import {useNavigation} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Checkbox, useTheme, Text} from 'react-native-paper';
@@ -110,7 +110,7 @@ const ForgotPasswordScreen = () => {
           </KeyboardAvoidingView>
 
           <AppPrimaryButton
-          onPress={()=>navigation.navigate(AuthStackRoutes.RESET_PASSWORD)}
+            onPress={() => navigation.navigate(AuthStackRoutes.RESET_PASSWORD)}
             containerStyle={{
               alignSelf: 'center',
               marginTop: 40,

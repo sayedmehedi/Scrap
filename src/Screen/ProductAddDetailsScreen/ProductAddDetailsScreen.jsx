@@ -3,7 +3,7 @@ import {Image} from 'react-native-elements';
 import {Controller, useForm} from 'react-hook-form';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {useNavigation} from '@react-navigation/native';
-import {PostItemStackRoutes} from '../../Constant/routes';
+import {PostItemStackRoutes} from '../../constants/routes';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import SelectionModal from '../../Component/SelectionModal';
 import {HelperText, Text, useTheme} from 'react-native-paper';
@@ -37,8 +37,6 @@ export default function ProductAddDetailsScreen() {
     navigation.navigate(PostItemStackRoutes.ADD_PRICE);
   };
 
-  
-
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{padding: 15}}>
       <Controller
@@ -53,16 +51,15 @@ export default function ProductAddDetailsScreen() {
                     padding: 15,
                     borderRadius: 8,
                     backgroundColor: theme.colors.white,
-                   flexDirection:'row',
-                   justifyContent:'space-between'
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
                   }}>
                   <View>
-                  <Text style={{color: '#222222'}}>Category*</Text>
-                  <Text>{field.value?.text}</Text>
+                    <Text style={{color: '#222222'}}>Category*</Text>
+                    <Text>{field.value?.text}</Text>
                   </View>
 
-                  <EvilIcons name='chevron-down' size={25}/>
-
+                  <EvilIcons name="chevron-down" size={25} />
                 </View>
               </Pressable>
 
@@ -108,17 +105,15 @@ export default function ProductAddDetailsScreen() {
                     padding: 15,
                     borderRadius: 8,
                     backgroundColor: theme.colors.white,
-                    justifyContent:'space-between',
-                    flexDirection:'row'
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
                   }}>
                   <View>
-                  <Text style={{color: '#222222'}}>
-                    Subcategory*
-                  </Text>
-                  <Text>{field.value?.text}</Text>
+                    <Text style={{color: '#222222'}}>Subcategory*</Text>
+                    <Text>{field.value?.text}</Text>
                   </View>
 
-                  <EvilIcons name='chevron-down' size={25}/>
+                  <EvilIcons name="chevron-down" size={25} />
                 </View>
               </Pressable>
 
@@ -164,17 +159,15 @@ export default function ProductAddDetailsScreen() {
                     padding: 15,
                     borderRadius: 8,
                     backgroundColor: theme.colors.white,
-                    flexDirection:'row',
-                    justifyContent:'space-between'
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
                   }}>
                   <View>
-                  <Text style={{color: '#222222'}}>Condition*</Text>
-                  <Text>{field.value?.text}</Text>
+                    <Text style={{color: '#222222'}}>Condition*</Text>
+                    <Text>{field.value?.text}</Text>
                   </View>
 
-                  <EvilIcons name='chevron-down' size={25}/>
-
-                  
+                  <EvilIcons name="chevron-down" size={25} />
                 </View>
               </Pressable>
 
@@ -209,7 +202,6 @@ export default function ProductAddDetailsScreen() {
           render={({field}) => {
             return (
               <FloatingLabelInput
-              
                 label={'Brand'}
                 value={field.value}
                 onChangeText={field.onChange}
@@ -231,14 +223,14 @@ export default function ProductAddDetailsScreen() {
                     padding: 15,
                     borderRadius: 8,
                     backgroundColor: theme.colors.white,
-                    flexDirection:'row',
-                    justifyContent:'space-between'
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
                   }}>
                   <View>
-                  <Text style={{color: '#222222'}}>Size Type</Text>
-                  <Text>{field.value?.text}</Text>
+                    <Text style={{color: '#222222'}}>Size Type</Text>
+                    <Text>{field.value?.text}</Text>
                   </View>
-                  <EvilIcons name='chevron-down' size={25}/>
+                  <EvilIcons name="chevron-down" size={25} />
                 </View>
               </Pressable>
 
@@ -276,15 +268,15 @@ export default function ProductAddDetailsScreen() {
                     padding: 15,
                     borderRadius: 8,
                     backgroundColor: theme.colors.white,
-                    justifyContent:'space-between',
-                    flexDirection:'row'
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
                   }}>
-                 <View>
-                 <Text style={{color: '#222222'}}>Size </Text>
-                  <Text>{field.value?.text}</Text>
-                 </View>
+                  <View>
+                    <Text style={{color: '#222222'}}>Size </Text>
+                    <Text>{field.value?.text}</Text>
+                  </View>
 
-                  <EvilIcons name='chevron-down' size={25}/>
+                  <EvilIcons name="chevron-down" size={25} />
                 </View>
               </Pressable>
 
@@ -322,15 +314,15 @@ export default function ProductAddDetailsScreen() {
                     padding: 15,
                     borderRadius: 8,
                     backgroundColor: theme.colors.white,
-                    flexDirection:'row',
-                    justifyContent:'space-between'
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
                   }}>
-                 <View>
-                 <Text style={{color: '#222222'}}>Color</Text>
-                  <Text>{field.value?.text}</Text>
-                 </View>
+                  <View>
+                    <Text style={{color: '#222222'}}>Color</Text>
+                    <Text>{field.value?.text}</Text>
+                  </View>
 
-                  <EvilIcons name='chevron-down' size={25}/>
+                  <EvilIcons name="chevron-down" size={25} />
                 </View>
               </Pressable>
 
@@ -368,16 +360,15 @@ export default function ProductAddDetailsScreen() {
                     padding: 15,
                     borderRadius: 8,
                     backgroundColor: theme.colors.white,
-                    flexDirection:'row',
-                    justifyContent:'space-between'
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
                   }}>
                   <View>
-                  <Text style={{color: '#222222'}}>Style</Text>
-                  <Text>{field.value?.text}</Text>
+                    <Text style={{color: '#222222'}}>Style</Text>
+                    <Text>{field.value?.text}</Text>
                   </View>
 
-                  <EvilIcons name='chevron-down' size={25}/>
-                  
+                  <EvilIcons name="chevron-down" size={25} />
                 </View>
               </Pressable>
 
@@ -415,15 +406,15 @@ export default function ProductAddDetailsScreen() {
                     padding: 15,
                     borderRadius: 8,
                     backgroundColor: theme.colors.white,
-                    flexDirection:'row',
-                    justifyContent:'space-between'
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
                   }}>
-                 <View>
-                 <Text style={{color: '#222222'}}>Material</Text>
-                  <Text>{field.value?.text}</Text>
-                 </View>
+                  <View>
+                    <Text style={{color: '#222222'}}>Material</Text>
+                    <Text>{field.value?.text}</Text>
+                  </View>
 
-                  <EvilIcons name='chevron-down' size={25}/>
+                  <EvilIcons name="chevron-down" size={25} />
                 </View>
               </Pressable>
 
@@ -459,7 +450,7 @@ export default function ProductAddDetailsScreen() {
                 Description
               </Text>
               <TextInput
-              placeholder='Product details write here'
+                placeholder="Product details write here"
                 multiline
                 numberOfLines={5}
                 value={field.value}

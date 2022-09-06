@@ -4,7 +4,7 @@ import {useTheme} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import AppPrimaryButton from '../../Component/AppPrimaryButton';
-import {AuthStackRoutes} from '../../Constant/routes';
+import {AuthStackRoutes} from '../../constants/routes';
 
 const LocationScreen = ({}) => {
   const navigation = useNavigation();

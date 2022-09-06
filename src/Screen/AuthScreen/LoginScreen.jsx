@@ -1,16 +1,14 @@
 import React from 'react';
 import {useForm, Controller} from 'react-hook-form';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {AuthStackRoutes} from '../../Constant/routes';
+import {AuthStackRoutes} from '../../constants/routes';
 import {useNavigation} from '@react-navigation/native';
 import {Checkbox, useTheme, Text} from 'react-native-paper';
 import AppPrimaryButton from '../../Component/AppPrimaryButton';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {PreferencesContext} from '../../Providers/PreferencesProvider';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
-
-
 
 import {
   View,
@@ -28,8 +26,8 @@ import {
 import {AuthContext} from '../../Providers/AuthProvider';
 
 GoogleSignin.configure({
-  webClientId: '1098035251669-j4gopt4e5ce00kc8jd16hh3ua6mlg75h.apps.googleusercontent.com',
-  
+  webClientId:
+    '1098035251669-j4gopt4e5ce00kc8jd16hh3ua6mlg75h.apps.googleusercontent.com',
 });
 
 setGlobalStyles.containerStyles = {
@@ -67,20 +65,18 @@ const LoginScreen = () => {
 
   async function onGoogleButtonPress() {
     // Get the users ID token
-   try {
-    const { idToken } = await GoogleSignin.signIn();
-    console.log(idToken);
-  
-    // Create a Google credential with the token
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-  
-    // Sign-in the user with the credential
-    return auth().signInWithCredential(googleCredential);
-    
-   } catch (error) {
-    console.log(error);
-    
-   }
+    try {
+      const {idToken} = await GoogleSignin.signIn();
+      console.log(idToken);
+
+      // Create a Google credential with the token
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+      // Sign-in the user with the credential
+      return auth().signInWithCredential(googleCredential);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const theme = useTheme();
@@ -284,7 +280,7 @@ const LoginScreen = () => {
                 justifyContent: 'space-between',
               }}>
               <TouchableOpacity
-              onPress={onGoogleButtonPress}
+                onPress={onGoogleButtonPress}
                 style={{
                   width: 60,
                   height: 60,

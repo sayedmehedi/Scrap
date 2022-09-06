@@ -1,7 +1,7 @@
 import {View, Text, StyleSheet, FlatList} from 'react-native';
 import React from 'react';
 import CustomStatusBar from '../../Component/CustomStatusBar';
-import Colors from '../../Constant/Colors';
+import Colors from '../../constants/Colors';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Header from '../../Component/Header';
 import Feather from 'react-native-vector-icons/Feather';
@@ -70,7 +70,7 @@ const LocalPickupScreen = () => {
               fontFamily: 'Inter-Regular',
               fontSize: 14,
               color: '#111111',
-              marginLeft:10
+              marginLeft: 10,
             }}>
             New York, 30 Miles
           </Text>

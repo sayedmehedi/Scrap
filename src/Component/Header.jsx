@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Colors from '../Constant/Colors';
+import Colors from '../constants/Colors';
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useNavigation} from '@react-navigation/native';
-import {AuthStackRoutes, RootStackRoutes} from '../Constant/routes';
+import {AuthStackRoutes, RootStackRoutes} from '../constants/routes';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {CheckBox} from 'react-native-elements';
 const Header = ({from}) => {

@@ -2,7 +2,7 @@ import React from 'react';
 import {Image} from 'react-native-elements';
 import {Controller, useForm} from 'react-hook-form';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {PostItemStackRoutes} from '../Constant/routes';
+import {PostItemStackRoutes} from '../constants/routes';
 import {useNavigation} from '@react-navigation/native';
 import SelectionModal from '../Component/SelectionModal';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';

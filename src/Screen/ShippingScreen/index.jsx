@@ -1,7 +1,7 @@
 import {View, Text, StyleSheet, FlatList} from 'react-native';
 import React from 'react';
 import CustomStatusBar from '../../Component/CustomStatusBar';
-import Colors from '../../Constant/Colors';
+import Colors from '../../constants/Colors';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Header from '../../Component/Header';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';

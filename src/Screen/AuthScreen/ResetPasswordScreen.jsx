@@ -7,7 +7,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import AppPrimaryButton from '../../Component/AppPrimaryButton';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {PreferencesContext} from '../../Providers/PreferencesProvider';
-import {AuthStackRoutes} from '../../Constant/routes';
+import {AuthStackRoutes} from '../../constants/routes';
 import {
   View,
   Image,
@@ -154,7 +154,7 @@ const ResetPasswordScreen = () => {
           </KeyboardAvoidingView>
 
           <AppPrimaryButton
-          onPress={()=>navigation.navigate(AuthStackRoutes.LOCATION)}
+            onPress={() => navigation.navigate(AuthStackRoutes.LOCATION)}
             containerStyle={{
               marginTop: 40,
               alignSelf: 'center',

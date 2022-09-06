@@ -1,6 +1,6 @@
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {RootStackRoutes} from '../../Constant/routes';
+import {RootStackRoutes} from '../../constants/routes';
 import {View, Text, Image, TouchableOpacity} from 'react-native';
 
 const EachConversation = () => {

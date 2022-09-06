@@ -5,13 +5,13 @@ import {Divider, Title} from 'react-native-paper';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import AppPrimaryButton from '../Component/AppPrimaryButton';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
-import Colors from '../Constant/Colors';
+import Colors from '../constants/Colors';
 
 export default function LocationSelectionModal({open, onClose, onChange}) {
   return (
     <Modal visible={open} animationType={'slide'}>
-      <View style={{padding: 15,backgroundColor:Colors.PRIMARY_COLOR}}>
-        <Title style={{color:'white'}}>Select Location</Title>
+      <View style={{padding: 15, backgroundColor: Colors.PRIMARY_COLOR}}>
+        <Title style={{color: 'white'}}>Select Location</Title>
       </View>
 
       <GooglePlacesAutocomplete

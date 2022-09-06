@@ -1,7 +1,7 @@
 import {View, Text, StyleSheet, FlatList, Dimensions} from 'react-native';
 import React from 'react';
 import CustomStatusBar from '../../Component/CustomStatusBar';
-import Colors from '../../Constant/Colors';
+import Colors from '../../constants/Colors';
 import Header from '../../Component/Header';
 import Feather from 'react-native-vector-icons/Feather';
 const {width} = Dimensions.get('window');
@@ -107,7 +107,7 @@ const IndividualCategoriesScreen = () => {
               fontFamily: 'Inter-Regular',
               fontSize: 14,
               color: '#111111',
-              marginLeft:10
+              marginLeft: 10,
             }}>
             New York, 30 Miles + Shipping
           </Text>
