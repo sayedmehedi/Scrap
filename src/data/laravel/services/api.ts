@@ -1,31 +1,35 @@
-import {Axios} from 'axios';
-import {Mutex} from 'async-mutex';
-import {container} from '@src/appEngine';
-import {QUERY_KEYS} from '@constants/query';
-import {ConfigService} from '@config/ConfigService';
-import LoginUserDto from '@core/domain/dto/LoginUserDto';
-import {loggedOut, tokenReceived} from '@store/actions/auth';
-import {ApplicationError} from '@core/domain/ApplicationError';
-import {ServiceProviderTypes} from '@core/serviceProviderTypes';
+import {Axios} from "axios";
+import {Mutex} from "async-mutex";
+import {container} from "@src/appEngine";
+import {QUERY_KEYS} from "@constants/query";
+import {ConfigService} from "@config/ConfigService";
+import LoginUserDto from "@core/domain/dto/LoginUserDto";
+import {loggedOut, tokenReceived} from "@store/actions/auth";
+import {ApplicationError} from "@core/domain/ApplicationError";
+import {ServiceProviderTypes} from "@core/serviceProviderTypes";
 import {
+  isErrorWithError,
+  isErrorWithErrors,
+  isErrorWithException,
   isErrorWithMessage,
   isFetchBaseQueryError,
   isValidationError,
-} from '@utils/error-handling';
+} from "@utils/error-handling";
 import {
   RootState,
   LoginResponse,
   JoteyQueryError,
   PaginatedResponse,
   RegisterResponse,
-} from '@src/types';
+  FullTextSearchResponse,
+} from "@src/types";
 import {
   createApi,
   FetchArgs,
   BaseQueryFn,
   fetchBaseQuery,
-} from '@reduxjs/toolkit/query/react';
-import RegisterUserDto from '@core/domain/dto/RegisterUserDto';
+} from "@reduxjs/toolkit/query/react";
+import RegisterUserDto from "@core/domain/dto/RegisterUserDto";
 
 const configService = container.get<ConfigService>(ConfigService);
 const apiClient = container.get<Axios>(ServiceProviderTypes.HttpClient);
@@ -48,12 +52,12 @@ export function providesList<
       ? resultsWithIds
       : resultsWithIds.data;
     return [
-      {type: tagType, id: 'LIST'} as const,
+      {type: tagType, id: "LIST"} as const,
       ...result.map(({id}) => ({type: tagType, id} as const)),
     ];
   }
 
-  return [{type: tagType, id: 'LIST'}] as const;
+  return [{type: tagType, id: "LIST"}] as const;
 }
 
 // create a new mutex
@@ -61,12 +65,12 @@ const mutex = new Mutex();
 const baseQuery = fetchBaseQuery({
   baseUrl: configService.apiBaseURL,
   prepareHeaders: (headers, {getState}) => {
-    headers.append('Accept', 'application/json');
-    headers.append('X-Requested-With', 'XMLHttpRequest');
+    headers.append("Accept", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
     // By default, if we have a token in the store, let's use that for authenticated requests
     const token = (getState() as RootState).auth.token;
     if (token) {
-      headers.set('authorization', `Bearer ${token}`);
+      headers.set("authorization", `Bearer ${token}`);
     }
     return headers;
   },
@@ -82,23 +86,29 @@ const laravelBaseQuery: BaseQueryFn<
   if (result.error) {
     const err = result.error;
 
-    let non_field_error = '';
+    let non_field_error = "";
 
     // you can access all properties of `FetchBaseQueryError` here
     if (
-      err.status === 'FETCH_ERROR' ||
-      err.status === 'PARSING_ERROR' ||
-      err.status === 'CUSTOM_ERROR'
+      err.status === "FETCH_ERROR" ||
+      err.status === "PARSING_ERROR" ||
+      err.status === "CUSTOM_ERROR"
     ) {
       non_field_error = err.error;
-    } else if (typeof err.data === 'string') {
+    } else if (typeof err.data === "string") {
       non_field_error = err.data;
     } else if (isErrorWithMessage(err.data)) {
       non_field_error = err.data.message;
+    } else if (isErrorWithErrors(err.data)) {
+      non_field_error = err.data.errors;
+    } else if (isErrorWithError(err.data)) {
+      non_field_error = err.data.error;
+    } else if (isErrorWithException(err.data)) {
+      non_field_error = err.data.exception;
     } else if (isErrorWithMessage(err)) {
       non_field_error = err.message;
     } else {
-      non_field_error = 'Something went wrong';
+      non_field_error = "Something went wrong";
     }
 
     // // you can access all properties of `FetchBaseQueryError` here
@@ -158,11 +168,11 @@ const baseQueryWithReauth: BaseQueryFn<
       try {
         const refreshResult = await laravelBaseQuery(
           {
-            url: '/token',
-            method: 'POST',
+            url: "/token",
+            method: "POST",
             body: {
-              email: '',
-              password: '',
+              email: "",
+              password: "",
             },
           },
           api,
@@ -191,26 +201,27 @@ const baseQueryWithReauth: BaseQueryFn<
 
 // Define a service using a base URL and expected endpoints
 export const api = createApi({
-  reducerPath: 'api',
+  reducerPath: "api",
   baseQuery: baseQueryWithReauth,
   tagTypes: [
     QUERY_KEYS.PRODUCT,
     QUERY_KEYS.CATEGORY,
     QUERY_KEYS.UNAUTHORIZED,
     QUERY_KEYS.UNKNOWN_ERROR,
+    QUERY_KEYS.FULL_TEXT_SEARCH,
   ],
   endpoints: builder => ({
     login: builder.mutation<LoginResponse, LoginUserDto>({
       query: credentials => ({
-        method: 'POST',
-        url: 'login',
+        method: "POST",
+        url: "login",
         body: credentials,
       }),
     }),
     register: builder.mutation<RegisterResponse, RegisterUserDto>({
       query: credentials => ({
-        method: 'POST',
-        url: 'register',
+        method: "POST",
+        url: "register",
         body: credentials,
       }),
     }),
@@ -218,9 +229,23 @@ export const api = createApi({
       queryFn: () => ({data: null}),
       invalidatesTags: [QUERY_KEYS.UNKNOWN_ERROR],
     }),
+    getFullTextSearch: builder.query<FullTextSearchResponse, {q: string}>({
+      query(params) {
+        return {
+          params,
+          url: "search",
+        };
+      },
+      providesTags: result =>
+        result ? [QUERY_KEYS.FULL_TEXT_SEARCH] : [QUERY_KEYS.UNKNOWN_ERROR],
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useLoginMutation, useRegisterMutation} = api;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useGetFullTextSearchQuery,
+} = api;

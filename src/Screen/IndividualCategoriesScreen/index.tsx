@@ -101,9 +101,11 @@ const IndividualCategoriesScreen = ({ route }: Props) => {
 };
 
 const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => {
-  const [trigger, { isFetching, isLoading }] = useLazyGetFilterProductsQuery()
+  const [trigger, { isFetching, isLoading, data }] = useLazyGetFilterProductsQuery()
   // const [isFilterProductsLoading, setIsFilterProductsLoading] = React.useState(false);
   const [productPages, setProductPages] = React.useState<Array<FilterProductsResponse["products"]>>([]);
+  const actionCreaterRef = React.useRef<ReturnType<typeof trigger> | null>(null);
+
 
   const getNextProducts = async () => {
     if (isFetching) {
@@ -120,27 +122,55 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
       params.page = lastProductPage.current_page + 1;
     }
 
-    try {
-      const productResponse = await trigger(params, true).unwrap()
+    actionCreaterRef.current = trigger(params, true)
 
-      setProductPages(prevPages => prevPages.concat(productResponse.products))
+    try {
+      const productResponse = await actionCreaterRef.current.unwrap()
+
+      setProductPages(prevPages => {
+        console.log("updating products getNextProducts")
+
+        return prevPages.concat(productResponse.products)
+      })
     } finally {
       // setIsFilterProductsLoading(false)
     }
   }
 
+
+
   React.useEffect(() => {
+    const actionCreator: ReturnType<typeof trigger> = trigger(params, true);
+
     (async () => {
       // setIsFilterProductsLoading(true)
       try {
-        const productResponse = await trigger(params, true).unwrap()
+        const productResponse = await actionCreator.unwrap()
 
-        setProductPages([productResponse.products])
+        setProductPages(() => {
+          console.log("updating products initial")
+
+          return [productResponse.products]
+        })
       } finally {
         // setIsFilterProductsLoading(false)
       }
     })()
+
+    return () => {
+      console.log("initial unsubscribing...")
+      actionCreator.abort()
+    }
   }, [params, trigger])
+
+  React.useEffect(() => {
+    return () => {
+      if (actionCreaterRef.current) {
+        console.log("getNextProducts unsubscribing...")
+        actionCreaterRef.current.abort()
+      }
+    }
+  }, [])
 
   const products = React.useMemo(() => {
     if (isLoading) {

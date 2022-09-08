@@ -3,6 +3,7 @@ import { FilterProduct } from '@src/types';
 import { useNavigation } from '@react-navigation/native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { View, Text, Image, Dimensions, Pressable } from 'react-native';
+import { RootStackRoutes } from '@constants/routes';
 
 const { width } = Dimensions.get('window');
 const itemWidth = width / 3;
@@ -26,7 +27,9 @@ const EachProductItem = ({ item, }: { item: FilterProduct & { type: "data" } | {
       style={{
         margin: 3,
       }}
-      onPress={() => navigation.navigate('productDetails')}>
+      onPress={() => navigation.navigate(RootStackRoutes.PRODUCT_DETAILS, {
+        productId: item.id,
+      })}>
       <View
         style={{
           height: 130,

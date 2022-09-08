@@ -4,8 +4,8 @@ import AuthStack from './AuthStack';
 import { forFade } from '@utils/misc';
 import { useTheme } from 'react-native-paper';
 import { RootStackParamList } from '@src/types';
-import MakeBidScreen from '../Screen/MakeBidScreen';
 import PlaceBidScreen from '../Screen/PlaceBidScreen';
+import MakeOfferScreen from '../Screen/MakeOfferScreen';
 import { RootStackRoutes } from '../constants/routes';
 import AskQuestionScreen from '../Screen/AskQuestionScreen';
 import ReviewOfferScreen from '../Screen/ReviewOfferScreen';
@@ -31,10 +31,12 @@ const Navigator = () => {
         headerTitleStyle: {
           fontSize: 18,
           fontFamily: 'Inter-Bold',
+          // @ts-ignore
           color: theme.colors.white,
         },
-        headerTintColor: theme.colors.white,
         cardStyleInterpolator: forFade,
+        // @ts-ignore
+        headerTintColor: theme.colors.white,
       }}>
       <RootStack.Screen
         component={BottomTab}
@@ -63,6 +65,9 @@ const Navigator = () => {
       />
 
       <RootStack.Screen
+        options={{
+          title: ""
+        }}
         component={ProductDetailsScreen}
         name={RootStackRoutes.PRODUCT_DETAILS}
       />
@@ -74,8 +79,8 @@ const Navigator = () => {
       />
 
       <RootStack.Screen
-        component={MakeBidScreen}
-        name={RootStackRoutes.MAKE_BID}
+        component={MakeOfferScreen}
+        name={RootStackRoutes.MAKE_OFFER}
         options={{ title: 'Make an offer', headerTitleAlign: 'center' }}
       />
 

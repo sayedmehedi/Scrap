@@ -1,7 +1,7 @@
 import React from 'react';
-import {useTheme} from 'react-native-paper';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { useTheme } from 'react-native-paper';
 import Octicons from 'react-native-vector-icons/Octicons';
+import { View, Text, TouchableOpacity, StyleProp, TextStyle, ViewStyle, GestureResponderEvent } from 'react-native';
 
 export default function AppPrimaryButton({
   text,
@@ -10,6 +10,13 @@ export default function AppPrimaryButton({
   textStyle = {},
   containerStyle = {},
   iconContainerStyle = {},
+}: {
+  text: string,
+  onPress?: (event: GestureResponderEvent) => void,
+  textStyle?: StyleProp<TextStyle>,
+  containerStyle?: StyleProp<ViewStyle>
+  iconContainerStyle?: StyleProp<ViewStyle>
+  iconProps?: Omit<React.ComponentProps<typeof Octicons>, "name">,
 }) {
   const theme = useTheme();
 
@@ -41,6 +48,7 @@ export default function AppPrimaryButton({
             {
               fontSize: 16,
               fontWeight: '600',
+              // @ts-ignore
               color: theme.colors.white,
             },
             textStyle,
@@ -68,6 +76,7 @@ export default function AppPrimaryButton({
         <Octicons
           size={26}
           name={'arrow-right'}
+          // @ts-ignore
           color={theme.colors.white}
           {...iconProps}
         />

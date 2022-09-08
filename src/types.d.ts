@@ -1,17 +1,17 @@
-import {store} from '@store/configureStore';
-import rootReducer from '@store/reducers/rootReducer';
+import {store} from "@store/configureStore";
+import rootReducer from "@store/reducers/rootReducer";
 import {
   CompositeScreenProps,
   NavigatorScreenParams,
-} from '@react-navigation/native';
+} from "@react-navigation/native";
 import {
   HomeTabRoutes,
   AuthStackRoutes,
   HomeStackRoutes,
   RootStackRoutes,
-} from '@constants/routes';
-import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+} from "@constants/routes";
+import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
 
 export type HomeStackParamList = {
   [HomeStackRoutes.HOME]: undefined;
@@ -62,14 +62,34 @@ export type AuthStackScreenProps<T extends keyof AuthStackParamList> =
 export type RootStackParamList = {
   [RootStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
   [RootStackRoutes.HOME]: NavigatorScreenParams<HomeTabParamList>;
-  [RootStackRoutes.MAKE_BID]: undefined;
-  [RootStackRoutes.PLACE_BID]: undefined;
-  [RootStackRoutes.REVIEW_OFFER]: undefined;
+  [RootStackRoutes.MAKE_OFFER]: {
+    buyPrice: number;
+    totalOffers: number;
+    productName: string;
+    shippingCost: number;
+    productImage?: string;
+    productId: string | number;
+  };
+  [RootStackRoutes.PLACE_BID]: {
+    totalBids: number;
+    productName: string;
+    timeLeftToBid: string;
+    productImage?: string;
+    bidStartingPrice: number;
+    productId: string | number;
+  };
+  [RootStackRoutes.REVIEW_OFFER]: {
+    offerPrice: number;
+    shippingCost: number;
+    productId: string | number;
+  };
   [RootStackRoutes.ASK_QUESTION]: undefined;
   [RootStackRoutes.NOTIFICATIONS]: undefined;
   [RootStackRoutes.SEARCH_PRODUCT]: undefined;
   [RootStackRoutes.PRODUCT_FILTER]: undefined;
-  [RootStackRoutes.PRODUCT_DETAILS]: undefined;
+  [RootStackRoutes.PRODUCT_DETAILS]: {
+    productId: number | string;
+  };
   [RootStackRoutes.SINGLE_CONVERSATION]: undefined;
 };
 
@@ -88,7 +108,7 @@ export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof rootReducer>;
 
 export type ServerNonFieldError = {
-  status: 'failed';
+  status: "failed";
   message: string;
 };
 
@@ -116,7 +136,7 @@ export type ServerValidationError = {
 export type ServerErrorType = ServerValidationError | ServerNonFieldError;
 
 export type JoteyQueryError = {
-  status: number | 'FETCH_ERROR' | 'PARSING_ERROR' | 'CUSTOM_ERROR';
+  status: number | "FETCH_ERROR" | "PARSING_ERROR" | "CUSTOM_ERROR";
   data: {
     non_field_error: string;
     field_errors: Record<string, string>;
@@ -179,14 +199,14 @@ export interface FilterProduct {
   location: string;
   price: string;
   is_locale: boolean;
-  is_favourite: boolean;
   total_bids: number;
+  is_favourite: boolean;
   total_offers: number;
 }
 
 export type FilterProductQueryParams = Partial<{
-  is_locale: '1' | '0';
-  is_shipping: '1' | '0';
+  is_locale: "1" | "0";
+  is_shipping: "1" | "0";
   category_id: string | number;
   sub_category_id: string | number;
   user_id: string | number;
@@ -196,7 +216,7 @@ export type FilterProductQueryParams = Partial<{
   min_price: number;
   max_price: number;
   distance: number;
-  sort_by: 'random' | 'oldest' | 'low_price' | 'high_price';
+  sort_by: "random" | "oldest" | "low_price" | "high_price";
   paginate: number;
   page: number;
 }>;
@@ -224,3 +244,82 @@ export interface AllCategoryItem {
 export type AllCategoryResponse = {
   categories: AllCategoryItem[];
 };
+
+export interface Category {
+  id: number;
+  title: string;
+}
+
+export interface Condition {
+  id: number;
+  title: string;
+}
+
+export interface Attribute {
+  id: number;
+  title: string;
+  category: string;
+}
+
+export type FullTextSearchResponse = {
+  categories: Category[];
+  conditions: Condition[];
+  attributes: Attribute[];
+  sub_categories: Category[];
+};
+
+export interface Seller {
+  id: number;
+  name: string;
+  image: string;
+  rating: number;
+  reviews: number;
+  join_date: string;
+}
+
+export interface BidOrOffer {
+  id: number;
+  price: string;
+  is_winner: boolean;
+}
+
+export interface Metal {
+  id: number;
+  title: string;
+}
+
+export interface ProductDetails {
+  id: number;
+  distance: string;
+  title: string;
+  images: string[];
+  is_locale: boolean;
+  is_shipping: boolean;
+  starting_price: string;
+  buy_price: string;
+  total_bids: number;
+  total_offers: number;
+  time_left: string;
+  condition: string;
+  category: string;
+  sub_category: string;
+  attributes: Record<string, string> | [];
+  about: string;
+  location: string;
+  latitude: number;
+  longitude: number;
+  show_metal_price: boolean;
+  metals: Metal[];
+  quantity: number;
+  related_products: PaginatedResponse<FilterProduct>;
+  seller: Seller;
+  has_bid: boolean;
+  highest_bidder?: boolean;
+  bid_out: boolean;
+  highest_offerer?: boolean;
+  has_offer: boolean;
+  bid?: "" | BidOrOffer;
+  offer?: "" | BidOrOffer;
+  is_favorite: boolean;
+  shipping_cost: string;
+}
