@@ -13,10 +13,11 @@ import Octicons from "react-native-vector-icons/Octicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EachProductItem from "../../Component/EachProductItem";
 import AppPrimaryButton from "@src/Component/AppPrimaryButton";
-import { ActivityIndicator, Button, useTheme } from "react-native-paper";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { ActivityIndicator, Button, useTheme } from "react-native-paper";
+import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import { useGetProductDetailsQuery, useToggleProductFavoriteMutation } from "@data/laravel/services/product";
 import {
   View,
@@ -32,6 +33,8 @@ type Props = NativeStackScreenProps<
   typeof RootStackRoutes.PRODUCT_DETAILS
 >;
 
+
+const metalsTableHeadData = ["Metal", "Current Price", "Changes"]
 
 
 const ProductDetailsScreen = ({ route, navigation }: Props) => {
@@ -192,6 +195,20 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
     );
   }
 
+  const metalsChangesCell = (data: [number, number], index: number) => (
+    <View style={{ flexDirection: "row", flex: 1 }}>
+      <Text style={{
+        textAlign: "center", margin: 6, fontWeight: "700",
+        // @ts-ignore
+        color: data[0] <= data[1] ? theme.colors.error : theme.colors.success
+      }}>{data[0]}</Text>
+      <Text style={{
+        textAlign: "center", margin: 6,
+        color: '#252522'
+      }}>{data[1]}</Text>
+    </View>
+  );
+
   // Bid scenarios: Bid placed, highest bidder, bid out, bid won
   return (
     <>
@@ -280,8 +297,8 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
 
           {productDetails.has_offer &&
             <View>
-              {/* Scenario: when won the bid show the congratulations text part
-                Else show highest bidder text or bid out text or bid placed text */}
+              {/* Scenario: When offer approved show text for that
+                Else show offer placed text */}
               {typeof productDetails.offer === "object" && productDetails.offer.is_winner ? (
                 <React.Fragment>
                   <Text style={{ textAlign: "center", fontSize: 20, fontWeight: "600", marginTop: 20 }}>
@@ -304,7 +321,7 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
               </Text>
 
               <Text style={{ textAlign: "center", fontSize: 13 }}>
-                {productDetails.total_offers} bids
+                {productDetails.total_offers} offers
               </Text>
 
               {productDetails.has_offer && <Text style={{ textAlign: "center", fontSize: 14, marginTop: 5 }}>Your max bid: ${typeof productDetails.offer === "object" && productDetails.offer.price}</Text>}
@@ -628,6 +645,30 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
                 <Octicons name="arrow-right" color={"#023047"} size={26} />
               </View>
             </TouchableOpacity>}
+
+            {/* metals */}
+            <View style={{ marginTop: 30 }}>
+              <Text style={{ fontWeight: "600", marginBottom: 30 }}>Current/Live Metals Price</Text>
+
+              <Table>
+                <Row data={metalsTableHeadData} textStyle={{ margin: 6, color: '#252522', textAlign: "center" }} style={{ borderWidth: 1, height: 40, backgroundColor: "#EFEFEF", borderColor: "#D0D0D0" }} />
+                {
+                  ([
+                    ['Copper', '$13.40', [-2.33, -2.33] as [number, number]],
+                    ['Aluminium', '$27.22', [4.20, +3.00] as [number, number]],
+                  ]).map((rowData, index) => (
+                    <TableWrapper key={index} style={{ flexDirection: "row", borderWidth: 1, borderTopWidth: 0, borderColor: "#D1D1D1", }}>
+                      {
+                        rowData.map((cellData, cellIndex) => (
+                          <Cell key={cellIndex} data={Array.isArray(cellData) ? metalsChangesCell(cellData, index) : cellData} textStyle={{ margin: 6, color: '#252522', textAlign: "center" }} />
+                        ))
+                      }
+                    </TableWrapper>
+                  ))
+                }
+                {/* <Rows textStyle={{ margin: 6, color: '#252522' }} style={{ borderWidth: 1, borderTopWidth: 0, borderColor: "#D1D1D1" }} data={} /> */}
+              </Table>
+            </View>
 
             <Text
               style={{

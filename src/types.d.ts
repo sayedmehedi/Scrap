@@ -91,6 +91,12 @@ export type RootStackParamList = {
     productId: number | string;
   };
   [RootStackRoutes.SINGLE_CONVERSATION]: undefined;
+  [RootStackRoutes.CONFIRM_PURCHASE]: {
+    productName: string;
+    productImage: string;
+    productId: string | number;
+    productBuyNowPrice: number;
+  };
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

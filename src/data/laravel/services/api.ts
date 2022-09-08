@@ -126,6 +126,8 @@ const laravelBaseQuery: BaseQueryFn<
     let field_errors: Record<string, string> = {};
 
     if (err.data && isValidationError(err.data)) {
+      non_field_error = "Invalid data";
+
       field_errors = Object.entries(err.data.errors ?? err.data.error!).reduce(
         (acc, [fieldName, [errorMessage]]) => {
           acc[fieldName] = errorMessage;

@@ -8,14 +8,16 @@ export default function AppPrimaryButton({
   onPress,
   iconProps = {},
   textStyle = {},
+  disabled = false,
   containerStyle = {},
   iconContainerStyle = {},
 }: {
   text: string,
-  onPress?: (event: GestureResponderEvent) => void,
+  disabled?: boolean;
   textStyle?: StyleProp<TextStyle>,
   containerStyle?: StyleProp<ViewStyle>
   iconContainerStyle?: StyleProp<ViewStyle>
+  onPress?: (event: GestureResponderEvent) => void,
   iconProps?: Omit<React.ComponentProps<typeof Octicons>, "name">,
 }) {
   const theme = useTheme();
@@ -35,6 +37,7 @@ export default function AppPrimaryButton({
         },
         containerStyle,
       ]}
+      disabled={disabled}
       onPress={(...args) => {
         onPress?.(...args);
       }}>

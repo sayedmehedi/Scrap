@@ -1,4 +1,4 @@
-import {IsNotEmpty} from 'class-validator';
+import {IsNotEmpty} from "class-validator";
 
 export default class RegisterUserDto {
   @IsNotEmpty()
@@ -9,4 +9,7 @@ export default class RegisterUserDto {
 
   @IsNotEmpty()
   password!: string;
+
+  @IsNotEmpty()
+  password_confirmation!: string;
 }

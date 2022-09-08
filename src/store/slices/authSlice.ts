@@ -4,9 +4,6 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {loggedOut, tokenReceived} from "@store/actions/auth";
 
 type AuthState = {
-  isAdmin: boolean;
-  isClient: boolean;
-  isLawyer: boolean;
   user: User | null;
   token: string | null;
 };
@@ -16,9 +13,6 @@ const slice = createSlice({
   initialState: {
     user: null,
     token: null,
-    isAdmin: false,
-    isClient: false,
-    isLawyer: false,
   } as AuthState,
   reducers: {
     setCredentials: (
@@ -34,20 +28,15 @@ const slice = createSlice({
       state.token = action.payload;
     });
 
-    builder.addCase(loggedOut, (state, action) => {
+    builder.addCase(loggedOut, state => {
+      state.user = null;
       state.token = null;
-      state.isAdmin = false;
-      state.isClient = false;
-      state.isLawyer = false;
     });
 
     builder.addMatcher(
       api.endpoints.login.matchFulfilled,
       (state, {payload}) => {
-        state.token = payload.token;
-        state.isAdmin = payload.isAdmin;
-        state.isClient = payload.isClient;
-        state.isLawyer = payload.isLawyer;
+        state.token = payload.user.token;
 
         state.user = payload.user ?? null;
       },

@@ -19,6 +19,7 @@ export const RootStackRoutes = {
   SEARCH_PRODUCT: "searchProduct",
   PRODUCT_FILTER: "productFilter",
   PRODUCT_DETAILS: "productDetails",
+  CONFIRM_PURCHASE: "confirmPurchase",
 } as const;
 
 export const PostItemStackRoutes = {
@@ -32,15 +33,15 @@ export const PostItemStackRoutes = {
 export const HomeTabRoutes = {
   HOME: "Home",
   CHAT: "chat",
-  POST_ITEM: "postItem",
   SELLING: "selling",
   PROFILE: "profile",
+  POST_ITEM: "postItem",
 } as const;
 
 export const HomeStackRoutes = {
   HOME: "home",
   SHIPPING: "shipping",
   LOCAL_PICKUP: "localPickup",
-  INDIVIDUAL_CATEGORIES: "individualCategories",
   ALL_CATEGORIES: "allCategories",
+  INDIVIDUAL_CATEGORIES: "individualCategories",
 } as const;

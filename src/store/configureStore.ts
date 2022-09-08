@@ -1,14 +1,15 @@
-import {api} from '@data/laravel/services/api';
-import rootReducer from './reducers/rootReducer';
-import {configureStore} from '@reduxjs/toolkit';
-import {notistackSlice} from './slices/notistackSlice';
-import {productApi} from '@data/laravel/services/product';
-import {categoryApi} from '@data/laravel/services/category';
-import {setupListeners} from '@reduxjs/toolkit/dist/query';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {rtkQueryErrorLogger} from './middleware/rtkQueryErrorLogger';
-import NetInfo, {NetInfoSubscription} from '@react-native-community/netinfo';
-import {AppState, AppStateStatus, NativeEventSubscription} from 'react-native';
+import createDebugger from "redux-flipper";
+import {api} from "@data/laravel/services/api";
+import rootReducer from "./reducers/rootReducer";
+import {configureStore} from "@reduxjs/toolkit";
+import {notistackSlice} from "./slices/notistackSlice";
+import {productApi} from "@data/laravel/services/product";
+import {categoryApi} from "@data/laravel/services/category";
+import {setupListeners} from "@reduxjs/toolkit/dist/query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {rtkQueryErrorLogger} from "./middleware/rtkQueryErrorLogger";
+import NetInfo, {NetInfoSubscription} from "@react-native-community/netinfo";
+import {AppState, AppStateStatus, NativeEventSubscription} from "react-native";
 import {
   FLUSH,
   PURGE,
@@ -18,12 +19,12 @@ import {
   REHYDRATE,
   persistStore,
   persistReducer,
-} from 'redux-persist';
+} from "redux-persist";
 
 const persistConfig = {
-  key: 'root',
+  key: "root",
   version: 1,
-  whitelist: ['auth'],
+  whitelist: ["auth"],
   storage: AsyncStorage,
 };
 
@@ -38,7 +39,7 @@ export function createStore(
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware({
         immutableCheck: {
-          ignoredPaths: ['firebase', 'firestore'],
+          ignoredPaths: ["firebase", "firestore"],
         },
         serializableCheck: {
           ignoredActions: [
@@ -62,6 +63,7 @@ export function createStore(
         productApi.middleware,
         categoryApi.middleware,
         rtkQueryErrorLogger,
+        createDebugger(),
       ),
   });
 
@@ -72,20 +74,20 @@ export const store = createStore();
 
 export const persistor = persistStore(store);
 
+let initialized = false;
+
 // optional, but required for refetchOnFocus/refetchOnReconnect behaviors
 // see `setupListeners` docs - takes an optional callback as the 2nd arg for customization
 setupListeners(
   store.dispatch,
   (dispatch, {onFocus, onFocusLost, onOffline, onOnline}) => {
-    let initialized = false;
-
     function defaultHandler() {
       const handleFocus = () => dispatch(onFocus());
       const handleFocusLost = () => dispatch(onFocusLost());
       const handleOnline = () => dispatch(onOnline());
       const handleOffline = () => dispatch(onOffline());
       const handleVisibilityChange = (state: AppStateStatus) => {
-        if (state === 'active') {
+        if (state === "active") {
           handleFocus();
         } else {
           handleFocusLost();
@@ -106,13 +108,14 @@ setupListeners(
         });
 
         focusSubscription = AppState.addEventListener(
-          'focus',
+          "focus",
           handleVisibilityChange,
         );
         initialized = true;
       }
 
       const unsubscribe = () => {
+        console.log("listener sob remove krtesi");
         netinfoSubscription?.();
         focusSubscription?.remove();
         initialized = false;

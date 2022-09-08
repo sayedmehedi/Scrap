@@ -75,6 +75,7 @@ export default function ReviewOfferScreen({ route, navigation }: Props) {
           marginTop: 15,
         }}
         title={'Edit offer'}
+        onPress={() => navigation.goBack()}
         TouchableComponent={TouchableOpacity}
         titleStyle={{
           textDecorationColor: '#000',

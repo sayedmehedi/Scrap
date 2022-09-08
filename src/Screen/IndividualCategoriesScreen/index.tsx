@@ -128,7 +128,7 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
       const productResponse = await actionCreaterRef.current.unwrap()
 
       setProductPages(prevPages => {
-        console.log("updating products getNextProducts")
+
 
         return prevPages.concat(productResponse.products)
       })
@@ -148,7 +148,7 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
         const productResponse = await actionCreator.unwrap()
 
         setProductPages(() => {
-          console.log("updating products initial")
+
 
           return [productResponse.products]
         })
@@ -158,7 +158,7 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
     })()
 
     return () => {
-      console.log("initial unsubscribing...")
+
       actionCreator.abort()
     }
   }, [params, trigger])
@@ -166,7 +166,7 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
   React.useEffect(() => {
     return () => {
       if (actionCreaterRef.current) {
-        console.log("getNextProducts unsubscribing...")
+
         actionCreaterRef.current.abort()
       }
     }
