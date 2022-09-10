@@ -45,7 +45,12 @@ export type HomeTabScreenProps<T extends keyof HomeTabParamList> =
   BottomTabScreenProps<HomeTabParamList, T>;
 
 export type AuthStackParamList = {
-  [AuthStackRoutes.LOGIN]: undefined;
+  [AuthStackRoutes.LOGIN]: {
+    nextScreen?: {
+      name: string;
+      params: Record<string, any>;
+    };
+  };
   [AuthStackRoutes.LOCATION]: undefined;
   [AuthStackRoutes.REGISTRATION]: undefined;
   [AuthStackRoutes.RESET_PASSWORD]: undefined;

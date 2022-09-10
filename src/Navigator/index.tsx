@@ -1,12 +1,12 @@
 import React from 'react';
 import BottomTab from './BottomTab';
-import AuthStack from './AuthStack';
 import { forFade } from '@utils/misc';
 import { useTheme } from 'react-native-paper';
 import { RootStackParamList } from '@src/types';
+import AuthStackNavigator from './AuthStackNavigator';
 import PlaceBidScreen from '../Screen/PlaceBidScreen';
-import MakeOfferScreen from '../Screen/MakeOfferScreen';
 import { RootStackRoutes } from '../constants/routes';
+import MakeOfferScreen from '../Screen/MakeOfferScreen';
 import AskQuestionScreen from '../Screen/AskQuestionScreen';
 import ReviewOfferScreen from '../Screen/ReviewOfferScreen';
 import { createStackNavigator, } from '@react-navigation/stack';
@@ -17,7 +17,6 @@ import SingleConversationScreen from '../Screen/SingleConversationScreen';
 import ProductFilterScreen from '../Screen/ProductFilterScreen/ProductFilterScreen';
 
 const RootStack = createStackNavigator<RootStackParamList>();
-
 
 const Navigator = () => {
   const theme = useTheme();
@@ -37,7 +36,8 @@ const Navigator = () => {
         cardStyleInterpolator: forFade,
         // @ts-ignore
         headerTintColor: theme.colors.white,
-      }}>
+      }}
+    >
       <RootStack.Screen
         component={BottomTab}
         name={RootStackRoutes.HOME}
@@ -51,8 +51,8 @@ const Navigator = () => {
         options={{
           headerShown: false,
         }}
-        component={AuthStack}
         name={RootStackRoutes.AUTH}
+        component={AuthStackNavigator}
       />
 
       <RootStack.Screen

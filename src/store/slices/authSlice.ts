@@ -1,7 +1,7 @@
 import {api} from "@data/laravel/services/api";
 import type {RootState, User} from "@src/types";
+import {tokenReceived} from "@store/actions/auth";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {loggedOut, tokenReceived} from "@store/actions/auth";
 
 type AuthState = {
   user: User | null;
@@ -28,7 +28,7 @@ const slice = createSlice({
       state.token = action.payload;
     });
 
-    builder.addCase(loggedOut, state => {
+    builder.addMatcher(api.endpoints.logout.matchFulfilled, state => {
       state.user = null;
       state.token = null;
     });

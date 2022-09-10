@@ -101,7 +101,7 @@ const IndividualCategoriesScreen = ({ route }: Props) => {
 };
 
 const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => {
-  const [trigger, { isFetching, isLoading, data }] = useLazyGetFilterProductsQuery()
+  const [trigger, { isFetching, isLoading }] = useLazyGetFilterProductsQuery()
   // const [isFilterProductsLoading, setIsFilterProductsLoading] = React.useState(false);
   const [productPages, setProductPages] = React.useState<Array<FilterProductsResponse["products"]>>([]);
   const actionCreaterRef = React.useRef<ReturnType<typeof trigger> | null>(null);

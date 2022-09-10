@@ -227,6 +227,19 @@ export const api = createApi({
         body: credentials,
       }),
     }),
+    logout: builder.mutation<
+      {
+        status: string;
+        message: string;
+      },
+      void
+    >({
+      query() {
+        return {
+          url: "/logout",
+        };
+      },
+    }),
     refetchErroredQueries: builder.mutation<null, void>({
       queryFn: () => ({data: null}),
       invalidatesTags: [QUERY_KEYS.UNKNOWN_ERROR],
@@ -248,6 +261,7 @@ export const api = createApi({
 // auto-generated based on the defined endpoints
 export const {
   useLoginMutation,
+  useLogoutMutation,
   useRegisterMutation,
   useGetFullTextSearchQuery,
 } = api;

@@ -18,8 +18,8 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
-  AuthStackRoutes,
   HomeTabRoutes,
+  AuthStackRoutes,
   RootStackRoutes,
 } from '../constants/routes';
 
@@ -49,11 +49,18 @@ const BottomTab = () => {
               e.preventDefault();
               navigation.navigate(RootStackRoutes.AUTH, {
                 screen: AuthStackRoutes.LOGIN,
+                params: {
+                  nextScreen: {
+                    name: route.name,
+                    params: route.params
+                  }
+                }
               });
             }
           },
         };
       }}
+
       screenOptions={{
         headerStyle: {
           backgroundColor: theme.colors.primary,
@@ -61,9 +68,11 @@ const BottomTab = () => {
         headerTitleStyle: {
           fontSize: 18,
           fontFamily: 'Inter-Bold',
+          // @ts-ignore
           color: theme.colors.white,
         },
         tabBarShowLabel: false,
+        // @ts-ignore
         headerTintColor: theme.colors.white,
         tabBarStyle: {
           height: 70,

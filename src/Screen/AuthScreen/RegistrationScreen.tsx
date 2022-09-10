@@ -9,6 +9,7 @@ import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import { useRegisterMutation } from "@data/laravel/services/api";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { addServerErrors, isJoteyQueryError } from "@utils/error-handling";
 import {
   View,
   Image,
@@ -21,6 +22,7 @@ import {
   setGlobalStyles,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
+import { ErrorMessage } from "@hookform/error-message";
 
 setGlobalStyles.containerStyles = {
   height: 58,
@@ -63,23 +65,31 @@ const RegistrationScreen = ({ navigation }: Props) => {
   const [register, { isLoading, isError, error, isSuccess, data }] =
     useRegisterMutation();
 
-  const { control, handleSubmit } = useForm({
-    defaultValues: {
-      name: "",
-      email: "",
-      fullname: "",
-      password: "",
-      password_confirmation: ""
-    },
-  });
+  const { control, handleSubmit, setError,
+    formState: { errors }, reset } = useForm({
+      defaultValues: {
+        name: "",
+        email: "",
+        password: "",
+        password_confirmation: ""
+      },
+    });
 
   React.useEffect(() => {
     if (isSuccess && data) {
       enqueueSuccessSnackbar({
         text1: data.success
       })
+
+      reset()
     }
-  }, [enqueueSuccessSnackbar, isSuccess, data])
+  }, [enqueueSuccessSnackbar, isSuccess, data, reset])
+
+  React.useEffect(() => {
+    if (isError && isJoteyQueryError(error)) {
+      addServerErrors(error.data.field_errors, setError);
+    }
+  }, [setError, isError, error]);
 
   const handleRegistration = handleSubmit((values) => {
     register(values)
@@ -158,7 +168,7 @@ const RegistrationScreen = ({ navigation }: Props) => {
             <View style={{ width: "100%", marginBottom: 16 }}>
               <Controller
                 control={control}
-                name={"fullname"}
+                name={"name"}
                 render={({ field }) => {
                   return (
                     <FloatingLabelInput
@@ -168,6 +178,16 @@ const RegistrationScreen = ({ navigation }: Props) => {
                     />
                   );
                 }}
+              />
+
+              <ErrorMessage
+                name={"name"}
+                errors={errors}
+                render={({ message }) => (
+                  <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                    {message}
+                  </Text>
+                )}
               />
             </View>
 
@@ -185,6 +205,16 @@ const RegistrationScreen = ({ navigation }: Props) => {
                     />
                   );
                 }}
+              />
+
+              <ErrorMessage
+                name={"email"}
+                errors={errors}
+                render={({ message }) => (
+                  <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                    {message}
+                  </Text>
+                )}
               />
             </View>
 
@@ -218,6 +248,16 @@ const RegistrationScreen = ({ navigation }: Props) => {
                   );
                 }}
               />
+
+              <ErrorMessage
+                name={"password"}
+                errors={errors}
+                render={({ message }) => (
+                  <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                    {message}
+                  </Text>
+                )}
+              />
             </View>
 
             <View style={{ width: "100%" }}>
@@ -250,6 +290,16 @@ const RegistrationScreen = ({ navigation }: Props) => {
                   );
                 }}
               />
+
+              <ErrorMessage
+                name={"password_confirmation"}
+                errors={errors}
+                render={({ message }) => (
+                  <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                    {message}
+                  </Text>
+                )}
+              />
             </View>
           </KeyboardAvoidingView>
 
@@ -275,6 +325,7 @@ const RegistrationScreen = ({ navigation }: Props) => {
 
           <AppPrimaryButton
             text={"Register"}
+            disabled={isLoading}
             onPress={handleRegistration}
             containerStyle={{
               alignSelf: "center",

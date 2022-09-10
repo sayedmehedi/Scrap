@@ -1,15 +1,18 @@
 import React from "react";
 import auth from "@react-native-firebase/auth";
+import { useAppSelector } from "@hooks/store";
+import { AuthStackParamList } from "@src/types";
+import { useTheme, Text } from "react-native-paper";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import { useForm, Controller } from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
-import { AuthStackRoutes } from "../../constants/routes";
 import { ErrorMessage } from "@hookform/error-message";
-import { useNavigation } from "@react-navigation/native";
-import { Checkbox, useTheme, Text } from "react-native-paper";
+import { AuthStackRoutes, RootStackRoutes } from "../../constants/routes";
+import { selectIsAuthenticated } from "@store/slices/authSlice";
 import { useLoginMutation } from "@data/laravel/services/api";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { addServerErrors, isJoteyQueryError } from "@utils/error-handling";
 import {
@@ -25,8 +28,6 @@ import {
   setGlobalStyles,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "@src/types";
 
 GoogleSignin.configure({
   webClientId:
@@ -62,17 +63,19 @@ setGlobalStyles.inputStyles = {
 
 type Props = NativeStackScreenProps<AuthStackParamList, typeof AuthStackRoutes.LOGIN>
 
-const LoginScreen = ({ navigation }: Props) => {
+const LoginScreen = ({ navigation, route }: Props) => {
   const theme = useTheme();
   const { enqueueSuccessSnackbar } = useAppSnackbar();
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [togglePassword, setTogglePassword] = React.useState(false);
 
   const [login, { isLoading, isError, error, isSuccess, data }] = useLoginMutation();
 
   const {
+    reset,
     control,
-    handleSubmit,
     setError,
+    handleSubmit,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -89,11 +92,24 @@ const LoginScreen = ({ navigation }: Props) => {
 
   React.useEffect(() => {
     if (isSuccess && data) {
+      reset()
       enqueueSuccessSnackbar({
         text1: data.success
       })
     }
-  }, [enqueueSuccessSnackbar, isSuccess, data])
+  }, [enqueueSuccessSnackbar, isSuccess, data, reset])
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      if (route.params.nextScreen) {
+        // @ts-ignore
+        navigation.navigate(route.params.nextScreen.name, route.params.nextScreen.params)
+      } else {
+        // @ts-ignore
+        navigation.navigate(RootStackRoutes.HOME)
+      }
+    }
+  }, [route, navigation, isAuthenticated])
 
   async function onGoogleButtonPress() {
     // Get the users ID token

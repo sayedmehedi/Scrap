@@ -16,7 +16,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { HomeStackRoutes, HomeTabRoutes, RootStackRoutes } from '../../constants/routes';
+import { HomeStackRoutes, RootStackRoutes } from '../../constants/routes';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -24,7 +24,6 @@ const HomeScreen = () => {
   const handleRedirectToNotificatoins = () => {
     navigation.navigate(RootStackRoutes.NOTIFICATIONS);
   };
-
 
   return (
     <SafeAreaProvider>
@@ -132,12 +131,10 @@ const HomeScreen = () => {
             </Text>
             <Pressable style={{ flexDirection: 'row', alignItems: 'center' }}>
               <TouchableOpacity
-                onPress={() => navigation.navigate(RootStackRoutes.HOME, {
-                  screen: HomeTabRoutes.HOME,
-                  params: {
-                    screen: HomeStackRoutes.LOCAL_PICKUP
-                  }
-                })}>
+                onPress={() => {
+                  // @ts-ignore
+                  navigation.navigate(HomeStackRoutes.LOCAL_PICKUP)
+                }}>
                 <Text
                   style={{
                     fontFamily: 'Inter-Regular',
@@ -177,12 +174,10 @@ const HomeScreen = () => {
             </Text>
 
             <Pressable style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TouchableOpacity onPress={() => navigation.navigate(RootStackRoutes.HOME, {
-                screen: HomeTabRoutes.HOME,
-                params: {
-                  screen: HomeStackRoutes.SHIPPING
-                }
-              })}>
+              <TouchableOpacity onPress={() => {
+                // @ts-ignore
+                navigation.navigate(HomeStackRoutes.SHIPPING)
+              }}>
                 <Text
                   style={{
                     fontFamily: 'Inter-Regular',
