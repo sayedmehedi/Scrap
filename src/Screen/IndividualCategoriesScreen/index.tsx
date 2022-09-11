@@ -1,12 +1,15 @@
 import React from 'react';
-import Header from '../../Component/Header';
-import { HomeStackRoutes } from '@constants/routes';
+import { useTheme } from 'react-native-paper';
+import { CheckBox } from 'react-native-elements';
+import Entypo from 'react-native-vector-icons/Entypo';
 import Feather from 'react-native-vector-icons/Feather';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import EachProductItem from '../../Component/EachProductItem';
+import { HomeStackRoutes, RootStackRoutes } from '@constants/routes';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useLazyGetFilterProductsQuery } from '@data/laravel/services/product';
-import { View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity, } from 'react-native';
-import { FilterProductQueryParams, FilterProductsResponse, HomeStackParamList } from '@src/types';
+import { View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity, Image, Modal } from 'react-native';
+import { Condition, FilterProductQueryParams, FilterProductsResponse, HomeStackParamList } from '@src/types';
 
 const { width } = Dimensions.get('window');
 const itemWidth = width / 3;
@@ -14,13 +17,117 @@ const itemWidth = width / 3;
 
 type Props = NativeStackScreenProps<HomeStackParamList, typeof HomeStackRoutes.INDIVIDUAL_CATEGORIES>
 
-const IndividualCategoriesScreen = ({ route }: Props) => {
+const IndividualCategoriesScreen = ({ route, navigation }: Props) => {
+  const theme = useTheme()
+  const [modalVisible, setModalVisible] = React.useState(false);
 
+  const [location, setLocation] = React.useState<string | null>(null)
+  const [distance, setDistance] = React.useState<number | null>(null)
+  const [maxPrice, setMaxPrice] = React.useState<number | null>(null)
+  const [minPrice, setMinPrice] = React.useState<number | null>(null)
+  const [condition, setCondition] = React.useState<Condition | null>(null)
+  const [sortBy, setSortBy] = React.useState<FilterProductQueryParams["sort_by"]>("oldest")
   const [productType, setProductType] = React.useState<"all" | "is_locale" | "is_shipping">("all")
+
+  const locationRef = React.useRef(location)
+  const distanceRef = React.useRef(distance)
+  const maxPriceRef = React.useRef(maxPrice)
+  const minPriceRef = React.useRef(minPrice)
+  const conditionRef = React.useRef(condition)
+
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      headerStyle: {
+        backgroundColor: theme.colors.primary,
+      },
+      headerTitleStyle: {
+        fontSize: 18,
+        fontFamily: 'Inter-Bold',
+        // @ts-ignore
+        color: theme.colors.white,
+      },
+      // @ts-ignore
+      headerTintColor: theme.colors.white,
+      title: route.params.categoryTitle,
+      headerRight: () => {
+        return (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity
+              // @ts-ignore
+              onPress={() => navigation.navigate(RootStackRoutes.SEARCH_PRODUCT)}
+              style={{ padding: 5 }}>
+              <AntDesign name="search1" size={25} color={'white'} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setModalVisible(!modalVisible)}
+              style={{ padding: 5 }}>
+              <View style={{ flexDirection: 'row', paddingHorizontal: 10 }}>
+                <Image
+                  source={require('@assets/Images/Arrow.png')}
+                  style={{
+                    height: 20,
+                    width: 20,
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              // @ts-ignore
+              onPress={() => navigation.navigate(RootStackRoutes.PRODUCT_FILTER, {
+                location,
+                distance,
+                maxPrice,
+                minPrice,
+                condition,
+                categoryId: route.params.categoryId,
+                categoryTitle: route.params.categoryTitle
+              })}
+              style={{ padding: 5 }}>
+              <Image
+                style={{ height: 20, width: 20 }}
+                source={require('@assets/Images/filter.png')}
+              />
+            </TouchableOpacity>
+          </View>
+        );
+      },
+    });
+  }, [navigation, route, location,
+    distance,
+    maxPrice,
+    minPrice,
+    condition]);
+
+  React.useEffect(() => {
+    if (route.params.location) {
+      setLocation(route.params.location)
+    }
+
+    if (route.params.distance) {
+      setDistance(route.params.distance)
+    }
+
+    if (route.params.maxPrice) {
+      setMaxPrice(route.params.maxPrice)
+    }
+
+    if (route.params.minPrice) {
+      setMinPrice(route.params.minPrice)
+    }
+
+    if (route.params.condition) {
+      setCondition(route.params.condition)
+    }
+  }, [route])
+
 
   const queryParams = React.useMemo(() => {
     const data: FilterProductQueryParams = {}
 
+    data.sort_by = sortBy;
     data.category_id = route.params.categoryId;
 
     if (productType === "is_locale") {
@@ -31,13 +138,137 @@ const IndividualCategoriesScreen = ({ route }: Props) => {
       data.is_shipping = "1"
     }
 
+    if (!!location) {
+      data.location = location
+    }
+
+    if (!!distance) {
+      data.distance = distance
+    }
+
+    if (!!maxPrice) {
+      data.max_price = maxPrice
+    }
+
+    if (!!minPrice) {
+      data.min_price = minPrice
+    }
+
+    if (!!condition) {
+      data.condition_id = condition.id
+    }
+
     return data;
-  }, [route.params.categoryId, productType])
+  }, [route.params.categoryId,
+    productType,
+    sortBy,
+    location,
+    distance,
+    maxPrice,
+    minPrice,
+    condition])
+
+  if (modalVisible) {
+    return (
+      <View style={styles.centeredView}>
+        <Modal
+          transparent
+          animationType={"slide"}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <TouchableOpacity
+                onPress={() => setModalVisible(!modalVisible)}
+                style={{
+                  alignSelf: 'flex-end',
+                  padding: 15,
+                }}>
+                <Entypo name="cross" size={25} color={'#222222'} />
+              </TouchableOpacity>
+
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{ fontFamily: 'Inter-SemiBold', fontSize: 16 }}>
+                  Sort By
+                </Text>
+              </View>
+
+              <View style={{ padding: 20 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <CheckBox
+                    center
+                    checkedColor="gray"
+                    uncheckedIcon="circle-o"
+                    checkedIcon="dot-circle-o"
+                    checked={sortBy === "low_price"}
+                    onPress={() => setSortBy("low_price")}
+                    containerStyle={{
+                      padding: 1,
+                    }}
+                  />
+
+                  <Text>Low Price</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <CheckBox
+                    center
+                    checkedColor="gray"
+                    uncheckedIcon="circle-o"
+                    checkedIcon="dot-circle-o"
+                    checked={sortBy === "high_price"}
+                    onPress={() => setSortBy("high_price")}
+                    containerStyle={{
+                      padding: 1,
+                    }}
+                  />
+
+                  <Text>High Price</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <CheckBox
+                    center
+                    checkedColor="gray"
+                    uncheckedIcon="circle-o"
+                    checkedIcon="dot-circle-o"
+                    checked={sortBy === "oldest"}
+                    onPress={() => setSortBy("oldest")}
+                    containerStyle={{
+                      padding: 1,
+                    }}
+                  />
+
+                  <Text>Oldest</Text>
+                </View>
+
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <CheckBox
+                    center
+                    checkedColor="gray"
+                    uncheckedIcon="circle-o"
+                    checkedIcon="dot-circle-o"
+                    checked={sortBy === "random"}
+                    onPress={() => setSortBy("random")}
+                    containerStyle={{
+                      padding: 1,
+                    }}
+                  />
+
+                  <Text>Randomly</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    );
+  }
 
   return (
     <>
       <View style={{ flex: 1, backgroundColor: '#F7F7F7' }}>
-        <Header from="individualCategory" />
+        {/* <Header from="individualCategory" /> */}
 
         <View style={{ flexDirection: 'row' }}>
           <TouchableOpacity style={[styles.tabButton, { backgroundColor: productType === "all" ? "#191F2B" : '#E6E6E6' }]} onPress={() => setProductType("all")}>
@@ -219,5 +450,14 @@ const styles = StyleSheet.create({
     width: itemWidth,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  centeredView: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  modalView: {
+    height: 300,
+    width: '100%',
+    backgroundColor: 'white',
   },
 });

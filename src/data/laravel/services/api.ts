@@ -206,40 +206,16 @@ export const api = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
   tagTypes: [
+    QUERY_KEYS.AUTH,
+    QUERY_KEYS.ORDER,
     QUERY_KEYS.PRODUCT,
     QUERY_KEYS.CATEGORY,
+    QUERY_KEYS.CONDITION,
     QUERY_KEYS.UNAUTHORIZED,
     QUERY_KEYS.UNKNOWN_ERROR,
     QUERY_KEYS.FULL_TEXT_SEARCH,
   ],
   endpoints: builder => ({
-    login: builder.mutation<LoginResponse, LoginUserDto>({
-      query: credentials => ({
-        method: "POST",
-        url: "login",
-        body: credentials,
-      }),
-    }),
-    register: builder.mutation<RegisterResponse, RegisterUserDto>({
-      query: credentials => ({
-        method: "POST",
-        url: "register",
-        body: credentials,
-      }),
-    }),
-    logout: builder.mutation<
-      {
-        status: string;
-        message: string;
-      },
-      void
-    >({
-      query() {
-        return {
-          url: "/logout",
-        };
-      },
-    }),
     refetchErroredQueries: builder.mutation<null, void>({
       queryFn: () => ({data: null}),
       invalidatesTags: [QUERY_KEYS.UNKNOWN_ERROR],
@@ -259,9 +235,4 @@ export const api = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {
-  useLoginMutation,
-  useLogoutMutation,
-  useRegisterMutation,
-  useGetFullTextSearchQuery,
-} = api;
+export const {useGetFullTextSearchQuery} = api;

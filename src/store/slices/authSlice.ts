@@ -1,11 +1,12 @@
-import {api} from "@data/laravel/services/api";
-import type {RootState, User} from "@src/types";
+import type {RootState, User, UserProfile} from "@src/types";
 import {tokenReceived} from "@store/actions/auth";
+import {authApi} from "@data/laravel/services/auth";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 type AuthState = {
   user: User | null;
   token: string | null;
+  profile: UserProfile | null;
 };
 
 const slice = createSlice({
@@ -13,6 +14,7 @@ const slice = createSlice({
   initialState: {
     user: null,
     token: null,
+    profile: null,
   } as AuthState,
   reducers: {
     setCredentials: (
@@ -28,17 +30,24 @@ const slice = createSlice({
       state.token = action.payload;
     });
 
-    builder.addMatcher(api.endpoints.logout.matchFulfilled, state => {
+    builder.addMatcher(authApi.endpoints.logout.matchFulfilled, state => {
       state.user = null;
       state.token = null;
+      state.profile = null;
     });
 
     builder.addMatcher(
-      api.endpoints.login.matchFulfilled,
+      authApi.endpoints.getProfile.matchFulfilled,
+      (state, action) => {
+        state.profile = action.payload.user;
+      },
+    );
+
+    builder.addMatcher(
+      authApi.endpoints.login.matchFulfilled,
       (state, {payload}) => {
         state.token = payload.user.token;
-
-        state.user = payload.user ?? null;
+        state.user = payload.user;
       },
     );
   },

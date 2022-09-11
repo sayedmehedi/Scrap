@@ -19,7 +19,8 @@ const EachCateriesItem = ({ item }: { item: HomeCategory }) => {
   return (
     <Pressable
       onPress={() => navigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES, {
-        categoryId: item.id
+        categoryId: item.id,
+        categoryTitle: item.title
       })}
       style={{
         margin: 1,

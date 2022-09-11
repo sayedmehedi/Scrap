@@ -45,3 +45,13 @@ export const HomeStackRoutes = {
   ALL_CATEGORIES: "allCategories",
   INDIVIDUAL_CATEGORIES: "individualCategories",
 } as const;
+
+export const ProfileStackRoutes = {
+  PROFILE_SCREEN: "profileScreen",
+  OFFER_N_BID: "offerAndBid",
+  SAVE_PRODUCT: "saveProduct",
+  PUBLIC_PROFILE: "publicProfile",
+  ACCOUNT_SETTING: "accountSetting",
+  PURCHASES: "purchases",
+  ERROR: "error",
+} as const;

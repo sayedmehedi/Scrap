@@ -6,7 +6,7 @@ import { useForm, Controller } from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
 import { AuthStackRoutes } from "../../constants/routes";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
-import { useRegisterMutation } from "@data/laravel/services/api";
+import { useRegisterMutation } from "@data/laravel/services/auth";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { addServerErrors, isJoteyQueryError } from "@utils/error-handling";

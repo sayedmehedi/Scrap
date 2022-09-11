@@ -15,6 +15,7 @@ import ProductDetailsScreen from '../Screen/ProductDetailsScreen';
 import ProductSearchScreen from '../Screen/ProductSearchScreen';
 import SingleConversationScreen from '../Screen/SingleConversationScreen';
 import ProductFilterScreen from '../Screen/ProductFilterScreen/ProductFilterScreen';
+import ConfirmPurchaseScreen from '@src/Screen/ConfirmPurchaseScreen';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -115,6 +116,15 @@ const Navigator = () => {
         }}
         component={ProductFilterScreen}
         name={RootStackRoutes.PRODUCT_FILTER}
+      />
+
+      <RootStack.Screen
+        options={{
+          title: 'Review',
+          headerTitleAlign: 'center',
+        }}
+        component={ConfirmPurchaseScreen}
+        name={RootStackRoutes.CONFIRM_PURCHASE}
       />
     </RootStack.Navigator>
   );

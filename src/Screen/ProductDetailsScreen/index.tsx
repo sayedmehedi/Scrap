@@ -7,6 +7,7 @@ import { useTimer } from "react-timer-hook";
 import { Rating } from "react-native-elements";
 import { RootStackParamList } from "@src/types";
 import useAppConfig from "@hooks/useAppConfig";
+import useAppSnackbar from "@hooks/useAppSnackbar";
 import Feather from "react-native-vector-icons/Feather";
 import { RootStackRoutes } from "../../constants/routes";
 import Octicons from "react-native-vector-icons/Octicons";
@@ -15,9 +16,10 @@ import EachProductItem from "../../Component/EachProductItem";
 import AppPrimaryButton from "@src/Component/AppPrimaryButton";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps'
+import { useCreateCartMutation } from "@data/laravel/services/order";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ActivityIndicator, Button, useTheme } from "react-native-paper";
-import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
+import { Table, TableWrapper, Row, Cell } from 'react-native-table-component';
 import { useGetProductDetailsQuery, useToggleProductFavoriteMutation } from "@data/laravel/services/product";
 import {
   View,
@@ -41,6 +43,7 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
   const theme = useTheme();
   const config = useAppConfig()
   const [image, setImage] = React.useState("");
+  const { enqueueSuccessSnackbar } = useAppSnackbar()
   const [expiryTimestamp,] = React.useState(() => dayjs().toDate())
 
   const { days, hours, minutes, seconds, restart } = useTimer({
@@ -51,6 +54,7 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
     id: route.params.productId,
   });
 
+  const [createCart, { isLoading: isCreatingCart }] = useCreateCartMutation()
   const [toggleFavorite,] = useToggleProductFavoriteMutation()
 
   React.useEffect(() => {
@@ -83,7 +87,7 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
                     id: productDetails.id,
                   })
                 }}>
-                  <AntDesign name={productDetails.is_favorite ? "heart" : "hearto"} size={20} color={"white"} />
+                  <AntDesign name={productDetails.is_favourite ? "heart" : "hearto"} size={20} color={"white"} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -168,6 +172,27 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
     }
 
   };
+
+  const handleBuyProduct = () => {
+    if (productDetails && !!productDetails.buy_price) {
+      createCart({
+        product_id: route.params.productId,
+      })
+        .unwrap()
+        .then(res => {
+          enqueueSuccessSnackbar({
+            text1: res.success
+          })
+
+          navigation.navigate(RootStackRoutes.CONFIRM_PURCHASE as any, {
+            productImage: image,
+            productId: productDetails.id,
+            productName: productDetails.title,
+            productBuyNowPrice: productDetails.buy_price,
+          })
+        })
+    }
+  }
 
   const handlePayment = () => {
 
@@ -621,7 +646,11 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
               </View>
             </TouchableOpacity>}
 
-            {!!productDetails.buy_price && <TouchableOpacity style={styles.makeofferButton}>
+            {!!productDetails.buy_price && <TouchableOpacity
+              disabled={isCreatingCart}
+              onPress={handleBuyProduct}
+              style={styles.makeofferButton}
+            >
               <View></View>
               <Text
                 style={{

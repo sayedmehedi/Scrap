@@ -150,6 +150,7 @@ const ProductSearchScreen = () => {
               style={{
                 paddingHorizontal: 50,
                 borderRadius: theme.roundness * 3,
+                // @ts-ignore
                 backgroundColor: theme.colors.white,
               }}
             />

@@ -9,6 +9,7 @@ import {
   AuthStackRoutes,
   HomeStackRoutes,
   RootStackRoutes,
+  ProfileStackRoutes,
 } from "@constants/routes";
 import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
@@ -19,7 +20,13 @@ export type HomeStackParamList = {
   [HomeStackRoutes.LOCAL_PICKUP]: undefined;
   [HomeStackRoutes.ALL_CATEGORIES]: undefined;
   [HomeStackRoutes.INDIVIDUAL_CATEGORIES]: {
+    categoryTitle: string;
     categoryId: string | number;
+    location?: string;
+    distance?: number;
+    maxPrice?: number;
+    minPrice?: number;
+    condition?: Condition;
   };
 };
 
@@ -29,7 +36,15 @@ export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
     HomeTabScreenProps<keyof HomeTabParamList>
   >;
 
-export type ProfileStackParamList = {};
+export type ProfileStackParamList = {
+  [ProfileStackRoutes.PROFILE_SCREEN]: undefined;
+  [ProfileStackRoutes.OFFER_N_BID]: undefined;
+  [ProfileStackRoutes.SAVE_PRODUCT]: undefined;
+  [ProfileStackRoutes.PUBLIC_PROFILE]: undefined;
+  [ProfileStackRoutes.ACCOUNT_SETTING]: undefined;
+  [ProfileStackRoutes.PURCHASES]: undefined;
+  [ProfileStackRoutes.ERROR]: undefined;
+};
 export type ChatStackParamList = {};
 export type PostItemStackParamList = {};
 
@@ -91,7 +106,15 @@ export type RootStackParamList = {
   [RootStackRoutes.ASK_QUESTION]: undefined;
   [RootStackRoutes.NOTIFICATIONS]: undefined;
   [RootStackRoutes.SEARCH_PRODUCT]: undefined;
-  [RootStackRoutes.PRODUCT_FILTER]: undefined;
+  [RootStackRoutes.PRODUCT_FILTER]: {
+    categoryTitle?: string;
+    categoryId?: string | number;
+    location?: string;
+    distance?: number;
+    maxPrice?: number;
+    minPrice?: number;
+    condition?: Condition;
+  };
   [RootStackRoutes.PRODUCT_DETAILS]: {
     productId: number | string;
   };
@@ -256,7 +279,7 @@ export type AllCategoryResponse = {
   categories: AllCategoryItem[];
 };
 
-export interface Category {
+export interface MinimalCategory {
   id: number;
   title: string;
 }
@@ -273,10 +296,10 @@ export interface Attribute {
 }
 
 export type FullTextSearchResponse = {
-  categories: Category[];
+  categories: MinimalCategory[];
   conditions: Condition[];
   attributes: Attribute[];
-  sub_categories: Category[];
+  sub_categories: MinimalCategory[];
 };
 
 export interface Seller {
@@ -331,6 +354,119 @@ export interface ProductDetails {
   has_offer: boolean;
   bid?: "" | BidOrOffer;
   offer?: "" | BidOrOffer;
-  is_favorite: boolean;
+  is_favourite: boolean;
   shipping_cost: string;
+}
+
+export interface PaginationQueryParams {
+  page?: number;
+  limit?: number;
+}
+
+export interface Condition {
+  id: number;
+  title: string;
+}
+
+export type ConditionResponse = {
+  success: string;
+  items: PaginatedResponse<Condition>;
+};
+
+export type CategoryListResponse = {
+  success: string;
+  items: PaginatedResponse<HomeCategory>;
+};
+
+export interface PaymentInfo {
+  id: number;
+  amount: number;
+  product: number;
+  trx_id: string;
+  user: number;
+}
+
+export interface CreateCartRequest {
+  product_id: number | string;
+  offer_bid_id?: number;
+}
+
+export interface CreateCartResponse {
+  success: string;
+  payment_info: PaymentInfo;
+}
+
+export interface CartItem {
+  id: number;
+  product: number;
+  quantity: number;
+  sub_total: string;
+}
+
+export interface Calculations {
+  sub_total: string;
+  shipping_cost: string;
+  discount: string;
+  vat: string;
+  total: string;
+}
+
+export interface GetCartsResponse {
+  items: CartItem[];
+  calculations: Calculations;
+  success: string;
+}
+
+export interface Order {
+  id: number;
+  price: string;
+  product_image: string;
+  product_title: string;
+  product_condition: string;
+  product_category: string;
+  product_sub_category: string;
+  delivery_status: string;
+}
+
+export type GetPurchaseHistoryResponse = {
+  success: string;
+  orders: PaginatedResponse<Order>;
+};
+
+export interface ConfirmOrderRequest {
+  postal_code: number;
+  delivery_status: 0 | 1;
+  payment_method: string;
+  city_id: number | string;
+  state_id: number | string;
+  country_id: number | string;
+}
+
+export interface UserProfile {
+  id: number;
+  name: string;
+  phone?: any;
+  email: string;
+  location?: any;
+  latitude?: any;
+  longitude?: any;
+  status: number;
+  profile_image: string;
+  has_product: boolean;
+  is_fb_connected: boolean;
+  country: string;
+  state: string;
+  city: string;
+  fb_details?: any;
+  joined_date: string;
+  total_purchased: number;
+  is_email_verified: boolean;
+  rating: number;
+  reviews: number;
+  total_sold: number;
+}
+
+export interface GetUserProfileReponse {
+  success: string;
+  user: UserProfile;
 }

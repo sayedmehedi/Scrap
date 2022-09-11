@@ -7,13 +7,13 @@ import useAppSnackbar from "@hooks/useAppSnackbar";
 import { useForm, Controller } from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
 import { ErrorMessage } from "@hookform/error-message";
-import { AuthStackRoutes, RootStackRoutes } from "../../constants/routes";
 import { selectIsAuthenticated } from "@store/slices/authSlice";
-import { useLoginMutation } from "@data/laravel/services/api";
+import { useGetProfileQuery, useLoginMutation } from "@data/laravel/services/auth";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { AuthStackRoutes, RootStackRoutes } from "../../constants/routes";
 import { addServerErrors, isJoteyQueryError } from "@utils/error-handling";
 import {
   View,
@@ -71,6 +71,10 @@ const LoginScreen = ({ navigation, route }: Props) => {
 
   const [login, { isLoading, isError, error, isSuccess, data }] = useLoginMutation();
 
+  const { isSuccess: isGettingProfileSuccess } = useGetProfileQuery(undefined, {
+    skip: !isAuthenticated
+  })
+
   const {
     reset,
     control,
@@ -100,7 +104,7 @@ const LoginScreen = ({ navigation, route }: Props) => {
   }, [enqueueSuccessSnackbar, isSuccess, data, reset])
 
   React.useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && isGettingProfileSuccess) {
       if (route.params.nextScreen) {
         // @ts-ignore
         navigation.navigate(route.params.nextScreen.name, route.params.nextScreen.params)
@@ -128,7 +132,7 @@ const LoginScreen = ({ navigation, route }: Props) => {
   }
 
   const handleLogin = handleSubmit(values => {
-    login(values);
+    login(values)
   });
 
   return (
