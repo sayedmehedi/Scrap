@@ -88,6 +88,7 @@ const LoginScreen = ({ navigation, route }: Props) => {
     },
   });
 
+
   React.useEffect(() => {
     if (isError && isJoteyQueryError(error)) {
       addServerErrors(error.data.field_errors, setError);
@@ -105,15 +106,15 @@ const LoginScreen = ({ navigation, route }: Props) => {
 
   React.useEffect(() => {
     if (isAuthenticated && isGettingProfileSuccess) {
-      if (route.params.nextScreen) {
+      if (route.params?.nextScreen) {
         // @ts-ignore
-        navigation.navigate(route.params.nextScreen.name, route.params.nextScreen.params)
+        navigation.navigate(route.params?.nextScreen.name, route.params?.nextScreen.params)
       } else {
         // @ts-ignore
         navigation.navigate(RootStackRoutes.HOME)
       }
     }
-  }, [route, navigation, isAuthenticated])
+  }, [route, navigation, isAuthenticated, isGettingProfileSuccess])
 
   async function onGoogleButtonPress() {
     // Get the users ID token

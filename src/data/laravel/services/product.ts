@@ -2,8 +2,11 @@ import {api} from "./api";
 import {QUERY_KEYS} from "@constants/query";
 import {
   ProductDetails,
+  PaginationQueryParams,
   FilterProductsResponse,
   FilterProductQueryParams,
+  GetSavedProductsReponse,
+  GetSaleOrArchivedProductsReponse,
 } from "@src/types";
 
 // Define a service using a base URL and expected endpoints
@@ -14,20 +17,16 @@ export const productApi = api.injectEndpoints({
       FilterProductsResponse,
       FilterProductQueryParams | undefined
     >({
-      query: (params = {}) => ({
+      query: params => ({
         params,
         url: "filter-product",
       }),
-      providesTags: result =>
+      providesTags: (result, error) =>
         result
-          ? [
-              {type: QUERY_KEYS.PRODUCT, id: "FILTER-LIST"},
-              ...result.products.data.map(({id}) => ({
-                type: QUERY_KEYS.PRODUCT as const,
-                id,
-              })),
-            ]
-          : [{type: QUERY_KEYS.PRODUCT, id: "FILTER-LIST"}],
+          ? [{type: QUERY_KEYS.PRODUCT, id: "FILTER-LIST"}]
+          : error?.status === 401
+          ? [QUERY_KEYS.UNAUTHORIZED]
+          : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
     getProductDetails: builder.query<
       ProductDetails,
@@ -58,9 +57,66 @@ export const productApi = api.injectEndpoints({
           url: `favourite_products/${id}`,
         };
       },
-      invalidatesTags: (_result, _error, {id}) => [
-        {type: QUERY_KEYS.PRODUCT, id},
-      ],
+      invalidatesTags: (result, error, {id}) =>
+        result
+          ? [
+              {type: QUERY_KEYS.PRODUCT, id},
+              {type: QUERY_KEYS.PRODUCT, id: "FAVOURITE-LIST"},
+            ]
+          : error?.status === 401
+          ? [QUERY_KEYS.UNAUTHORIZED]
+          : [QUERY_KEYS.UNKNOWN_ERROR],
+    }),
+    getSavedProducts: builder.query<
+      GetSavedProductsReponse,
+      PaginationQueryParams
+    >({
+      query(params) {
+        return {
+          params,
+          url: `favourite_products`,
+        };
+      },
+      providesTags: (result, error) =>
+        result
+          ? [{type: QUERY_KEYS.PRODUCT, id: "FAVOURITE-LIST"}]
+          : error?.status === 401
+          ? [QUERY_KEYS.UNAUTHORIZED]
+          : [QUERY_KEYS.UNKNOWN_ERROR],
+    }),
+    getSaleProducts: builder.query<
+      GetSaleOrArchivedProductsReponse,
+      PaginationQueryParams
+    >({
+      query(params) {
+        return {
+          params,
+          url: `sale-product`,
+        };
+      },
+      providesTags: (result, error) =>
+        result
+          ? [{type: QUERY_KEYS.PRODUCT, id: "SALE-LIST"}]
+          : error?.status === 401
+          ? [QUERY_KEYS.UNAUTHORIZED]
+          : [QUERY_KEYS.UNKNOWN_ERROR],
+    }),
+    getArchiveProducts: builder.query<
+      GetSaleOrArchivedProductsReponse,
+      PaginationQueryParams
+    >({
+      query(params) {
+        return {
+          params,
+          url: `archive-product`,
+        };
+      },
+      providesTags: (result, error) =>
+        result
+          ? [{type: QUERY_KEYS.PRODUCT, id: "ARCHIVE-LIST"}]
+          : error?.status === 401
+          ? [QUERY_KEYS.UNAUTHORIZED]
+          : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
   }),
 });
@@ -70,6 +126,9 @@ export const productApi = api.injectEndpoints({
 export const {
   useGetFilterProductsQuery,
   useGetProductDetailsQuery,
+  useLazyGetSaleProductsQuery,
+  useLazyGetSavedProductsQuery,
   useLazyGetFilterProductsQuery,
+  useLazyGetArchiveProductsQuery,
   useToggleProductFavoriteMutation,
 } = productApi;

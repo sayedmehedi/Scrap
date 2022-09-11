@@ -1,19 +1,17 @@
 import React from 'react';
-import {useTheme} from 'react-native-paper';
-import {PostItemStackRoutes} from '../constants/routes';
-import {createStackNavigator} from '@react-navigation/stack';
-import ProductImageUploadScreen from '../Screen/ProductImageUploadScreen';
-import ProductAddDetailsScreen from '../Screen/ProductAddDetailsScreen/ProductAddDetailsScreen';
+import { forFade } from '@utils/misc';
+import { useTheme } from 'react-native-paper';
+import { PostItemStackParamList } from '@src/types';
+import { PostItemStackRoutes } from '../constants/routes';
+import { createStackNavigator } from '@react-navigation/stack';
 import ProductAddPriceScreen from '../Screen/ProductAddPriceScreen';
-import ProductAddDeliveryMethodScreen from '../Screen/ProductAddDeliveryMethodScreen';
+import ProductImageUploadScreen from '../Screen/ProductImageUploadScreen';
 import ProductAddSuccessScreen from '../Screen/ProductAddSuccessScreen';
+import ProductAddDeliveryMethodScreen from '../Screen/ProductAddDeliveryMethodScreen';
+import ProductAddDetailsScreen from '../Screen/ProductAddDetailsScreen/ProductAddDetailsScreen';
 
-const PostItemStack = createStackNavigator();
-const forFade = ({current}) => ({
-  cardStyle: {
-    opacity: current.progress,
-  },
-});
+const PostItemStack = createStackNavigator<PostItemStackParamList>();
+
 
 export default function PostItemStackNavigator() {
   const theme = useTheme();
@@ -27,8 +25,10 @@ export default function PostItemStackNavigator() {
         headerTitleStyle: {
           fontSize: 18,
           fontFamily: 'Inter-Bold',
+          // @ts-ignore
           color: theme.colors.white,
         },
+        // @ts-ignore
         headerTintColor: theme.colors.white,
         cardStyleInterpolator: forFade,
       }}>

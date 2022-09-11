@@ -28,7 +28,7 @@ export const PostItemStackRoutes = {
   ADD_DETAILS: "addDetails",
   UPLOAD_PHOTO: "uploadPhoto",
   ADD_DELIVERY_METHOD: "addDeliveryMethod",
-};
+} as const;
 
 export const HomeTabRoutes = {
   HOME: "Home",

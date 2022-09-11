@@ -44,24 +44,37 @@ export const offerNBidsApi = api.injectEndpoints({
           url: `user-offer-bids`,
         };
       },
-      providesTags: (_result, _error) => [
-        {type: QUERY_KEYS.OFFER_N_BIDS, id: "USER-OFFER-LIST"},
-      ],
+      providesTags: (result, error) =>
+        result
+          ? [{type: QUERY_KEYS.OFFER_N_BIDS, id: "USER-OFFER-LIST"}]
+          : error?.status === 401
+          ? [QUERY_KEYS.UNAUTHORIZED]
+          : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
 
     getSellerOfferNBids: builder.query<
       GetOfferNBidsResponse,
-      PaginationQueryParams
+      PaginationQueryParams & {
+        productId: string | number;
+      }
     >({
-      query(params) {
+      query({productId, ...params}) {
         return {
           params,
-          url: `user-offer-bids`,
+          url: `seller-offer-bids/${productId}`,
         };
       },
-      providesTags: (_result, _error) => [
-        {type: QUERY_KEYS.OFFER_N_BIDS, id: "USER-OFFER-LIST"},
-      ],
+      providesTags: (result, error, {productId}) =>
+        result
+          ? [
+              {
+                type: QUERY_KEYS.OFFER_N_BIDS,
+                id: `SELLER-OFFER-LIST-${productId}`,
+              },
+            ]
+          : error?.status === 401
+          ? [QUERY_KEYS.UNAUTHORIZED]
+          : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
   }),
 });

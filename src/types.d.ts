@@ -10,6 +10,7 @@ import {
   HomeStackRoutes,
   RootStackRoutes,
   ProfileStackRoutes,
+  PostItemStackRoutes,
 } from "@constants/routes";
 import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
@@ -46,7 +47,13 @@ export type ProfileStackParamList = {
   [ProfileStackRoutes.ERROR]: undefined;
 };
 export type ChatStackParamList = {};
-export type PostItemStackParamList = {};
+export type PostItemStackParamList = {
+  [PostItemStackRoutes.SUCCESS]: undefined;
+  [PostItemStackRoutes.ADD_PRICE]: undefined;
+  [PostItemStackRoutes.ADD_DETAILS]: undefined;
+  [PostItemStackRoutes.UPLOAD_PHOTO]: undefined;
+  [PostItemStackRoutes.ADD_DELIVERY_METHOD]: undefined;
+};
 
 export type HomeTabParamList = {
   [HomeTabRoutes.SELLING]: undefined;
@@ -489,4 +496,13 @@ export interface OfferOrBid {
 
 export type GetOfferNBidsResponse = {
   items: PaginatedResponse<OfferOrBid>;
+};
+
+export type GetSavedProductsReponse = {
+  success: string;
+  items: PaginatedResponse<FilterProduct>;
+};
+
+export type GetSaleOrArchivedProductsReponse = {
+  products: PaginatedResponse<FilterProduct>;
 };
