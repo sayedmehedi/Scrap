@@ -2,12 +2,14 @@ import createDebugger from "redux-flipper";
 import {api} from "@data/laravel/services/api";
 import rootReducer from "./reducers/rootReducer";
 import {configureStore} from "@reduxjs/toolkit";
+import {authApi} from "@data/laravel/services/auth";
 import {notistackSlice} from "./slices/notistackSlice";
 import {orderApi} from "@data/laravel/services/order";
 import {productApi} from "@data/laravel/services/product";
 import {categoryApi} from "@data/laravel/services/category";
 import {setupListeners} from "@reduxjs/toolkit/dist/query";
 import {conditionApi} from "@data/laravel/services/condition";
+import {offerNBidsApi} from "@data/laravel/services/offerNBids";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {rtkQueryErrorLogger} from "./middleware/rtkQueryErrorLogger";
 import NetInfo, {NetInfoSubscription} from "@react-native-community/netinfo";
@@ -22,7 +24,6 @@ import {
   persistStore,
   persistReducer,
 } from "redux-persist";
-import {authApi} from "@data/laravel/services/auth";
 
 const persistConfig = {
   key: "root",
@@ -68,6 +69,7 @@ export function createStore(
         productApi.middleware,
         categoryApi.middleware,
         conditionApi.middleware,
+        offerNBidsApi.middleware,
         rtkQueryErrorLogger,
         createDebugger(),
       ),

@@ -7,7 +7,7 @@ import { TouchableOpacity, View } from 'react-native';
 import AppPrimaryButton from '../Component/AppPrimaryButton';
 import { Divider, Text, Title, useTheme } from 'react-native-paper';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useMakeBidOrOfferMutation } from '@data/laravel/services/product';
+import { useUpsertBidOrOfferMutation } from '@data/laravel/services/offerNBids';
 
 type Props = NativeStackScreenProps<RootStackParamList, typeof RootStackRoutes.REVIEW_OFFER>
 
@@ -15,7 +15,7 @@ export default function ReviewOfferScreen({ route, navigation }: Props) {
   const theme = useTheme();
   const { enqueueSuccessSnackbar } = useAppSnackbar();
 
-  const [makeBid, { isSuccess, data }] = useMakeBidOrOfferMutation()
+  const [upsertOffer, { isSuccess, data }] = useUpsertBidOrOfferMutation()
 
   React.useEffect(() => {
     if (isSuccess && data) {
@@ -32,10 +32,10 @@ export default function ReviewOfferScreen({ route, navigation }: Props) {
   const totalPrice = React.useMemo(() => route.params.offerPrice + route.params.shippingCost, [route.params.offerPrice, route.params.shippingCost])
 
   const handleSendOffer = () => {
-    makeBid({
+    upsertOffer({
       type: "0",
-      id: route.params.productId,
       price: route.params.offerPrice,
+      product_id: route.params.productId,
     })
   }
 

@@ -62,30 +62,6 @@ export const productApi = api.injectEndpoints({
         {type: QUERY_KEYS.PRODUCT, id},
       ],
     }),
-
-    makeBidOrOffer: builder.mutation<
-      {success: string},
-      {
-        price: number;
-        type: "0" | "1";
-        id: string | number;
-      }
-    >({
-      query({id, price, type}) {
-        return {
-          method: "POST",
-          url: `make-offer-bid`,
-          body: {
-            type,
-            price,
-            product_id: id,
-          },
-        };
-      },
-      invalidatesTags: (_result, _error, {id}) => [
-        {type: QUERY_KEYS.PRODUCT, id},
-      ],
-    }),
   }),
 });
 
@@ -94,7 +70,6 @@ export const productApi = api.injectEndpoints({
 export const {
   useGetFilterProductsQuery,
   useGetProductDetailsQuery,
-  useMakeBidOrOfferMutation,
   useLazyGetFilterProductsQuery,
   useToggleProductFavoriteMutation,
 } = productApi;

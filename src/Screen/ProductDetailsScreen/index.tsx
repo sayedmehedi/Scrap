@@ -184,18 +184,20 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
             text1: res.success
           })
 
-          navigation.navigate(RootStackRoutes.CONFIRM_PURCHASE as any, {
-            productImage: image,
-            productId: productDetails.id,
-            productName: productDetails.title,
-            productBuyNowPrice: productDetails.buy_price,
-          })
+          handlePayment();
         })
     }
   }
 
   const handlePayment = () => {
-
+    if (productDetails) {
+      navigation.navigate(RootStackRoutes.CONFIRM_PURCHASE, {
+        productImage: image,
+        productId: productDetails.id,
+        productName: productDetails.title,
+        productBuyNowPrice: +productDetails.buy_price,
+      });
+    }
   }
 
   if (isLoading) {

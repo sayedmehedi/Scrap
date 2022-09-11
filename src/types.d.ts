@@ -470,3 +470,23 @@ export interface GetUserProfileReponse {
   success: string;
   user: UserProfile;
 }
+
+export interface OfferOrBid {
+  id: number;
+  price: string;
+  status: number;
+  user_name: string;
+  user_image: string;
+  type: "Bid" | "offer";
+  product_title: string;
+  product_price: string;
+  product_image: string;
+  product_location: string;
+  product_category: string;
+  product_condition: string;
+  product_sub_category: string;
+}
+
+export type GetOfferNBidsResponse = {
+  items: PaginatedResponse<OfferOrBid>;
+};
