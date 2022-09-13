@@ -353,7 +353,7 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
       params.page = lastProductPage.current_page + 1;
     }
 
-    actionCreaterRef.current = trigger(params, true)
+    actionCreaterRef.current = trigger(params,)
 
     try {
       const productResponse = await actionCreaterRef.current.unwrap()

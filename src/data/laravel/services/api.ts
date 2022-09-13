@@ -212,9 +212,10 @@ export const api = createApi({
     QUERY_KEYS.CATEGORY,
     QUERY_KEYS.CONDITION,
     QUERY_KEYS.UNAUTHORIZED,
-    QUERY_KEYS.OFFER_N_BIDS,
     QUERY_KEYS.UNKNOWN_ERROR,
     QUERY_KEYS.FULL_TEXT_SEARCH,
+    QUERY_KEYS.USER_OFFER_N_BIDS,
+    QUERY_KEYS.SELLER_OFFER_N_BIDS,
   ],
   endpoints: builder => ({
     refetchErroredQueries: builder.mutation<null, void>({

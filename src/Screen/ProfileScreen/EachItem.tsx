@@ -64,53 +64,61 @@ const EachItem = ({ item }: { item: OfferOrBid }) => {
               marginLeft: 10,
             }}>
             {/* TODO: api endpoint needs to add total_offers/total_bids, time_left */}
-            2 Offers | 2d 10h
+            {item.total_bids ?? item.total_offers} {item.type === "Bid" ? "Bids" : "Offers"} | {item.time_left}
           </Text>
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {item.status === 0 ? <View style={{ paddingVertical: 10, paddingHorizontal: 15, borderRadius: 5, borderWidth: 1, borderColor: item.type === "Bid" ? "#0C837E" : "#1FA4DE" }}>
-            <Text style={{ color: item.type === "Bid" ? "#0C837E" : "#1FA4DE", fontWeight: "500" }}>
-              {item.type === "offer" ? "Offer Sent" : "Bid Placed"}
-            </Text>
-          </View> : item.status === 1 ? (
-            <React.Fragment>
-              <TouchableOpacity style={styles.offerButton}>
-                <Text
-                  style={{
-                    fontFamily: 'Inter-Medium',
-                    fontSize: 12,
-                    color: 'white',
-                  }}>
-                  {item.type === "offer" ? "Offer Approved" : "Bid Winner"}
-                </Text>
-              </TouchableOpacity>
+          {item.is_bid_out ? (
+            <View style={{ paddingVertical: 10, paddingHorizontal: 15, borderRadius: 5, borderWidth: 1, borderColor: "#F04E26" }}>
+              <Text style={{ color: "#F04E26", fontWeight: "500" }}>
+                Out Bid
+              </Text>
+            </View>
+          )
+            : item.status === 0 ? <View style={{ paddingVertical: 10, paddingHorizontal: 15, borderRadius: 5, borderWidth: 1, borderColor: item.type === "Bid" ? "#0C837E" : "#1FA4DE" }}>
+              <Text style={{ color: item.type === "Bid" ? "#0C837E" : "#1FA4DE", fontWeight: "500" }}>
+                {item.type === "offer" ? "Offer Sent" : "Bid Placed"}
+              </Text>
+            </View>
+              : item.status === 1 ? (
+                <React.Fragment>
+                  <TouchableOpacity style={styles.offerButton}>
+                    <Text
+                      style={{
+                        fontFamily: 'Inter-Medium',
+                        fontSize: 12,
+                        color: 'white',
+                      }}>
+                      {item.type === "offer" ? "Offer Approved" : "Bid Winner"}
+                    </Text>
+                  </TouchableOpacity>
 
-              <TouchableOpacity
-                style={[
-                  styles.offerButton,
-                  { backgroundColor: '#E62B56', marginLeft: 5 },
-                ]}
-                onPress={() => {
-                  rootNavigation.navigate(RootStackRoutes.CONFIRM_PURCHASE, {
-                    productId: item.id,
-                    productName: item.product_title,
-                    productImage: item.product_image,
-                    productBuyNowPrice: +item.product_price,
-                  })
-                }}
-              >
-                <Text
-                  style={{
-                    fontFamily: 'Inter-Medium',
-                    fontSize: 12,
-                    color: 'white',
-                  }}>
-                  Pay Now
-                </Text>
-              </TouchableOpacity>
-            </React.Fragment>
-          ) : null}
+                  <TouchableOpacity
+                    style={[
+                      styles.offerButton,
+                      { backgroundColor: '#E62B56', marginLeft: 5 },
+                    ]}
+                    onPress={() => {
+                      rootNavigation.navigate(RootStackRoutes.CONFIRM_PURCHASE, {
+                        productId: item.product_id,
+                        productName: item.product_title,
+                        productImage: item.product_image,
+                        productBuyNowPrice: +item.product_price,
+                      })
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: 'Inter-Medium',
+                        fontSize: 12,
+                        color: 'white',
+                      }}>
+                      Pay Now
+                    </Text>
+                  </TouchableOpacity>
+                </React.Fragment>
+              ) : null}
         </View>
       </View>
     </View>

@@ -31,7 +31,7 @@ export const offerNBidsApi = api.injectEndpoints({
           },
         };
       },
-      invalidatesTags: (_result, _error) => [QUERY_KEYS.OFFER_N_BIDS],
+      invalidatesTags: (_result, _error) => [QUERY_KEYS.USER_OFFER_N_BIDS],
     }),
 
     getUserOfferNBids: builder.query<
@@ -46,7 +46,7 @@ export const offerNBidsApi = api.injectEndpoints({
       },
       providesTags: (result, error) =>
         result
-          ? [{type: QUERY_KEYS.OFFER_N_BIDS, id: "USER-OFFER-LIST"}]
+          ? [{type: QUERY_KEYS.USER_OFFER_N_BIDS, id: "LIST"}]
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
@@ -68,13 +68,24 @@ export const offerNBidsApi = api.injectEndpoints({
         result
           ? [
               {
-                type: QUERY_KEYS.OFFER_N_BIDS,
-                id: `SELLER-OFFER-LIST-${productId}`,
+                type: QUERY_KEYS.SELLER_OFFER_N_BIDS,
+                id: productId,
               },
             ]
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
+    }),
+    makeBidWinnerOrAcceptOffer: builder.mutation<
+      {success: string},
+      {offerOrBidId: number}
+    >({
+      query({offerOrBidId}) {
+        return {
+          url: `winner-accept/${offerOrBidId}`,
+        };
+      },
+      invalidatesTags: () => [QUERY_KEYS.SELLER_OFFER_N_BIDS],
     }),
   }),
 });
@@ -85,4 +96,5 @@ export const {
   useUpsertBidOrOfferMutation,
   useLazyGetUserOfferNBidsQuery,
   useLazyGetSellerOfferNBidsQuery,
+  useMakeBidWinnerOrAcceptOfferMutation,
 } = offerNBidsApi;

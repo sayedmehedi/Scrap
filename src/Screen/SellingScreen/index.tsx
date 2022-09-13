@@ -2,13 +2,13 @@ import React from 'react';
 import styles from './styles';
 import Colors from '../../constants/Colors';
 import { HomeTabParamList } from '@src/types';
+import SaleProductList from './SaleProductList';
+import ArchiveProductList from './ArchiveProductList';
 import { useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native';
 import { HomeTabRoutes, PostItemStackRoutes } from '../../constants/routes';
-import SaleProductList from './SaleProductList';
-import ArchiveProductList from './ArchiveProductList';
 
 type HometabNavigation = BottomTabNavigationProp<HomeTabParamList>
 
@@ -18,7 +18,6 @@ const SellingScreen = () => {
   return (
     <>
       <SafeAreaView style={{ flex: 1, backgroundColor: '#F7F7F7' }}>
-
         <View style={{ flexDirection: 'row' }}>
           <TouchableOpacity
             onPress={() => setProductType("sale")}

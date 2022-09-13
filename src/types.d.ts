@@ -485,6 +485,7 @@ export interface OfferOrBid {
   user_name: string;
   user_image: string;
   type: "Bid" | "offer";
+  product_id: string | number;
   product_title: string;
   product_price: string;
   product_image: string;
@@ -492,6 +493,10 @@ export interface OfferOrBid {
   product_category: string;
   product_condition: string;
   product_sub_category: string;
+  time_left: string;
+  is_bid_out: boolean;
+  total_bids: number;
+  total_offers: number;
 }
 
 export type GetOfferNBidsResponse = {
