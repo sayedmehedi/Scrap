@@ -1,19 +1,27 @@
 import React from 'react';
 import { Text } from 'react-native-paper';
-import { GetSavedProductsReponse, PaginationQueryParams } from '@src/types';
 import { FlatList, View } from 'react-native';
 import EachProductItem from '../../Component/EachProductItem';
-import { useLazyGetSavedProductsQuery } from '@data/laravel/services/product';
+import { GetSavedProductsReponse, PaginationQueryParams } from '@src/types';
+import { useGetSavedProductsQuery, useLazyGetSavedProductsQuery } from '@data/laravel/services/product';
 
 
 const SaveProductScreen = () => {
-  const [fetchProducts, { isLoading, isFetching }] = useLazyGetSavedProductsQuery();
+  const { data: savedProductsResponse, isLoading } = useGetSavedProductsQuery({})
+
+  const [fetchProducts, { isFetching }] = useLazyGetSavedProductsQuery();
 
   const [productPages, setProductPages] = React.useState<Array<GetSavedProductsReponse["items"]>>([]);
   const actionCreaterRef = React.useRef<ReturnType<typeof fetchProducts> | null>(null);
 
+  React.useEffect(() => {
+    if (!isLoading && !!savedProductsResponse) {
+      setProductPages([savedProductsResponse.items])
+    }
+  }, [savedProductsResponse, isLoading])
+
   const getNextProducts = async () => {
-    if (isFetching) {
+    if (isFetching || isLoading) {
       return;
     }
 
@@ -41,29 +49,6 @@ const SaveProductScreen = () => {
 
     }
   }
-
-
-  React.useEffect(() => {
-    const actionCreator: ReturnType<typeof fetchProducts> = fetchProducts({}, true);
-
-    (async () => {
-
-      try {
-        const productResponse = await actionCreator.unwrap()
-
-        setProductPages(() => {
-          return [productResponse.items]
-        })
-      } finally {
-
-      }
-    })()
-
-    return () => {
-
-      actionCreator.abort()
-    }
-  }, [fetchProducts])
 
   React.useEffect(() => {
     return () => {

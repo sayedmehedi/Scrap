@@ -1,15 +1,18 @@
 import React from 'react';
-import {useNavigation} from '@react-navigation/native';
-import {RootStackRoutes} from '../../constants/routes';
-import {View, Text, Image, TouchableOpacity} from 'react-native';
+import { Conversation } from '@src/types';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackRoutes } from '../../constants/routes';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
 
-const EachConversation = () => {
+
+const EachConversation = ({ item }: { item: Conversation }) => {
   const navigation = useNavigation();
+
   return (
     <TouchableOpacity
       onPress={() =>
         navigation.navigate(RootStackRoutes.SINGLE_CONVERSATION, {
-          conversationId: 'test',
+          conversationId: item.id,
         })
       }
       style={{
@@ -22,16 +25,16 @@ const EachConversation = () => {
         backgroundColor: '#FFFFFF',
         justifyContent: 'space-between',
       }}>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Image
-          source={require('../../assets/Images/test.png')}
-          style={{height: 50, width: 50, borderRadius: 25, marginRight: 20}}
+          source={{ uri: item.user_image }}
+          style={{ height: 50, width: 50, borderRadius: 25, marginRight: 20 }}
         />
 
         <View>
           <Text
-            style={{color: '#023047', fontFamily: 'Inter-Bold', fontSize: 15}}>
-            Sayed Mehedi hasan
+            style={{ color: '#023047', fontFamily: 'Inter-Bold', fontSize: 15 }}>
+            {item.user_name}
           </Text>
 
           <Text
@@ -40,7 +43,7 @@ const EachConversation = () => {
               color: '#023047',
               fontFamily: 'Inter-Regular',
             }}>
-            Hi Juilan! See you After work?
+            {item.message.title}
           </Text>
 
           <Text
@@ -49,14 +52,14 @@ const EachConversation = () => {
               color: '#E62B56',
               fontFamily: 'Inter-Regular',
             }}>
-            Now
+            {item.message.created_at}
           </Text>
         </View>
       </View>
 
       <Image
         source={require('../../assets/Images/test.png')}
-        style={{height: 50, width: 50, borderRadius: 8}}
+        style={{ height: 50, width: 50, borderRadius: 8 }}
       />
     </TouchableOpacity>
   );

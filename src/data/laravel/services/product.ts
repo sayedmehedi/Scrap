@@ -124,9 +124,12 @@ export const productApi = api.injectEndpoints({
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
+  useGetSaleProductsQuery,
+  useGetSavedProductsQuery,
   useGetFilterProductsQuery,
   useGetProductDetailsQuery,
   useLazyGetSaleProductsQuery,
+  useGetArchiveProductsQuery,
   useLazyGetSavedProductsQuery,
   useLazyGetFilterProductsQuery,
   useLazyGetArchiveProductsQuery,

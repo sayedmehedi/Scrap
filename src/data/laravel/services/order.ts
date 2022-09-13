@@ -74,4 +74,5 @@ export const {
   useCreateCartMutation,
   useConfirmOrderMutation,
   useGetPurchaseHistoryQuery,
+  useLazyGetPurchaseHistoryQuery,
 } = orderApi;

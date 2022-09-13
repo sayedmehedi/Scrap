@@ -1,16 +1,17 @@
 import React from 'react'
-import { Button, Card, Text, Title, useTheme } from 'react-native-paper';
 import { FlatList, View, Image } from 'react-native'
 import EachSellerOfferNBids from './EachSellerOfferNBids';
 import { useNavigation } from '@react-navigation/native';
 import { FilterProduct, GetOfferNBidsResponse } from '@src/types';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { useLazyGetSellerOfferNBidsQuery } from '@data/laravel/services/offerNBids';
+import { Button, Card, Text, Title, useTheme } from 'react-native-paper';
+import { useGetSellerOfferNBidsQuery, useLazyGetSellerOfferNBidsQuery } from '@data/laravel/services/offerNBids';
 
 export default function SellerOfferNBids({ product, onBackPressed }: { product: FilterProduct, onBackPressed: () => void }) {
     const theme = useTheme();
     const navigation = useNavigation();
-    const [getUserOfferNBids, { isLoading, isFetching }] = useLazyGetSellerOfferNBidsQuery()
+    const [getUserOfferNBids, { isFetching }] = useLazyGetSellerOfferNBidsQuery()
+    const { data: sellerOfferNBidsResponse, isLoading: isInitialLoading } = useGetSellerOfferNBidsQuery({ productId: product.id })
     const [offerNBidPages, setOfferNBidPages] = React.useState<Array<GetOfferNBidsResponse["items"]>>([]);
     const actionCreaterRef = React.useRef<ReturnType<typeof getUserOfferNBids> | null>(null);
 
@@ -25,8 +26,14 @@ export default function SellerOfferNBids({ product, onBackPressed }: { product: 
         [navigation, onBackPressed]
     );
 
+    React.useEffect(() => {
+        if (!isInitialLoading && !!sellerOfferNBidsResponse) {
+            setOfferNBidPages([sellerOfferNBidsResponse.items])
+        }
+    }, [sellerOfferNBidsResponse])
+
     const getNextOfferNBids = async () => {
-        if (isFetching) {
+        if (isFetching || isInitialLoading) {
             return;
         }
 
@@ -57,27 +64,6 @@ export default function SellerOfferNBids({ product, onBackPressed }: { product: 
     }
 
     React.useEffect(() => {
-        if (product) {
-            const actionCreator: ReturnType<typeof getUserOfferNBids> = getUserOfferNBids({ productId: product.id }, true);
-
-            (async () => {
-                try {
-                    const productResponse = await actionCreator.unwrap()
-
-                    setOfferNBidPages(() => {
-                        return [productResponse.items]
-                    })
-                } finally {
-                }
-            })()
-
-            return () => {
-                actionCreator.abort()
-            }
-        }
-    }, [getUserOfferNBids, product])
-
-    React.useEffect(() => {
         return () => {
             if (actionCreaterRef.current) {
                 actionCreaterRef.current.abort()
@@ -86,7 +72,7 @@ export default function SellerOfferNBids({ product, onBackPressed }: { product: 
     }, [])
 
     const offerNBids = React.useMemo(() => {
-        if (isLoading) {
+        if (isInitialLoading) {
             return [{
                 id: 1,
                 type: "skeleton" as const
@@ -103,7 +89,7 @@ export default function SellerOfferNBids({ product, onBackPressed }: { product: 
 
         return offerNBidPages.flatMap(offerNBidPage => offerNBidPage.data)
 
-    }, [isLoading, offerNBidPages])
+    }, [isInitialLoading, offerNBidPages])
 
     return (
         <React.Fragment>

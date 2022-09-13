@@ -125,7 +125,9 @@ export type RootStackParamList = {
   [RootStackRoutes.PRODUCT_DETAILS]: {
     productId: number | string;
   };
-  [RootStackRoutes.SINGLE_CONVERSATION]: undefined;
+  [RootStackRoutes.SINGLE_CONVERSATION]: {
+    conversationId: number;
+  };
   [RootStackRoutes.CONFIRM_PURCHASE]: {
     productName: string;
     productImage: string;
@@ -510,4 +512,35 @@ export type GetSavedProductsReponse = {
 
 export type GetSaleOrArchivedProductsReponse = {
   products: PaginatedResponse<FilterProduct>;
+};
+
+export interface Conversation {
+  id: number;
+  user_name: string;
+  user_image: string;
+  has_offer: boolean;
+  has_msg: boolean;
+  product: string;
+  message: {
+    title: string;
+    created_at: string;
+  };
+}
+
+export type GetConversationsResponse = {
+  messages: PaginatedResponse<Conversation>;
+};
+
+export interface ConversationMessage {
+  id: number;
+  title: string;
+  created_at: string;
+  sender_name: string;
+  sender_image: string;
+  receiver_name: string;
+  receiver_image: string;
+}
+
+export type GetConversationDetailsResponse = {
+  messages: PaginatedResponse<ConversationMessage>;
 };

@@ -1,17 +1,24 @@
 import React from 'react'
 import { View, Text, FlatList } from 'react-native'
-import { useLazyGetSaleProductsQuery } from '@data/laravel/services/product';
-import { GetSaleOrArchivedProductsReponse, PaginationQueryParams } from '@src/types';
 import SaleOrArchiveItem from './SaleOrArchiveItem';
+import { GetSaleOrArchivedProductsReponse, PaginationQueryParams } from '@src/types';
+import { useGetSaleProductsQuery, useLazyGetSaleProductsQuery } from '@data/laravel/services/product';
 
 export default function SaleProductList() {
-    const [fetchProducts, { isLoading, isFetching }] = useLazyGetSaleProductsQuery();
+    const [fetchProducts, { isFetching }] = useLazyGetSaleProductsQuery();
+    const { data: saleProductsResponse, isLoading } = useGetSaleProductsQuery({})
 
     const [productPages, setProductPages] = React.useState<Array<GetSaleOrArchivedProductsReponse["products"]>>([]);
     const actionCreaterRef = React.useRef<ReturnType<typeof fetchProducts> | null>(null);
 
+    React.useEffect(() => {
+        if (!isLoading && !!saleProductsResponse) {
+            setProductPages([saleProductsResponse.products])
+        }
+    }, [saleProductsResponse, isLoading])
+
     const getNextProducts = async () => {
-        if (isFetching) {
+        if (isFetching || isLoading) {
             return;
         }
 
@@ -41,32 +48,6 @@ export default function SaleProductList() {
 
         }
     }
-
-
-
-    React.useEffect(() => {
-        const actionCreator: ReturnType<typeof fetchProducts> = fetchProducts({}, true);
-
-        (async () => {
-
-            try {
-                const productResponse = await actionCreator.unwrap()
-
-                setProductPages(() => {
-
-
-                    return [productResponse.products]
-                })
-            } finally {
-
-            }
-        })()
-
-        return () => {
-
-            actionCreator.abort()
-        }
-    }, [fetchProducts])
 
     React.useEffect(() => {
         return () => {

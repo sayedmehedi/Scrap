@@ -4,17 +4,24 @@ import { Text } from 'react-native-paper';
 import { FlatList, View } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { GetOfferNBidsResponse, PaginationQueryParams } from '@src/types';
-import { useLazyGetUserOfferNBidsQuery } from '@data/laravel/services/offerNBids';
+import { useGetUserOfferNBidsQuery, useLazyGetUserOfferNBidsQuery } from '@data/laravel/services/offerNBids';
 
 
 
 export default function UserOfferNBids() {
-    const [getUserOfferNBids, { isLoading, isFetching }] = useLazyGetUserOfferNBidsQuery()
+    const [getUserOfferNBids, { isFetching }] = useLazyGetUserOfferNBidsQuery()
     const [offerNBidPages, setOfferNBidPages] = React.useState<Array<GetOfferNBidsResponse["items"]>>([]);
     const actionCreaterRef = React.useRef<ReturnType<typeof getUserOfferNBids> | null>(null);
+    const { data: userOfferNBidsResponse, isLoading } = useGetUserOfferNBidsQuery({})
+
+    React.useEffect(() => {
+        if (!isLoading && !!userOfferNBidsResponse) {
+            setOfferNBidPages([userOfferNBidsResponse.items])
+        }
+    }, [userOfferNBidsResponse, isLoading])
 
     const getNextOfferNBids = async () => {
-        if (isFetching) {
+        if (isFetching || isLoading) {
             return;
         }
 
@@ -41,28 +48,6 @@ export default function UserOfferNBids() {
         } finally {
         }
     }
-
-
-
-    React.useEffect(() => {
-        const actionCreator: ReturnType<typeof getUserOfferNBids> = getUserOfferNBids({}, true);
-
-        (async () => {
-            try {
-                const productResponse = await actionCreator.unwrap()
-
-                setOfferNBidPages(() => {
-                    return [productResponse.items]
-                })
-            } finally {
-            }
-        })()
-
-        return () => {
-
-            actionCreator.abort()
-        }
-    }, [getUserOfferNBids])
 
     React.useEffect(() => {
         return () => {

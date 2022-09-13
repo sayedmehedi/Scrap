@@ -1,18 +1,25 @@
 import React from 'react'
 import { View, Text, FlatList } from 'react-native'
 import SaleOrArchiveItem from './SaleOrArchiveItem';
-import { useLazyGetArchiveProductsQuery } from '@data/laravel/services/product';
 import { GetSaleOrArchivedProductsReponse, PaginationQueryParams } from '@src/types';
+import { useGetArchiveProductsQuery, useLazyGetArchiveProductsQuery } from '@data/laravel/services/product';
 
 
 export default function ArchiveProductList() {
-    const [fetchProducts, { isLoading, isFetching }] = useLazyGetArchiveProductsQuery();
+    const [fetchProducts, { isFetching }] = useLazyGetArchiveProductsQuery();
+    const { data: archivedProductsResponse, isLoading } = useGetArchiveProductsQuery({})
 
     const [productPages, setProductPages] = React.useState<Array<GetSaleOrArchivedProductsReponse["products"]>>([]);
     const actionCreaterRef = React.useRef<ReturnType<typeof fetchProducts> | null>(null);
 
+    React.useEffect(() => {
+        if (!isLoading && !!archivedProductsResponse) {
+            setProductPages([archivedProductsResponse.products])
+        }
+    }, [archivedProductsResponse, isLoading])
+
     const getNextProducts = async () => {
-        if (isFetching) {
+        if (isFetching || isLoading) {
             return;
         }
 
@@ -42,32 +49,6 @@ export default function ArchiveProductList() {
 
         }
     }
-
-
-
-    React.useEffect(() => {
-        const actionCreator: ReturnType<typeof fetchProducts> = fetchProducts({}, true);
-
-        (async () => {
-
-            try {
-                const productResponse = await actionCreator.unwrap()
-
-                setProductPages(() => {
-
-
-                    return [productResponse.products]
-                })
-            } finally {
-
-            }
-        })()
-
-        return () => {
-
-            actionCreator.abort()
-        }
-    }, [fetchProducts])
 
     React.useEffect(() => {
         return () => {
