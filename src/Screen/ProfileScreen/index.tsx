@@ -20,6 +20,7 @@ import {
   ImageBackground,
   TouchableOpacity,
 } from "react-native";
+import ProfileImageUploader from "./ProfileImageUploader";
 
 type Props = NativeStackScreenProps<ProfileStackParamList, typeof ProfileStackRoutes.PROFILE_SCREEN>
 
@@ -55,23 +56,7 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
   return (
     <ScrollView>
       <View style={{ alignSelf: "center", alignItems: "center" }}>
-        <TouchableOpacity>
-          <ImageBackground
-            source={{ uri: profile?.profile_image }}
-            style={{ height: 100, width: 100, borderRadius: 50, marginTop: 20 }}>
-            <View
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 50,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "rgba(0,0,0,0.5)",
-              }}>
-              <AntDesign name="camerao" size={26} color={"#FFFFFF"} />
-            </View>
-          </ImageBackground>
-        </TouchableOpacity>
+        <ProfileImageUploader />
         <Text style={{ fontFamily: "Inter-Bold", fontSize: 20 }}>
           {profile?.name}
         </Text>

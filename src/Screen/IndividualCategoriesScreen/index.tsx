@@ -26,14 +26,9 @@ const IndividualCategoriesScreen = ({ route, navigation }: Props) => {
   const [maxPrice, setMaxPrice] = React.useState<number | null>(null)
   const [minPrice, setMinPrice] = React.useState<number | null>(null)
   const [condition, setCondition] = React.useState<Condition | null>(null)
+  const [attributeId, setAttributeId] = React.useState<number | null>(null)
   const [sortBy, setSortBy] = React.useState<FilterProductQueryParams["sort_by"]>("oldest")
   const [productType, setProductType] = React.useState<"all" | "is_locale" | "is_shipping">("all")
-
-  const locationRef = React.useRef(location)
-  const distanceRef = React.useRef(distance)
-  const maxPriceRef = React.useRef(maxPrice)
-  const minPriceRef = React.useRef(minPrice)
-  const conditionRef = React.useRef(condition)
 
   React.useEffect(() => {
     navigation.setOptions({
@@ -121,6 +116,10 @@ const IndividualCategoriesScreen = ({ route, navigation }: Props) => {
     if (route.params.condition) {
       setCondition(route.params.condition)
     }
+
+    if (route.params.attribute_id) {
+      setAttributeId(+route.params.attribute_id)
+    }
   }, [route])
 
 
@@ -158,6 +157,10 @@ const IndividualCategoriesScreen = ({ route, navigation }: Props) => {
       data.condition_id = condition.id
     }
 
+    if (!!attributeId) {
+      data.attribute_id = attributeId
+    }
+
     return data;
   }, [route.params.categoryId,
     productType,
@@ -166,7 +169,8 @@ const IndividualCategoriesScreen = ({ route, navigation }: Props) => {
     distance,
     maxPrice,
     minPrice,
-    condition])
+    condition,
+    attributeId])
 
   if (modalVisible) {
     return (
@@ -364,7 +368,7 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
         return prevPages.concat(productResponse.products)
       })
     } finally {
-      // setIsFilterProductsLoading(false)
+
     }
   }
 
@@ -374,7 +378,7 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
     const actionCreator: ReturnType<typeof trigger> = trigger(params, true);
 
     (async () => {
-      // setIsFilterProductsLoading(true)
+
       try {
         const productResponse = await actionCreator.unwrap()
 
@@ -384,7 +388,7 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
           return [productResponse.products]
         })
       } finally {
-        // setIsFilterProductsLoading(false)
+
       }
     })()
 

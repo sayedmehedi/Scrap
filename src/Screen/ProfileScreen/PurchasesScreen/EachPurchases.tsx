@@ -2,9 +2,13 @@ import React from 'react';
 import styles from '../styles';
 import { Order } from '@src/types';
 import { View, Text, Image } from 'react-native';
+import { RootStackRoutes } from '@constants/routes';
+import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const EachPurchases = ({ item }: { item: Order & { type: "data" } }) => {
+  const navigation = useNavigation();
+
   return (
     <View
       key={item.id}
@@ -56,7 +60,14 @@ const EachPurchases = ({ item }: { item: Order & { type: "data" } }) => {
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity style={[styles.offerButton, { backgroundColor: '#E62B56' }]}>
+          <TouchableOpacity style={[styles.offerButton, { backgroundColor: '#E62B56' }]} onPress={() => {
+            navigation.navigate(RootStackRoutes.CONFIRM_PURCHASE, {
+              productId: item.product_id,
+              productImage: item.product_image,
+              productName: item.product_title,
+              productBuyNowPrice: +item.price,
+            });
+          }}>
             <Text
               style={{
                 fontSize: 12,
@@ -67,20 +78,9 @@ const EachPurchases = ({ item }: { item: Order & { type: "data" } }) => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-          >
-            <Text
-              style={{
-                fontSize: 12,
-                marginLeft: 8,
-                color: '#667085',
-                fontFamily: 'Inter-Medium',
-                textDecorationLine: 'underline',
-              }}>
-
-              Leave Feedback
-            </Text>
-          </TouchableOpacity>
+          <View style={{ padding: 10, borderRadius: 10, backgroundColor: "#1FA4DE" }}>
+            <Text>{item.delivery_status}</Text>
+          </View>
         </View>
       </View>
     </View>

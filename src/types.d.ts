@@ -14,6 +14,7 @@ import {
 } from "@constants/routes";
 import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {Asset} from "react-native-image-picker";
 
 export type HomeStackParamList = {
   [HomeStackRoutes.HOME]: undefined;
@@ -21,13 +22,14 @@ export type HomeStackParamList = {
   [HomeStackRoutes.LOCAL_PICKUP]: undefined;
   [HomeStackRoutes.ALL_CATEGORIES]: undefined;
   [HomeStackRoutes.INDIVIDUAL_CATEGORIES]: {
-    categoryTitle: string;
-    categoryId: string | number;
+    categoryTitle?: string;
+    categoryId?: string | number;
     location?: string;
     distance?: number;
     maxPrice?: number;
     minPrice?: number;
     condition?: Condition;
+    attribute_id?: string | number;
   };
 };
 
@@ -114,6 +116,9 @@ export type RootStackParamList = {
   [RootStackRoutes.ASK_QUESTION]: undefined;
   [RootStackRoutes.NOTIFICATIONS]: undefined;
   [RootStackRoutes.SEARCH_PRODUCT]: undefined;
+  [RootStackRoutes.SELLER_REVIEW]: {
+    sellerId: string | number;
+  };
   [RootStackRoutes.PRODUCT_FILTER]: {
     categoryTitle?: string;
     categoryId?: string | number;
@@ -128,6 +133,11 @@ export type RootStackParamList = {
   };
   [RootStackRoutes.SINGLE_CONVERSATION]: {
     conversationId: number;
+    userName: string;
+    userImage: string;
+    userLocation: string;
+    productPrice: number;
+    productImage: string;
   };
   [RootStackRoutes.CONFIRM_PURCHASE]: {
     productName: string;
@@ -153,7 +163,7 @@ export type RootState = ReturnType<typeof rootReducer>;
 
 export type ServerNonFieldError = {
   status: "failed";
-  message: string;
+  error: string;
 };
 
 export type ResourceCreatedResponse = {
@@ -252,6 +262,7 @@ export type FilterProductQueryParams = Partial<{
   is_locale: "1" | "0";
   is_shipping: "1" | "0";
   category_id: string | number;
+  attribute_id: string | number;
   sub_category_id: string | number;
   user_id: string | number;
   title: string;
@@ -430,12 +441,13 @@ export interface GetCartsResponse {
 export interface Order {
   id: number;
   price: string;
+  product_id: number;
   product_image: string;
   product_title: string;
+  delivery_status: string;
   product_condition: string;
   product_category: string;
   product_sub_category: string;
-  delivery_status: string;
 }
 
 export type GetPurchaseHistoryResponse = {
@@ -521,7 +533,13 @@ export interface Conversation {
   user_image: string;
   has_offer: boolean;
   has_msg: boolean;
-  product: string;
+  product:
+    | ""
+    | {
+        title: string;
+        image: string;
+        price: string;
+      };
   message: {
     title: string;
     created_at: string;
@@ -571,4 +589,36 @@ export interface Transaction {
 
 export type GetTransactionsResponse = {
   transactions: PaginatedResponse<Transaction>;
+};
+
+export type UpdateProfileRequest = {
+  name?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+  latitude?: string;
+  longitude?: string;
+  image?: Asset;
+  country_id?: string;
+  state_id?: string;
+  city_id?: string;
+};
+
+export interface SellerReview {
+  id: number;
+  rating: number;
+  review: string;
+  user_name: string;
+  created_at: string;
+  user_image: string;
+}
+
+export type GetSellerReviewsResponse = {
+  reviews: PaginatedResponse<SellerReview>;
+};
+
+export type CreateSellerReview = {
+  seller_id: number;
+  rating: number;
+  review: string;
 };

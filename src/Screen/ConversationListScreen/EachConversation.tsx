@@ -13,6 +13,11 @@ const EachConversation = ({ item }: { item: Conversation }) => {
       onPress={() =>
         navigation.navigate(RootStackRoutes.SINGLE_CONVERSATION, {
           conversationId: item.id,
+          userName: item.user_name,
+          userImage: item.user_image,
+          userLocation: "",
+          productPrice: item.product !== "" ? +item.product.price : 0,
+          productImage: item.product !== "" ? item.product.image : "",
         })
       }
       style={{
@@ -57,10 +62,14 @@ const EachConversation = ({ item }: { item: Conversation }) => {
         </View>
       </View>
 
-      <Image
-        source={require('../../assets/Images/test.png')}
-        style={{ height: 50, width: 50, borderRadius: 8 }}
-      />
+      {item.product !== "" ? <View>
+        <Image
+          source={{ uri: item.product.image }}
+          style={{ height: 50, width: 50, borderRadius: 8 }}
+        />
+        <Text>${item.product.price}</Text>
+      </View> : null}
+
     </TouchableOpacity>
   );
 };

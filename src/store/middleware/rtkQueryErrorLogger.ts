@@ -11,7 +11,7 @@ export const rtkQueryErrorLogger: Middleware =
     if (isRejectedWithValue(action)) {
       console.warn("We got a rejected action!", action.meta);
       const non_field_error: string = action.payload.data.non_field_error;
-
+      console.log("non_field_error", non_field_error);
       const options: ToastShowParams = {
         type: "error",
       };

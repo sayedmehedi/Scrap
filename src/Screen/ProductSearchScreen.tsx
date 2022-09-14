@@ -1,28 +1,60 @@
 import React from 'react';
+import { HomeStackParamList } from '@src/types';
 import useDebouncedState from '@hooks/useDebouncedState';
+import { useNavigation } from '@react-navigation/native';
+import { TextInput, View, SectionList, } from 'react-native';
 import { useTheme, Text, Card, Divider } from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { useGetFullTextSearchQuery } from '@data/laravel/services/api';
-import { TextInput, View, SectionList, Dimensions, } from 'react-native';
+import { HomeStackRoutes, RootStackRoutes } from '@constants/routes';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-const { width } = Dimensions.get("window")
 
-const searchedTextWidth = width * 0.30
+type SearchItemType = "categories" | "sub_categories" | "conditions" | "attributes"
 
-const Item = ({ title, loading = false }: { title: string, loading?: boolean }) => {
-  if (loading) {
-    return (
-      <SkeletonPlaceholder>
-        <SkeletonPlaceholder.Item padding={10}>
-          <SkeletonPlaceholder.Item width={searchedTextWidth} height={15} />
-        </SkeletonPlaceholder.Item>
-      </SkeletonPlaceholder>
-    )
-  }
+
+type HomeStackNavigatorProps = NativeStackNavigationProp<HomeStackParamList>
+
+const Item = ({ title, type, id }: { title: string, type: SearchItemType, id: number }) => {
+  const homestackNavigation = useNavigation<HomeStackNavigatorProps>()
 
   return (
-    <Card>
+    <Card onPress={() => {
+      switch (type) {
+        case "attributes":
+          homestackNavigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES, {
+            attribute_id: id
+          });
+          break;
+
+        case "conditions":
+          homestackNavigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES, {
+            condition: {
+              id,
+              title: ""
+            }
+          });
+          break;
+
+        case "categories":
+          homestackNavigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES, {
+            categoryTitle: title,
+            categoryId: id,
+          });
+          break;
+
+        case "sub_categories":
+          homestackNavigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES, {
+            categoryTitle: title,
+            categoryId: id,
+          });
+          break;
+
+        default:
+          break;
+      }
+    }}>
       <Card.Content style={{ padding: 10 }}>
         <Text>{title}</Text>
       </Card.Content>
@@ -53,15 +85,18 @@ const ProductSearchScreen = () => {
           data: [
             {
               id: 1,
-              title: "skeleton"
+              title: "skeleton" as const,
+              type: "skeleton" as const,
             },
             {
               id: 2,
-              title: "skeleton"
+              title: "skeleton" as const,
+              type: "skeleton" as const,
             },
             {
               id: 3,
-              title: "skeleton"
+              title: "skeleton" as const,
+              type: "skeleton" as const,
             }
           ]
         },
@@ -70,15 +105,18 @@ const ProductSearchScreen = () => {
           data: [
             {
               id: 1,
-              title: "skeleton"
+              title: "skeleton" as const,
+              type: "skeleton" as const,
             },
             {
               id: 2,
-              title: "skeleton"
+              title: "skeleton" as const,
+              type: "skeleton" as const,
             },
             {
               id: 3,
-              title: "skeleton"
+              title: "skeleton" as const,
+              type: "skeleton" as const,
             }
           ]
         },
@@ -87,15 +125,18 @@ const ProductSearchScreen = () => {
           data: [
             {
               id: 1,
-              title: "skeleton"
+              title: "skeleton" as const,
+              type: "skeleton" as const,
             },
             {
               id: 2,
-              title: "skeleton"
+              title: "skeleton" as const,
+              type: "skeleton" as const,
             },
             {
               id: 3,
-              title: "skeleton"
+              title: "skeleton" as const,
+              type: "skeleton" as const,
             }
           ]
         },
@@ -104,15 +145,18 @@ const ProductSearchScreen = () => {
           data: [
             {
               id: 1,
-              title: "skeleton"
+              title: "skeleton" as const,
+              type: "skeleton" as const,
             },
             {
               id: 2,
-              title: "skeleton"
+              title: "skeleton" as const,
+              type: "skeleton" as const,
             },
             {
               id: 3,
-              title: "skeleton"
+              title: "skeleton" as const,
+              type: "skeleton" as const,
             }
           ]
         }
@@ -120,8 +164,11 @@ const ProductSearchScreen = () => {
     }
 
     return Object.entries(data ?? {}).map(([title, data]) => ({
-      title,
-      data,
+      title: title.split("_").join(" "),
+      data: data.map(datum => ({
+        type: title as SearchItemType,
+        ...datum
+      })),
     }));
   }, [data, isLoading]);
 
@@ -157,7 +204,7 @@ const ProductSearchScreen = () => {
           </View>
         </View>
 
-        <SectionList
+        <SectionList<typeof searchResult[0]["data"][0]>
           sections={searchResult}
           contentContainerStyle={{
             margin: 15,
@@ -170,17 +217,20 @@ const ProductSearchScreen = () => {
           ItemSeparatorComponent={Divider}
           keyExtractor={(item, index) => item.title + index}
           SectionSeparatorComponent={() => <View style={{ height: 10 }} />}
-          renderItem={({ item, section }) => <Item title={item.title} loading={section.title === "skeleton"} />}
-          renderSectionHeader={({ section: { title } }) => (
-            <View>
-              <Text
-                style={{
-                  fontWeight: '700',
-                }}>
-                {title.toLocaleUpperCase()}
-              </Text>
-            </View>
-          )}
+          renderItem={({ item, section }) => {
+            if (item.type === "skeleton") {
+              return (
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item padding={10}>
+                    <SkeletonPlaceholder.Item width={"100%"} height={15} />
+                  </SkeletonPlaceholder.Item>
+                </SkeletonPlaceholder>
+              )
+            }
+
+            return <Item type={item.type} id={item.id} title={item.title} />
+          }}
+
         />
       </View>
     </>

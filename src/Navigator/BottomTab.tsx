@@ -181,36 +181,41 @@ const BottomTab = () => {
       <HomeTab.Screen
         component={SellingScreen}
         name={HomeTabRoutes.SELLING}
-        options={{
-          title: 'Selling',
-          // cardStyleInterpolator: forFade,
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-              <Ionicons
-                name="pricetag"
-                size={22}
-                color={focused ? Colors.PRIMARY_COLOR : 'gray'}
-              />
-              <Text
-                style={{
-                  color: focused ? Colors.PRIMARY_COLOR : 'gray',
-                  fontSize: 10,
-                  fontFamily: 'Inter-SemiBold',
-                }}>
-                Selling
-              </Text>
-            </View>
-          ),
-          headerRight: () => (
-            <View style={{ paddingRight: 10 }}>
-              <MaterialIcons
-                name="notifications-none"
-                size={20}
-                color={'white'}
-              />
-            </View>
-          ),
+        options={({ navigation }) => {
+          return {
+            title: 'Selling',
+            // cardStyleInterpolator: forFade,
+            tabBarIcon: ({ focused }) => (
+              <View
+                style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                <Ionicons
+                  name="pricetag"
+                  size={22}
+                  color={focused ? Colors.PRIMARY_COLOR : 'gray'}
+                />
+                <Text
+                  style={{
+                    color: focused ? Colors.PRIMARY_COLOR : 'gray',
+                    fontSize: 10,
+                    fontFamily: 'Inter-SemiBold',
+                  }}>
+                  Selling
+                </Text>
+              </View>
+            ),
+            headerRight: () => (
+              <View style={{ paddingRight: 10 }}>
+                <MaterialIcons
+                  color={'white'}
+                  size={22}
+                  name="notifications-none"
+                  onPress={() => {
+                    navigation.navigate(RootStackRoutes.NOTIFICATIONS);
+                  }}
+                />
+              </View>
+            ),
+          }
         }}
       />
 

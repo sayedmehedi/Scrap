@@ -9,6 +9,7 @@ import EachProductItem from "../../Component/EachProductItem";
 import { GetSaleOrArchivedProductsReponse, PaginationQueryParams } from "@src/types";
 import { FlatList, View, Text, ImageBackground, TouchableOpacity } from "react-native";
 import { useGetSaleProductsQuery, useLazyGetSaleProductsQuery } from "@data/laravel/services/product";
+import ProfileImageUploader from "./ProfileImageUploader";
 
 
 
@@ -105,23 +106,7 @@ const PublicProfileScreen = () => {
                   width: "100%",
                   paddingHorizontal: 10,
                 }}>
-                <TouchableOpacity style={{ marginTop: 20 }}>
-                  <ImageBackground
-                    source={{ uri: profile?.profile_image }}
-                    style={{ height: 100, width: 100, borderRadius: 50 }}>
-                    <View
-                      style={{
-                        width: 100,
-                        height: 100,
-                        borderRadius: 50,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor: "rgba(0,0,0,0.5)",
-                      }}>
-                      <AntDesign name="camerao" size={26} color={"#FFFFFF"} />
-                    </View>
-                  </ImageBackground>
-                </TouchableOpacity>
+                <ProfileImageUploader />
                 <Text style={{ fontFamily: "Inter-Bold", fontSize: 20 }}>
                   {profile?.name}
                 </Text>

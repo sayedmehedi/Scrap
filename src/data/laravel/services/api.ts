@@ -1,26 +1,19 @@
-import {Axios} from "axios";
 import {Mutex} from "async-mutex";
 import {container} from "@src/appEngine";
 import {QUERY_KEYS} from "@constants/query";
 import {ConfigService} from "@config/ConfigService";
-import LoginUserDto from "@core/domain/dto/LoginUserDto";
 import {loggedOut, tokenReceived} from "@store/actions/auth";
-import {ApplicationError} from "@core/domain/ApplicationError";
-import {ServiceProviderTypes} from "@core/serviceProviderTypes";
 import {
   isErrorWithError,
-  isErrorWithErrors,
-  isErrorWithException,
-  isErrorWithMessage,
-  isFetchBaseQueryError,
   isValidationError,
+  isErrorWithErrors,
+  isErrorWithMessage,
+  isErrorWithException,
 } from "@utils/error-handling";
 import {
   RootState,
-  LoginResponse,
   JoteyQueryError,
   PaginatedResponse,
-  RegisterResponse,
   FullTextSearchResponse,
 } from "@src/types";
 import {
@@ -29,10 +22,8 @@ import {
   BaseQueryFn,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
-import RegisterUserDto from "@core/domain/dto/RegisterUserDto";
 
 const configService = container.get<ConfigService>(ConfigService);
-const apiClient = container.get<Axios>(ServiceProviderTypes.HttpClient);
 
 export function providesList<
   O extends {id: string | number},
@@ -110,18 +101,6 @@ const laravelBaseQuery: BaseQueryFn<
     } else {
       non_field_error = "Something went wrong";
     }
-
-    // // you can access all properties of `FetchBaseQueryError` here
-    // non_field_error =
-    //   'error' in err
-    //     ? err.error
-    //     : isErrorWithMessage(err.data)
-    //     ? !!err.data.message
-    //       ? err.data.message
-    //       : 'Something went wrong'
-    //     : typeof err.data === 'string'
-    //     ? (err.data as string)
-    //     : 'Server gave invalid error format';
 
     let field_errors: Record<string, string> = {};
 
@@ -208,6 +187,7 @@ export const api = createApi({
   tagTypes: [
     QUERY_KEYS.AUTH,
     QUERY_KEYS.ORDER,
+    QUERY_KEYS.SELLER,
     QUERY_KEYS.PRODUCT,
     QUERY_KEYS.CATEGORY,
     QUERY_KEYS.CONDITION,

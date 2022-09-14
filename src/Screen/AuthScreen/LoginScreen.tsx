@@ -71,10 +71,6 @@ const LoginScreen = ({ navigation, route }: Props) => {
 
   const [login, { isLoading, isError, error, isSuccess, data }] = useLoginMutation();
 
-  const { isSuccess: isGettingProfileSuccess } = useGetProfileQuery(undefined, {
-    skip: !isAuthenticated
-  })
-
   const {
     reset,
     control,
@@ -105,7 +101,7 @@ const LoginScreen = ({ navigation, route }: Props) => {
   }, [enqueueSuccessSnackbar, isSuccess, data, reset])
 
   React.useEffect(() => {
-    if (isAuthenticated && isGettingProfileSuccess) {
+    if (isAuthenticated) {
       if (route.params?.nextScreen) {
         // @ts-ignore
         navigation.navigate(route.params?.nextScreen.name, route.params?.nextScreen.params)
@@ -114,7 +110,7 @@ const LoginScreen = ({ navigation, route }: Props) => {
         navigation.navigate(RootStackRoutes.HOME)
       }
     }
-  }, [route, navigation, isAuthenticated, isGettingProfileSuccess])
+  }, [route, navigation, isAuthenticated])
 
   async function onGoogleButtonPress() {
     // Get the users ID token

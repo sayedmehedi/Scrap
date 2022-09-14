@@ -48,8 +48,9 @@ const EachCateriesItem = ({ item }: { item: HomeCategory }) => {
           elevation: 5,
         }}>
         <Image
+          resizeMode={"center"}
+          style={{ width: 35, height: 35, }}
           source={{ uri: `${appConfig.mediaBaseUrl}/${item.image}` }}
-          style={{ width: IMAGE_CONTAINER_WIDTH * 0.35, height: IMAGE_CONTAINER_HEIGHT * 0.35 }}
         />
       </View>
 

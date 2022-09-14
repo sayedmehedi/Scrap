@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from '../styles';
-import {View, Text, TouchableOpacity} from 'react-native';
 import AccountSettingsModal from './AccountSettingsModal';
+import { View, Text, TouchableOpacity, TextInputProps } from 'react-native';
 
 export default function AccountSettingsItem({
   icon,
@@ -9,16 +9,22 @@ export default function AccountSettingsItem({
   modalTitle,
   modalSubtitle,
   modalInputs = [],
+}: {
+  text: string;
+  modalTitle: string;
+  modalSubtitle?: string;
+  icon: React.ReactNode;
+  modalInputs: Array<TextInputProps & { name: string; error?: string }>;
 }) {
   const [openModal, setOpenModal] = React.useState(false);
 
   return (
     <React.Fragment>
       <View style={styles.buttonContainer}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {icon}
 
-          <Text style={{marginLeft: 10, color: '#707070'}}>{text}</Text>
+          <Text style={{ marginLeft: 10, color: '#707070' }}>{text}</Text>
         </View>
 
         <TouchableOpacity onPress={() => setOpenModal(true)}>

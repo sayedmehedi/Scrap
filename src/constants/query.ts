@@ -1,6 +1,7 @@
 export enum QUERY_KEYS {
   AUTH = "auth",
   ORDER = "order",
+  SELLER = "seller",
   PRODUCT = "product",
   CATEGORY = "category",
   CONDITION = "condition",

@@ -5,6 +5,7 @@ import {configureStore} from "@reduxjs/toolkit";
 import {authApi} from "@data/laravel/services/auth";
 import {notistackSlice} from "./slices/notistackSlice";
 import {orderApi} from "@data/laravel/services/order";
+import {sellerApi} from "@data/laravel/services/seller";
 import {productApi} from "@data/laravel/services/product";
 import {categoryApi} from "@data/laravel/services/category";
 import {setupListeners} from "@reduxjs/toolkit/dist/query";
@@ -66,6 +67,7 @@ export function createStore(
         api.middleware,
         authApi.middleware,
         orderApi.middleware,
+        sellerApi.middleware,
         productApi.middleware,
         categoryApi.middleware,
         conditionApi.middleware,

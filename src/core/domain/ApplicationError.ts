@@ -45,8 +45,8 @@ export class ApplicationError extends Error {
     if (this.response?.data) {
       const nonFieldError = this.response.data as ServerNonFieldError;
 
-      if (nonFieldError.message) {
-        return nonFieldError.message;
+      if (!!nonFieldError.error) {
+        return nonFieldError.error;
       }
     }
 

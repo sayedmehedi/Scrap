@@ -25,10 +25,10 @@ export default function registerHttpClient(container: Container) {
         },
         function (error) {
           const applicationError = new ApplicationError(error);
-
           return Promise.reject(applicationError);
         },
       );
       return apiHttpClient;
-    });
+    })
+    .inSingletonScope();
 }

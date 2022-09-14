@@ -1,6 +1,6 @@
-import styles from './styles';
-import React, {useState} from 'react';
-import {View, Text} from 'react-native';
+import React from 'react';
+import { View, Text } from 'react-native';
+import { useAppSelector } from '@hooks/store';
 import Feather from 'react-native-vector-icons/Feather';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -8,17 +8,19 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import AccountSettingsItem from './modals/AccountSettingsItem';
 
 const AccountSettingScreen = () => {
+  const profile = useAppSelector(state => state.auth.profile)
+
   return (
     <>
-      <View style={{paddingHorizontal: 12}}>
+      <View style={{ paddingHorizontal: 12 }}>
         <AccountSettingsItem
           modalInputs={[
             {
-              name: 'username',
-              value: 'John Khan',
+              name: 'name',
+              value: profile?.name,
             },
           ]}
-          text={'John Khan'}
+          text={profile?.name ?? ""}
           modalTitle={'Update Full Name'}
           icon={<AntDesign name="user" size={20} color={'#707070'} />}
         />
@@ -27,11 +29,12 @@ const AccountSettingScreen = () => {
           modalInputs={[
             {
               name: 'phone',
+              value: profile?.phone,
               placeholder: 'Add Your Mobile Number',
             },
           ]}
-          text={'Phone'}
           modalTitle={'Phone Verification'}
+          text={profile?.phone ?? "No Phone number provided"}
           icon={<Feather name="phone" size={20} color={'#707070'} />}
           modalSubtitle={
             "Add a phone number to secure your account. We'll text you a code."
@@ -42,10 +45,10 @@ const AccountSettingScreen = () => {
           modalInputs={[
             {
               name: 'email',
-              value: 'softiconic@gmail.com',
+              value: profile?.email,
             },
           ]}
-          text={'softiconic@gmail.com'}
+          text={profile?.email ?? ""}
           modalTitle={'Update Email Address'}
           icon={<Fontisto name="email" size={20} color={'#707070'} />}
         />
@@ -87,10 +90,11 @@ const AccountSettingScreen = () => {
             {
               name: 'location',
               placeholder: 'Location',
+              value: profile?.location
             },
           ]}
-          text={'Location'}
           modalTitle={'Update Location'}
+          text={profile?.location ?? "No location data"}
           icon={<Feather name="map-pin" size={20} color={'#707070'} />}
         />
       </View>

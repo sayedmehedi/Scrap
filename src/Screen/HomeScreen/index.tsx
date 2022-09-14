@@ -1,13 +1,5 @@
 import React from 'react';
 import styles from './styles';
-import {
-  View,
-  Image,
-  Text,
-  Pressable,
-  SafeAreaView,
-  TouchableOpacity,
-} from 'react-native';
 import CategoryList from './CategoryList';
 import Colors from '../../constants/Colors';
 import ProductPreviewList from './ProductPreviewList';
@@ -17,6 +9,14 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { HomeStackRoutes, RootStackRoutes } from '../../constants/routes';
+import {
+  View,
+  Image,
+  Text,
+  Pressable,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';
 
 const HomeScreen = () => {
   const navigation = useNavigation();

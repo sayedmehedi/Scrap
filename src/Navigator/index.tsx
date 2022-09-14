@@ -13,9 +13,10 @@ import { createStackNavigator, } from '@react-navigation/stack';
 import NotificationsScreen from '../Screen/NotificationsScreen';
 import ProductDetailsScreen from '../Screen/ProductDetailsScreen';
 import ProductSearchScreen from '../Screen/ProductSearchScreen';
-import SingleConversationScreen from '../Screen/SingleConversationScreen';
-import ProductFilterScreen from '../Screen/ProductFilterScreen/ProductFilterScreen';
 import ConfirmPurchaseScreen from '@src/Screen/ConfirmPurchaseScreen';
+import SingleConversationScreen from '../Screen/SingleConversationScreen';
+import SellerReviewScreen from '@src/Screen/ReviewScreen/SellerReviewScreen';
+import ProductFilterScreen from '../Screen/ProductFilterScreen/ProductFilterScreen';
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -125,6 +126,15 @@ const Navigator = () => {
         }}
         component={ConfirmPurchaseScreen}
         name={RootStackRoutes.CONFIRM_PURCHASE}
+      />
+
+      <RootStack.Screen
+        options={{
+          title: 'Seller Review',
+          headerTitleAlign: 'center',
+        }}
+        component={SellerReviewScreen}
+        name={RootStackRoutes.SELLER_REVIEW}
       />
     </RootStack.Navigator>
   );

@@ -39,6 +39,7 @@ const EachProductItem = ({ item, }: { item: FilterProduct & { type: "data" } | {
           backgroundColor: '#FFFFFF',
         }}>
         <Image
+          resizeMode={"center"}
           source={{ uri: item.image }}
           style={{
             width: 110,

@@ -44,7 +44,7 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
   const config = useAppConfig()
   const [image, setImage] = React.useState("");
   const { enqueueSuccessSnackbar } = useAppSnackbar()
-  const [expiryTimestamp,] = React.useState(() => dayjs().toDate())
+  const [expiryTimestamp,] = React.useState(() => dayjs().toDate());
 
   const { days, hours, minutes, seconds, restart } = useTimer({
     expiryTimestamp,
@@ -301,8 +301,8 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
 
                 {typeof productDetails.bid === "object" && productDetails.bid.is_winner && <React.Fragment>
                   <AppPrimaryButton
-                    onPress={handlePayment}
                     text={"Pay now"}
+                    onPress={handlePayment}
                   />
 
                   <Button
@@ -312,10 +312,19 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
                       textDecorationLine: 'underline',
                     }}>Ask Question</Button>
 
-                  <Button color={theme.colors.accent} style={{ marginTop: 10 }} labelStyle={{
-                    textTransform: "capitalize",
-                    textDecorationLine: 'underline',
-                  }}>Leave Feedback</Button>
+                  <Button
+                    style={{ marginTop: 10 }}
+                    color={theme.colors.accent}
+                    onPress={() => {
+                      navigation.navigate(RootStackRoutes.SELLER_REVIEW, {
+                        sellerId: productDetails.seller.id,
+                      })
+                    }}
+                    labelStyle={{
+                      textTransform: "capitalize",
+                      textDecorationLine: 'underline',
+                    }}
+                  >Leave Feedback</Button>
                 </React.Fragment>}
               </View>
             </View>
@@ -368,10 +377,19 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
                       textDecorationLine: 'underline',
                     }}>Ask Question</Button>
 
-                  <Button color={theme.colors.accent} style={{ marginTop: 10 }} labelStyle={{
-                    textTransform: "capitalize",
-                    textDecorationLine: 'underline',
-                  }}>Leave Feedback</Button>
+                  <Button
+                    style={{ marginTop: 10 }}
+                    color={theme.colors.accent}
+                    onPress={() => {
+                      navigation.navigate(RootStackRoutes.SELLER_REVIEW, {
+                        sellerId: productDetails.seller.id,
+                      })
+                    }}
+                    labelStyle={{
+                      textTransform: "capitalize",
+                      textDecorationLine: 'underline',
+                    }}
+                  >Leave Feedback</Button>
                 </React.Fragment>}
               </View>
             </View>

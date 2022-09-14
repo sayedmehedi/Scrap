@@ -3,18 +3,18 @@ import React from 'react';
 import RangeSlider from 'rn-range-slider';
 import { useTheme, Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import { Condition, ConditionResponse, PaginationQueryParams, RootStackParamList } from '@src/types';
 import LocationSelectionModal from './LocationSelectionModal';
 import CategorySelectionModal from './CategorySelectionModal';
 import AppPrimaryButton from '../../Component/AppPrimaryButton';
+import { TouchableOpacity, View, FlatList } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { HomeStackRoutes, RootStackRoutes } from '@constants/routes';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ScrollView, TouchableOpacity, View, FlatList } from 'react-native';
 import { useLazyGetConditionsQuery } from '@data/laravel/services/condition';
 import { ListItem, Divider, CheckBox, Button } from 'react-native-elements';
 import { combinedDefaultTheme } from '../../Providers/PreferencesProvider/theme';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { Condition, ConditionResponse, PaginationQueryParams, RootStackParamList } from '@src/types';
 
 const renderLabel = (value: string) => (
   <Text style={{ color: combinedDefaultTheme.colors.tertiary, marginTop: 5 }}>
@@ -214,8 +214,8 @@ const ProductFilterScreen = ({ route }: Props) => {
         <LocationSelectionModal
           open={openLocationModal}
           initialValue={{
+            distance: distance ?? 0,
             location: location ?? undefined,
-            distance: distance ?? undefined
           }}
           onClose={() => setOpenLocationModal(false)}
           onSelect={({ location, distance }) => {
@@ -252,7 +252,7 @@ const ProductFilterScreen = ({ route }: Props) => {
           onPress={() => { setOpenLocationModal(true) }}>
           <ListItem.Content>
             <ListItem.Title>Location</ListItem.Title>
-            <ListItem.Subtitle>{location}: {distance} miles</ListItem.Subtitle>
+            <ListItem.Subtitle>{location}: {distance ?? 0} miles</ListItem.Subtitle>
           </ListItem.Content>
           {/* @ts-ignore */}
           <ListItem.Chevron size={30} />
@@ -263,7 +263,7 @@ const ProductFilterScreen = ({ route }: Props) => {
         {/* @ts-ignore */}
         <ListItem containerStyle={{ backgroundColor: '#F7F7F7F' }}>
           <ListItem.Content>
-            <ListItem.Title>Price Range</ListItem.Title>
+            <ListItem.Title>Price Range (${minPrice} - ${maxPrice})</ListItem.Title>
 
             <View
               style={{

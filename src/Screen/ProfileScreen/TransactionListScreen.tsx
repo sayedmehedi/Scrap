@@ -1,7 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import isToday from 'dayjs/plugin/isToday'
-import { View, SectionList } from 'react-native';
+import { View, SectionList, StyleSheet } from 'react-native';
 import isYesterday from 'dayjs/plugin/isYesterday'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Title, Text, useTheme } from 'react-native-paper';
@@ -144,7 +144,7 @@ export default function TransactionsScreen() {
     }, [isLoading, transactionPages])
 
     return (
-        <View style={{ padding: 15 }}>
+        <View style={{ backgroundColor: 'white', flex: 1, padding: 10 }}>
             <SectionList<typeof transactions[0]["data"][0]>
                 sections={transactions}
                 keyExtractor={(item, index) => `${item.id + index}`}
@@ -163,7 +163,7 @@ export default function TransactionsScreen() {
                         <Text style={{ textAlign: "center" }}>No data</Text>
                     </View>
                 )}
-                renderItem={({ item, section }) => {
+                renderItem={({ item, }) => {
                     if (item.type === "skeleton") {
                         return (
                             <SkeletonPlaceholder>
@@ -175,60 +175,132 @@ export default function TransactionsScreen() {
                     }
 
                     return (
-                        <View
-                            style={{
-                                padding: 15,
-                                marginBottom: 15,
-                                flexDirection: 'row',
-                                borderRadius: theme.roundness * 3,
-                                // @ts-ingore
-                                backgroundColor: theme.colors.white,
-                            }}>
-                            <View
-                                style={{
-                                    width: 35,
-                                    height: 35,
-                                    //   marginRight: 15,
-                                    borderRadius: 1000,
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    backgroundColor: 'rgba(81, 183, 100, 0.25)',
-                                }}>
-                                <MaterialIcons
-                                    size={22}
-                                    color={'#51B764'}
-                                    name="notifications-none"
-                                />
-                            </View>
+                        <View style={{
+                            height: 100,
+                            width: '100%',
+                            borderRadius: 8,
+                            borderWidth: 1,
+                            marginVertical: 5,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            paddingHorizontal: 20,
+                            borderColor: '#F1F1F1',
+                            backgroundColor: 'white',
+                            justifyContent: 'space-around',
 
-                            <View style={{ flex: 1, paddingLeft: 15 }}>
-                                <View
-                                    style={{
-                                        marginBottom: 15,
-                                        alignItems: 'center',
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                    }}>
-                                    <Text
-                                        style={{
-                                            fontSize: 16,
-                                            color: '#F04E26',
-                                            fontWeight: '700',
-                                        }}>
-                                        {item.payment_method}
-                                    </Text>
-                                </View>
-
+                        }}>
+                            <View>
                                 <Text style={{
-                                    color: theme.colors.tertiary
-                                }}>
-                                    ${item.amount}
-                                </Text>
+                                    fontSize: 14,
+                                    color: '#262B2E',
+                                    fontFamily: 'SatoshiVariable-Bold',
+                                }}>item.clubName</Text>
+                                <View style={{ flexDirection: 'row', marginVertical: 4 }}>
+                                    <Text style={{
+                                        fontSize: 12,
+                                        color: '#8A8D9F',
+                                        fontFamily: 'Satoshi-Regular',
+                                    }}>item.tableName |</Text>
+                                    <Text style={{
+                                        fontSize: 12,
+                                        color: '#8A8D9F',
+                                        fontFamily: 'Satoshi-Regular',
+                                    }}> item.numberOfGuest Guest</Text>
+
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <View style={styles.dot} />
+                                    <Text style={{
+                                        fontSize: 10,
+                                        color: '#FE2121',
+                                        fontFamily: 'Satoshi-Regular',
+                                    }}>item.status</Text>
+                                </View>
                             </View>
+
+                            <View >
+                                <Text style={{
+                                    fontFamily: 'Satoshi-Regular',
+                                    fontSize: 10,
+                                    color: '#8A8D9F',
+                                    alignSelf: 'flex-end'
+                                }}>{item.payment_method}</Text>
+                                <Text style={{
+                                    fontFamily: 'SatoshiVariable-Bold',
+                                    fontSize: 18,
+                                    color: '#262B2E'
+                                }}>${item.amount}</Text>
+                            </View>
+
                         </View>
+
                     )
+
+                    // return (
+                    //     <View
+                    //         style={{
+                    //             padding: 15,
+                    //             marginBottom: 15,
+                    //             flexDirection: 'row',
+                    //             borderRadius: theme.roundness * 3,
+                    //             // @ts-ingore
+                    //             backgroundColor: theme.colors.white,
+                    //         }}>
+                    //         <View
+                    //             style={{
+                    //                 width: 35,
+                    //                 height: 35,
+                    //                 //   marginRight: 15,
+                    //                 borderRadius: 1000,
+                    //                 alignItems: 'center',
+                    //                 justifyContent: 'center',
+                    //                 backgroundColor: 'rgba(81, 183, 100, 0.25)',
+                    //             }}>
+                    //             <MaterialIcons
+                    //                 size={22}
+                    //                 color={'#51B764'}
+                    //                 name="notifications-none"
+                    //             />
+                    //         </View>
+
+                    //         <View style={{ flex: 1, paddingLeft: 15 }}>
+                    //             <View
+                    //                 style={{
+                    //                     marginBottom: 15,
+                    //                     alignItems: 'center',
+                    //                     flexDirection: 'row',
+                    //                     justifyContent: 'space-between',
+                    //                 }}>
+                    //                 <Text
+                    //                     style={{
+                    //                         fontSize: 16,
+                    //                         color: '#F04E26',
+                    //                         fontWeight: '700',
+                    //                     }}>
+                    //                     {item.payment_method}
+                    //                 </Text>
+                    //             </View>
+
+                    //             <Text style={{
+                    //                 color: theme.colors.tertiary
+                    //             }}>
+                    //                 ${item.amount}
+                    //             </Text>
+                    //         </View>
+                    //     </View>
+                    // )
                 }}
             />
         </View >
     );
 }
+
+const styles = StyleSheet.create({
+    dot: {
+        height: 8,
+        width: 8,
+        borderRadius: 4,
+        backgroundColor: '#FE2121',
+        marginRight: 10
+    }
+})

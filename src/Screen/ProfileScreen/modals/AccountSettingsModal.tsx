@@ -1,10 +1,13 @@
 import React from 'react';
 import styles from '../styles';
-import {useTheme} from 'react-native-paper';
-import {Controller, useForm} from 'react-hook-form';
+import { useTheme } from 'react-native-paper';
+import { Controller, useForm } from 'react-hook-form';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {View, Text, Modal, TextInput, TouchableOpacity} from 'react-native';
 import AppPrimaryButton from '../../../Component/AppPrimaryButton';
+import { View, Text, Modal, TextInput, TouchableOpacity, TextInputProps } from 'react-native';
+import { useUpdateProfileMutation } from '@data/laravel/services/auth';
+import useAppSnackbar from '@hooks/useAppSnackbar';
+import { isJoteyQueryError } from '@utils/error-handling';
 
 export default function AccountSettingsModal({
   open,
@@ -12,9 +15,17 @@ export default function AccountSettingsModal({
   subtitle,
   onClose,
   inputs = [],
+}: {
+  open: boolean;
+  title: string;
+  subtitle?: string;
+  onClose: () => void;
+  inputs: Array<TextInputProps & { name: string; error?: string }>
 }) {
   const theme = useTheme();
-  const {setValue, control, handleSubmit, setError} = useForm();
+  const { enqueueSuccessSnackbar } = useAppSnackbar()
+  const { setValue, control, handleSubmit, setError } = useForm();
+  const [updateProfile, { isLoading, isSuccess, data, isError, error }] = useUpdateProfileMutation()
 
   React.useEffect(() => {
     inputs.forEach(input => {
@@ -23,12 +34,26 @@ export default function AccountSettingsModal({
       }
 
       if (input.error) {
-        setError(input.name, input.error);
+        setError(input.name, {
+          type: "custom",
+          message: input.error
+        });
       }
     });
   }, [inputs]);
 
-  const handleUpdate = handleSubmit(() => {});
+  React.useEffect(() => {
+    if (isSuccess && !!data) {
+      enqueueSuccessSnackbar({
+        text1: data.success
+      })
+      onClose();
+    }
+  }, [enqueueSuccessSnackbar, isSuccess, data])
+
+  const handleUpdate = handleSubmit((values) => {
+    updateProfile(values)
+  });
 
   return (
     <Modal
@@ -38,9 +63,13 @@ export default function AccountSettingsModal({
       onRequestClose={onClose}>
       <View style={styles.modalContainer}>
         <View style={styles.modalView}>
-          <TouchableOpacity style={{alignSelf: 'flex-end',marginRight:20,marginBottom:20}} onPress={onClose}>
+          <TouchableOpacity style={{ alignSelf: 'flex-end', marginRight: 20, marginBottom: 20 }} onPress={onClose}>
             <Entypo name="cross" size={30} color={'#023047'} />
           </TouchableOpacity>
+
+          {isError && isJoteyQueryError(error) && (
+            <Text style={{ color: theme.colors.error }}>{error.data.non_field_error}</Text>
+          )}
 
           <Text
             style={{
@@ -70,7 +99,7 @@ export default function AccountSettingsModal({
               key={i}
               control={control}
               name={input.name}
-              render={({field}) => {
+              render={({ field }) => {
                 return (
                   <TextInput
                     value={field.value}
@@ -83,7 +112,7 @@ export default function AccountSettingsModal({
             />
           ))}
 
-          <AppPrimaryButton text={'Update'} onPress={handleUpdate} />
+          <AppPrimaryButton disabled={isLoading} text={'Update'} onPress={handleUpdate} />
         </View>
       </View>
     </Modal>

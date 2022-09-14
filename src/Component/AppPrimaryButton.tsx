@@ -1,7 +1,15 @@
-import React from 'react';
-import { useTheme } from 'react-native-paper';
-import Octicons from 'react-native-vector-icons/Octicons';
-import { View, Text, TouchableOpacity, StyleProp, TextStyle, ViewStyle, GestureResponderEvent } from 'react-native';
+import React from "react";
+import { useTheme } from "react-native-paper";
+import Octicons from "react-native-vector-icons/Octicons";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+  GestureResponderEvent,
+} from "react-native";
 
 export default function AppPrimaryButton({
   text,
@@ -12,13 +20,13 @@ export default function AppPrimaryButton({
   containerStyle = {},
   iconContainerStyle = {},
 }: {
-  text: string,
+  text: string;
   disabled?: boolean;
-  textStyle?: StyleProp<TextStyle>,
-  containerStyle?: StyleProp<ViewStyle>
-  iconContainerStyle?: StyleProp<ViewStyle>
-  onPress?: (event: GestureResponderEvent) => void,
-  iconProps?: Omit<React.ComponentProps<typeof Octicons>, "name">,
+  textStyle?: StyleProp<TextStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
+  iconContainerStyle?: StyleProp<ViewStyle>;
+  onPress?: (event: GestureResponderEvent) => void;
+  iconProps?: Omit<React.ComponentProps<typeof Octicons>, "name">;
 }) {
   const theme = useTheme();
 
@@ -29,11 +37,11 @@ export default function AppPrimaryButton({
           width: 270,
           height: 50,
           borderRadius: 50,
-          alignSelf: 'center',
-          alignItems: 'center',
-          position: 'relative',
-          flexDirection: 'row',
-          backgroundColor: theme.colors.primary,
+          alignSelf: "center",
+          alignItems: "center",
+          position: "relative",
+          flexDirection: "row",
+          backgroundColor: disabled ? "grey" : theme.colors.primary,
         },
         containerStyle,
       ]}
@@ -43,14 +51,14 @@ export default function AppPrimaryButton({
       }}>
       <View
         style={{
-          marginLeft: 'auto',
-          marginRight: 'auto',
+          marginLeft: "auto",
+          marginRight: "auto",
         }}>
         <Text
           style={[
             {
               fontSize: 16,
-              fontWeight: '600',
+              fontWeight: "600",
               // @ts-ignore
               color: theme.colors.white,
             },
@@ -68,17 +76,17 @@ export default function AppPrimaryButton({
             width: 50,
             height: 50,
             borderRadius: 50,
-            marginLeft: 'auto',
-            position: 'absolute',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(255,255,255,0.1)',
+            marginLeft: "auto",
+            position: "absolute",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(255,255,255,0.1)",
           },
           iconContainerStyle,
         ]}>
         <Octicons
           size={26}
-          name={'arrow-right'}
+          name={"arrow-right"}
           // @ts-ignore
           color={theme.colors.white}
           {...iconProps}

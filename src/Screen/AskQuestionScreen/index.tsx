@@ -1,14 +1,14 @@
 import React from 'react';
-import {Text, Title, useTheme} from 'react-native-paper';
-import {View, ScrollView, Image, TextInput} from 'react-native';
-import {Avatar} from 'react-native-elements';
+import { Avatar } from 'react-native-elements';
+import { Text, Title, useTheme } from 'react-native-paper';
+import { View, ScrollView, Image, TextInput } from 'react-native';
 import AppPrimaryButton from '../../Component/AppPrimaryButton';
 
 const AskQuestionScreen = () => {
   const theme = useTheme();
 
   return (
-    <ScrollView style={{padding: 15, flex: 1}}>
+    <ScrollView style={{ padding: 15, flex: 1 }}>
       <View
         style={{
           padding: 15,
@@ -20,12 +20,12 @@ const AskQuestionScreen = () => {
         <View>
           <Image
             source={require('../../assets/Images/prod4.png')}
-            style={{height: 67, width: 67, borderRadius: theme.roundness}}
+            style={{ height: 67, width: 67, borderRadius: theme.roundness }}
           />
         </View>
 
-        <View style={{flex: 1, paddingHorizontal: 15}}>
-          <Text style={{fontWeight: '700', fontSize: 18}}>Ladies bag</Text>
+        <View style={{ flex: 1, paddingHorizontal: 15 }}>
+          <Text style={{ fontWeight: '700', fontSize: 18 }}>Ladies bag</Text>
         </View>
 
         <View>
@@ -35,7 +35,7 @@ const AskQuestionScreen = () => {
             size={'large'}
           />
 
-          <Text style={{fontSize: 13, marginTop: 5}}>Seller Name</Text>
+          <Text style={{ fontSize: 13, marginTop: 5 }}>Seller Name</Text>
         </View>
       </View>
 
@@ -58,7 +58,7 @@ const AskQuestionScreen = () => {
           borderColor: '#191F2B',
           borderRadius: theme.roundness * 4,
         }}>
-        <Text style={{fontSize: 16, textAlign: 'center'}}>
+        <Text style={{ fontSize: 16, textAlign: 'center' }}>
           Hi, is this still avilable?
         </Text>
       </View>
@@ -71,7 +71,7 @@ const AskQuestionScreen = () => {
           borderColor: '#191F2B',
           borderRadius: theme.roundness * 4,
         }}>
-        <Text style={{fontSize: 16, textAlign: 'center'}}>
+        <Text style={{ fontSize: 16, textAlign: 'center' }}>
           Hi, I’d like to buy this
         </Text>
       </View>
@@ -84,7 +84,7 @@ const AskQuestionScreen = () => {
           borderColor: '#191F2B',
           borderRadius: theme.roundness * 4,
         }}>
-        <Text style={{fontSize: 16, textAlign: 'center'}}>
+        <Text style={{ fontSize: 16, textAlign: 'center' }}>
           Hi, can you meet today?
         </Text>
       </View>
@@ -97,7 +97,7 @@ const AskQuestionScreen = () => {
           borderColor: '#191F2B',
           borderRadius: theme.roundness * 4,
         }}>
-        <Text style={{fontSize: 16, textAlign: 'center'}}>
+        <Text style={{ fontSize: 16, textAlign: 'center' }}>
           Will you ship through us?
         </Text>
       </View>
@@ -115,7 +115,7 @@ const AskQuestionScreen = () => {
         }}
       />
 
-      <View style={{marginTop: 45, marginBottom: 25}}>
+      <View style={{ marginTop: 45, marginBottom: 25 }}>
         <AppPrimaryButton text={'Send Message'} />
       </View>
     </ScrollView>

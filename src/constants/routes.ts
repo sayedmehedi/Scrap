@@ -20,6 +20,7 @@ export const RootStackRoutes = {
   PRODUCT_FILTER: "productFilter",
   PRODUCT_DETAILS: "productDetails",
   CONFIRM_PURCHASE: "confirmPurchase",
+  SELLER_REVIEW: "sellerReviewScreen",
 } as const;
 
 export const PostItemStackRoutes = {

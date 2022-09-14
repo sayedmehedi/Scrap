@@ -19,7 +19,13 @@ import {
 } from 'react-native';
 
 
-function AppBar({ navigation, route, back }: NativeStackHeaderProps) {
+function AppBar({ navigation, route, back, userImage, userName, productImage, productPrice, userLocation }: NativeStackHeaderProps & {
+  userImage: string;
+  userName: string;
+  userLocation: string;
+  productPrice: number;
+  productImage: string
+}) {
   return (
     <View style={styles.header}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -37,19 +43,19 @@ function AppBar({ navigation, route, back }: NativeStackHeaderProps) {
           <Avatar
             rounded
             size={'medium'}
-            source={require('../../assets/Images/test.png')}
+            source={{ uri: userImage }}
           />
         </View>
 
         <View>
-          <Title style={{ color: 'white' }}>Rahim Uddin</Title>
-          <Text style={{ color: 'white' }}>New York, NY</Text>
+          <Title style={{ color: 'white' }}>{userName}</Title>
+          <Text style={{ color: 'white' }}>{userLocation}</Text>
         </View>
       </View>
 
       <View style={{ alignItems: 'center' }}>
         <Image
-          source={require('../../assets/Images/test.png')}
+          source={{ uri: productImage }}
           style={{ height: 50, width: 50, borderRadius: 8 }}
         />
 
@@ -59,7 +65,7 @@ function AppBar({ navigation, route, back }: NativeStackHeaderProps) {
             marginTop: 5,
             color: 'white',
           }}>
-          $20
+          ${productPrice}
         </Text>
       </View>
     </View>
@@ -103,11 +109,11 @@ const SingleConversationScreen = ({ navigation, route }: Props) => {
   React.useEffect(() => {
     navigation.setOptions({
       header: function (props) {
-        return <AppBar {...props} />
+        return <AppBar {...props} {...route.params} />
       },
       headerShown: true,
     });
-  }, [navigation]);
+  }, [navigation, route]);
 
 
   const messages = React.useMemo(() => {

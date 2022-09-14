@@ -87,9 +87,13 @@ const PurchasesScreen = () => {
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => {
             if (item.type === "skeleton") {
-              return (<SkeletonPlaceholder>
-                <SkeletonPlaceholder.Item />
-              </SkeletonPlaceholder>)
+              return (
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item paddingBottom={15}>
+                    <SkeletonPlaceholder.Item height={100} borderRadius={5} />
+                  </SkeletonPlaceholder.Item>
+                </SkeletonPlaceholder>
+              )
             }
 
             return <EachPurchases item={item} />
