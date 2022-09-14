@@ -50,7 +50,7 @@ const EachPurchases = ({ item }: { item: Order & { type: "data" } }) => {
               fontSize: 14,
               color: '#667085',
             }}>
-            {item.price}
+            ${item.price}
           </Text>
 
         </View>

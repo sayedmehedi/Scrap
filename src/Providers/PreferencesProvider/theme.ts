@@ -164,4 +164,29 @@ export const combinedDefaultTheme = merge(
   NavigationDefaultTheme,
   paperLightTheme,
 );
+
+declare global {
+  namespace ReactNativePaper {
+    interface ThemeColors {
+      primary: string;
+      background: string;
+      surface: string;
+      accent: string;
+      error: string;
+      text: string;
+      onSurface: string;
+      disabled: string;
+      placeholder: string;
+      backdrop: string;
+      notification: string;
+
+      primary05: string;
+      accent05: string;
+      white: string;
+      success: string;
+      tertiary: string;
+    }
+  }
+}
+
 export const combinedDarkTheme = merge(NavigationDarkTheme, paperDarkTheme);

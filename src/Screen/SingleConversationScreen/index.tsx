@@ -10,7 +10,7 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { GetConversationDetailsResponse, RootStackParamList } from '@src/types';
 import { NativeStackHeaderProps, NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useGetConversationDetailsQuery, useLazyGetConversationDetailsQuery } from '@data/laravel/services/message';
+import { useGetConversationDetailsQuery, useLazyGetConversationDetailsQuery, useSendMessageMutation } from '@data/laravel/services/message';
 import {
   View,
   Image,
@@ -70,6 +70,7 @@ type Props = NativeStackScreenProps<RootStackParamList, typeof RootStackRoutes.S
 
 const SingleConversationScreen = ({ navigation, route }: Props) => {
   const theme = useTheme();
+  const [messageText, setMessageText] = React.useState("")
   const currentUsername = useAppSelector(state => state.auth.profile?.name)
   const [messagePages, setMessagePages] = React.useState<Array<GetConversationDetailsResponse["messages"]>>([])
   const { data: conversationDetailsResponse, isLoading } = useGetConversationDetailsQuery({
@@ -79,12 +80,58 @@ const SingleConversationScreen = ({ navigation, route }: Props) => {
 
   const actionCreaterRef = React.useRef<ReturnType<typeof getConversationDetails> | null>(null);
 
+  const [sendMessage, { isLoading: isSendingMessage }] = useSendMessageMutation()
 
   React.useEffect(() => {
     if (!isLoading && !!conversationDetailsResponse) {
       setMessagePages([conversationDetailsResponse.messages])
     }
   }, [conversationDetailsResponse, isLoading])
+
+
+
+  React.useEffect(() => {
+    return () => {
+      if (actionCreaterRef.current) {
+
+        actionCreaterRef.current.abort()
+      }
+    }
+  }, [])
+
+
+  React.useEffect(() => {
+    navigation.setOptions({
+      header: function (props) {
+        return <AppBar {...props} />
+      },
+      headerShown: true,
+    });
+  }, [navigation]);
+
+
+  const messages = React.useMemo(() => {
+    if (isLoading) {
+      return [{
+        id: 1,
+        type: "skeleton" as const
+      },
+      {
+        id: 2,
+        type: "skeleton" as const
+      },
+      {
+        id: 3,
+        type: "skeleton" as const
+      }]
+    }
+
+    return messagePages.flatMap(productPage => productPage.data.map(product => ({
+      type: "data" as const,
+      ...product
+    })))
+
+  }, [isLoading, messagePages])
 
   const getNextMessages = async () => {
     if (isFetching) {
@@ -117,46 +164,13 @@ const SingleConversationScreen = ({ navigation, route }: Props) => {
     }
   }
 
-  React.useEffect(() => {
-    return () => {
-      if (actionCreaterRef.current) {
-
-        actionCreaterRef.current.abort()
-      }
-    }
-  }, [])
-
-  const messages = React.useMemo(() => {
-    if (isLoading) {
-      return [{
-        id: 1,
-        type: "skeleton" as const
-      },
-      {
-        id: 2,
-        type: "skeleton" as const
-      },
-      {
-        id: 3,
-        type: "skeleton" as const
-      }]
-    }
-
-    return messagePages.flatMap(productPage => productPage.data.map(product => ({
-      type: "data" as const,
-      ...product
-    })))
-
-  }, [isLoading, messagePages])
-
-  React.useEffect(() => {
-    navigation.setOptions({
-      header: function (props) {
-        return <AppBar {...props} />
-      },
-      headerShown: true,
-    });
-  }, [navigation]);
+  const handleSendMessage = () => {
+    sendMessage({
+      conversationId: route.params.conversationId,
+      message: messageText,
+      receiver_id: 0, // TODO: from route param or api
+    })
+  }
 
   return (
     <>
@@ -203,8 +217,9 @@ const SingleConversationScreen = ({ navigation, route }: Props) => {
 
 
         <FlatList<typeof messages[0]>
-          style={{ flex: 1, paddingHorizontal: 15 }}
           data={messages}
+          onEndReached={getNextMessages}
+          style={{ flex: 1, paddingHorizontal: 15 }}
           renderItem={({ item }) => {
             if (item.type === "skeleton") {
               return (
@@ -302,14 +317,16 @@ const SingleConversationScreen = ({ navigation, route }: Props) => {
             <TextInput
               multiline
               numberOfLines={3}
-              // value={''}
+              value={messageText}
               placeholder={'Type here..'}
+              onChangeText={setMessageText}
             />
           </View>
 
           <View>
             <TouchableOpacity
-            // disabled={!textMessage}
+              onPress={handleSendMessage}
+              disabled={!messageText || isSendingMessage}
             >
               <MaterialIcons name={'send'} size={30} />
             </TouchableOpacity>

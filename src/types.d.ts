@@ -544,3 +544,19 @@ export interface ConversationMessage {
 export type GetConversationDetailsResponse = {
   messages: PaginatedResponse<ConversationMessage>;
 };
+
+export type SendMessageRequest = {
+  receiver_id: number;
+  message: string;
+};
+
+export interface AppNotification {
+  date: Date;
+  id: number;
+  title: string;
+  message: string;
+}
+
+export type GetNotificationsResponse = {
+  notifications: PaginatedResponse<AppNotification>;
+};

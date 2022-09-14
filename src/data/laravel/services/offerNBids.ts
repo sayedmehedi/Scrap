@@ -20,15 +20,11 @@ export const offerNBidsApi = api.injectEndpoints({
         product_id: string | number;
       }
     >({
-      query({product_id, price, type}) {
+      query(body) {
         return {
+          body,
           method: "POST",
           url: `make-offer-bid`,
-          body: {
-            type,
-            price,
-            product_id,
-          },
         };
       },
       invalidatesTags: (_result, _error) => [QUERY_KEYS.USER_OFFER_N_BIDS],

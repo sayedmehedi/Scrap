@@ -85,6 +85,9 @@ const ProfileStack = () => {
 
       <Profile.Screen
         name='purchases'
+        options={{
+          title: "Purchase History"
+        }}
         component={PurchasesScreen}
       />
 

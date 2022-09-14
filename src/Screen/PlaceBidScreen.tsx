@@ -10,7 +10,7 @@ import { ErrorMessage } from '@hookform/error-message';
 import { Controller, useForm } from 'react-hook-form';
 import AppPrimaryButton from '../Component/AppPrimaryButton';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useMakeBidOrOfferMutation } from '@data/laravel/services/product';
+import { useUpsertBidOrOfferMutation } from '@data/laravel/services/offerNBids';
 import { isErrorWithSuggestion, isJoteyQueryError } from '@utils/error-handling';
 
 type Props = NativeStackScreenProps<RootStackParamList, typeof RootStackRoutes.PLACE_BID>
@@ -19,7 +19,7 @@ export default function PlaceBidScreen({ route, navigation }: Props) {
   const theme = useTheme();
   const { enqueueSuccessSnackbar } = useAppSnackbar();
 
-  const [makeBid, { isSuccess, data, error, isError }] = useMakeBidOrOfferMutation()
+  const [makeBid, { isSuccess, data, error, isError }] = useUpsertBidOrOfferMutation()
 
   const { control, formState: { errors }, setValue, handleSubmit, setError } = useForm({
     defaultValues: {
@@ -56,7 +56,7 @@ export default function PlaceBidScreen({ route, navigation }: Props) {
     makeBid({
       type: "1",
       price: values.bidPrice,
-      id: route.params.productId,
+      product_id: route.params.productId,
     })
   })
 

@@ -1,8 +1,10 @@
 import {api} from "./api";
 import {QUERY_KEYS} from "@constants/query";
 import {
+  GetNotificationsResponse,
   GetUserProfileReponse,
   LoginResponse,
+  PaginationQueryParams,
   RegisterResponse,
 } from "@src/types";
 import LoginUserDto from "@core/domain/dto/LoginUserDto";
@@ -52,6 +54,17 @@ export const authApi = api.injectEndpoints({
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
+    getNotifications: builder.query<
+      GetNotificationsResponse,
+      PaginationQueryParams
+    >({
+      query(params) {
+        return {
+          url: "notifications",
+          params,
+        };
+      },
+    }),
   }),
 });
 
@@ -60,6 +73,8 @@ export const authApi = api.injectEndpoints({
 export const {
   useLoginMutation,
   useLogoutMutation,
-  useRegisterMutation,
   useGetProfileQuery,
+  useRegisterMutation,
+  useGetNotificationsQuery,
+  useLazyGetNotificationsQuery,
 } = authApi;
