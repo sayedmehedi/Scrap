@@ -4,6 +4,8 @@ export enum QUERY_KEYS {
   PRODUCT = "product",
   CATEGORY = "category",
   CONDITION = "condition",
+  TRANSACTION = "transaction",
+  NOTIFICATION = "notification",
   CONVERSATION = "conversation",
   FULL_TEXT_SEARCH = "full-text-search",
   USER_OFFER_N_BIDS = "user-offer-n-bids",

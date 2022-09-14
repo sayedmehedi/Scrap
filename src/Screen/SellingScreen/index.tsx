@@ -6,9 +6,9 @@ import SaleProductList from './SaleProductList';
 import ArchiveProductList from './ArchiveProductList';
 import { useNavigation } from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
+import { HomeTabRoutes, PostItemStackRoutes } from '@constants/routes';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native';
-import { HomeTabRoutes, PostItemStackRoutes } from '../../constants/routes';
 
 type HometabNavigation = BottomTabNavigationProp<HomeTabParamList>
 

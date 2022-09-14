@@ -29,6 +29,8 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
   const [logout] = useLogoutMutation();
   const authNavigation = useNavigation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
+  const profile = useAppSelector(state => state.auth.profile)
+
 
   const signoutPress = () =>
     Alert.alert("Sign Out!", "Are you sure you want to Signout?", [
@@ -55,7 +57,7 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
       <View style={{ alignSelf: "center", alignItems: "center" }}>
         <TouchableOpacity>
           <ImageBackground
-            source={require("../../assets/Images/logo.png")}
+            source={{ uri: profile?.profile_image }}
             style={{ height: 100, width: 100, borderRadius: 50, marginTop: 20 }}>
             <View
               style={{
@@ -71,25 +73,25 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
           </ImageBackground>
         </TouchableOpacity>
         <Text style={{ fontFamily: "Inter-Bold", fontSize: 20 }}>
-          William P. Martinez
+          {profile?.name}
         </Text>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Rating
-            showRating={false}
-            imageSize={15}
-            startingValue={4}
             lock={true}
+            imageSize={15}
             readonly={true}
+            showRating={false}
+            startingValue={profile?.rating ?? 0}
           />
-          <Text style={{ marginLeft: 8 }}>{`(22 rating)`}</Text>
+          <Text style={{ marginLeft: 8 }}>({profile?.rating ?? 0} rating)</Text>
         </View>
         <Text
           style={{ fontFamily: "Inter-Regular", fontSize: 12, color: "#667085" }}>
-          Miami,FL
+          {profile?.location}
         </Text>
         <Text
           style={{ fontFamily: "Inter-Regular", fontSize: 12, color: "#667085" }}>
-          Joined December 17,2021
+          Joined {profile?.joined_date}
         </Text>
       </View>
 
@@ -139,7 +141,7 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
           <AntDesign name="right" size={20} color={"#707070"} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.buttonContainer} onPress={() => profileNavigation.navigate(ProfileStackRoutes.TRANSACTION)}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <MaterialIcons name="money" size={20} color={"#707070"} />
             <Text style={{ marginLeft: 10, color: "#707070" }}>Transactions</Text>

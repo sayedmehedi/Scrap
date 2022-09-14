@@ -122,9 +122,13 @@ export default function SellerOfferNBids({ product, onBackPressed }: { product: 
                 ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
                 renderItem={({ item }) => {
                     if (item.type === "skeleton") {
-                        return <SkeletonPlaceholder>
-                            <SkeletonPlaceholder.Item />
-                        </SkeletonPlaceholder>
+                        return (
+                            <SkeletonPlaceholder>
+                                <SkeletonPlaceholder.Item padding={5}>
+                                    <SkeletonPlaceholder.Item height={100} />
+                                </SkeletonPlaceholder.Item>
+                            </SkeletonPlaceholder>
+                        )
                     }
 
 

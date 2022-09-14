@@ -48,6 +48,7 @@ export const HomeStackRoutes = {
 
 export const ProfileStackRoutes = {
   PROFILE_SCREEN: "profileScreen",
+  TRANSACTION: "transactionScreen",
   OFFER_N_BID: "offerAndBid",
   SAVE_PRODUCT: "saveProduct",
   PUBLIC_PROFILE: "publicProfile",

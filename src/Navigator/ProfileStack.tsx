@@ -10,6 +10,8 @@ import OfferAndBidScreen from '../Screen/ProfileScreen/OfferAndBidScreen';
 import SaveProductScreen from '../Screen/ProfileScreen/SaveProductScreen';
 import PublicProfileScreen from '../Screen/ProfileScreen/PublicProfileScreen';
 import AccountSettingScreen from '../Screen/ProfileScreen/AccountSettingScreen';
+import TransactionsScreen from '@src/Screen/ProfileScreen/TransactionListScreen';
+import { ProfileStackRoutes } from '@constants/routes';
 
 
 const Profile = createStackNavigator<ProfileStackParamList>();
@@ -41,6 +43,14 @@ const ProfileStack = () => {
         }}
         name="profileScreen"
         component={ProfileScreen}
+      />
+
+      <Profile.Screen
+        options={{
+          title: 'Transactions',
+        }}
+        component={TransactionsScreen}
+        name={ProfileStackRoutes.TRANSACTION}
       />
 
       <Profile.Screen

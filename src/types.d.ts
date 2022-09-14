@@ -39,6 +39,7 @@ export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
 
 export type ProfileStackParamList = {
   [ProfileStackRoutes.PROFILE_SCREEN]: undefined;
+  [ProfileStackRoutes.TRANSACTION]: undefined;
   [ProfileStackRoutes.OFFER_N_BID]: undefined;
   [ProfileStackRoutes.SAVE_PRODUCT]: undefined;
   [ProfileStackRoutes.PUBLIC_PROFILE]: undefined;
@@ -559,4 +560,15 @@ export interface AppNotification {
 
 export type GetNotificationsResponse = {
   notifications: PaginatedResponse<AppNotification>;
+};
+
+export interface Transaction {
+  id: number;
+  amount: string;
+  payment_method: string;
+  date: string;
+}
+
+export type GetTransactionsResponse = {
+  transactions: PaginatedResponse<Transaction>;
 };

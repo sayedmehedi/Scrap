@@ -83,9 +83,13 @@ export default function UserOfferNBids() {
             data={offerNBids}
             renderItem={({ item }) => {
                 if (item.type === "skeleton") {
-                    return <SkeletonPlaceholder>
-                        <SkeletonPlaceholder.Item />
-                    </SkeletonPlaceholder>
+                    return (
+                        <SkeletonPlaceholder>
+                            <SkeletonPlaceholder.Item padding={5}>
+                                <SkeletonPlaceholder.Item height={100} />
+                            </SkeletonPlaceholder.Item>
+                        </SkeletonPlaceholder>
+                    )
                 }
 
 

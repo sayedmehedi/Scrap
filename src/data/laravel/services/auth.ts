@@ -2,6 +2,7 @@ import {api} from "./api";
 import {QUERY_KEYS} from "@constants/query";
 import {
   GetNotificationsResponse,
+  GetTransactionsResponse,
   GetUserProfileReponse,
   LoginResponse,
   PaginationQueryParams,
@@ -64,6 +65,29 @@ export const authApi = api.injectEndpoints({
           params,
         };
       },
+      providesTags: (result, error) =>
+        result
+          ? [QUERY_KEYS.NOTIFICATION]
+          : error?.status === 401
+          ? [QUERY_KEYS.UNAUTHORIZED]
+          : [QUERY_KEYS.UNKNOWN_ERROR],
+    }),
+    getTransactions: builder.query<
+      GetTransactionsResponse,
+      PaginationQueryParams
+    >({
+      query(params) {
+        return {
+          url: "transactions",
+          params,
+        };
+      },
+      providesTags: (result, error) =>
+        result
+          ? [QUERY_KEYS.TRANSACTION]
+          : error?.status === 401
+          ? [QUERY_KEYS.UNAUTHORIZED]
+          : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
   }),
 });
@@ -75,6 +99,8 @@ export const {
   useLogoutMutation,
   useGetProfileQuery,
   useRegisterMutation,
+  useGetTransactionsQuery,
   useGetNotificationsQuery,
   useLazyGetNotificationsQuery,
+  useLazyGetTransactionsQuery,
 } = authApi;
