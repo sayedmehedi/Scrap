@@ -6,16 +6,16 @@ import { useTheme } from 'react-native-paper';
 import { useAppSelector } from '@hooks/store';
 import { HomeTabParamList } from '@src/types';
 import SellingScreen from '../Screen/SellingScreen';
-import ChatStackNavigator from './ChatStackNavigator';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import PostItemStackNavigator from './PostItemStackNavigator';
-import { View, Text, TouchableNativeFeedback } from 'react-native';
 import { selectIsAuthenticated } from '@store/slices/authSlice';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { View, Text, TouchableNativeFeedback } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import ConversationListScreen from '@src/Screen/ConversationListScreen';
 import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
   HomeTabRoutes,
@@ -123,9 +123,21 @@ const BottomTab = () => {
       />
       <HomeTab.Screen
         name={HomeTabRoutes.CHAT}
-        component={ChatStackNavigator}
-        options={{
-          headerShown: false,
+        component={ConversationListScreen}
+        options={({ navigation }) => ({
+          title: 'Messages',
+          headerRight: () => (
+            <View style={{ paddingRight: 10 }}>
+              <MaterialIcons
+                size={22}
+                color={'white'}
+                name="notifications-none"
+                onPress={() => {
+                  navigation.navigate(RootStackRoutes.NOTIFICATIONS);
+                }}
+              />
+            </View>
+          ),
           tabBarIcon: ({ focused }) => (
             <View
               style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
@@ -136,15 +148,15 @@ const BottomTab = () => {
               />
               <Text
                 style={{
-                  color: focused ? Colors.PRIMARY_COLOR : 'gray',
                   fontSize: 10,
                   fontFamily: 'Inter-SemiBold',
+                  color: focused ? Colors.PRIMARY_COLOR : 'gray',
                 }}>
                 Message
               </Text>
             </View>
           ),
-        }}
+        })}
       />
 
       <HomeTab.Screen
