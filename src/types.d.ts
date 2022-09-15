@@ -21,15 +21,18 @@ export type HomeStackParamList = {
   [HomeStackRoutes.SHIPPING]: undefined;
   [HomeStackRoutes.LOCAL_PICKUP]: undefined;
   [HomeStackRoutes.ALL_CATEGORIES]: undefined;
-  [HomeStackRoutes.INDIVIDUAL_CATEGORIES]: {
+  [HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA]: {
     categoryTitle?: string;
     categoryId?: string | number;
     location?: string;
     distance?: number;
     maxPrice?: number;
     minPrice?: number;
+    isLocale?: boolean;
+    isShipping?: boolean;
     condition?: Condition;
-    attribute_id?: string | number;
+    attributeId?: string | number;
+    hideFilterActions?: boolean;
   };
 };
 
@@ -281,6 +284,7 @@ export interface FilterProduct {
   location: string;
   price: string;
   is_locale: boolean;
+  is_shipping: boolean;
   total_bids: number;
   is_favourite: boolean;
   total_offers: number;

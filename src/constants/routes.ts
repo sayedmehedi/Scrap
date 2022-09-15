@@ -44,7 +44,7 @@ export const HomeStackRoutes = {
   SHIPPING: "shipping",
   LOCAL_PICKUP: "localPickup",
   ALL_CATEGORIES: "allCategories",
-  INDIVIDUAL_CATEGORIES: "individualCategories",
+  PRODUCT_LIST_BY_CRITERIA: "productListByCriteria",
 } as const;
 
 export const ProfileStackRoutes = {

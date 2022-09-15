@@ -2,9 +2,10 @@ import React from 'react'
 import { FlatList, View, Text } from 'react-native'
 import { FilterProductQueryParams } from '@src/types'
 import EachProductItem from '@src/Component/EachProductItem'
+import { SCREEN_PADDING_HORIZONTAL } from '@constants/spacing'
 import { useGetFilterProductsQuery } from '@data/laravel/services/product'
 
-const ProductPreviewList = ({ params }: { params?: FilterProductQueryParams }) => {
+const ProductPreviewList = ({ params, }: { params?: FilterProductQueryParams, }) => {
     const { data: filterProductsResponse, isLoading: isFilterProductsLoading, } = useGetFilterProductsQuery(params)
 
     const products = React.useMemo(() => {
@@ -33,6 +34,9 @@ const ProductPreviewList = ({ params }: { params?: FilterProductQueryParams }) =
         <FlatList<typeof products[0]>
             horizontal
             data={products}
+            contentContainerStyle={{
+                marginHorizontal: SCREEN_PADDING_HORIZONTAL
+            }}
             ListEmptyComponent={() => (
                 <View>
                     <Text>No data</Text>

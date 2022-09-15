@@ -2,13 +2,13 @@ import React from "react";
 import styles from "./styles";
 import { Rating } from "react-native-elements";
 import { useAppSelector } from "@hooks/store";
-import { AuthStackParamList, ProfileStackParamList } from "@src/types";
 import Entypo from "react-native-vector-icons/Entypo";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useLogoutMutation } from "@data/laravel/services/auth";
 import { selectIsAuthenticated } from "@store/slices/authSlice";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { AuthStackParamList, ProfileStackParamList } from "@src/types";
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthStackRoutes, ProfileStackRoutes, RootStackRoutes } from "@constants/routes";
 import {
@@ -17,7 +17,6 @@ import {
   Alert,
   Image,
   ScrollView,
-  ImageBackground,
   TouchableOpacity,
 } from "react-native";
 import ProfileImageUploader from "./ProfileImageUploader";
@@ -28,7 +27,7 @@ type AuthNavigationProps = NativeStackNavigationProp<AuthStackParamList>
 
 const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
   const [logout] = useLogoutMutation();
-  const authNavigation = useNavigation();
+  const rootNavigation = useNavigation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const profile = useAppSelector(state => state.auth.profile)
 
@@ -45,12 +44,13 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
 
   React.useEffect(() => {
     if (!isAuthenticated) {
-      authNavigation.navigate(RootStackRoutes.AUTH, {
+      // @ts-ignore
+      rootNavigation.replace(RootStackRoutes.AUTH, {
         screen: AuthStackRoutes.LOGIN,
         params: {}
       })
     }
-  }, [isAuthenticated, authNavigation])
+  }, [isAuthenticated, rootNavigation])
 
 
   return (

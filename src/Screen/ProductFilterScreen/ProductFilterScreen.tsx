@@ -17,7 +17,7 @@ import { combinedDefaultTheme } from '../../Providers/PreferencesProvider/theme'
 import { Condition, ConditionResponse, PaginationQueryParams, RootStackParamList } from '@src/types';
 
 const renderLabel = (value: string) => (
-  <Text style={{ color: combinedDefaultTheme.colors.tertiary, marginTop: 5 }}>
+  <Text style={{ color: "black", marginTop: 5 }}>
     ${value}
   </Text>
 );
@@ -199,7 +199,7 @@ const ProductFilterScreen = ({ route }: Props) => {
 
   return (
     <SafeAreaProvider>
-      <View style={{ paddingHorizontal: 15 }}>
+      <View style={{}}>
         <CategorySelectionModal
           open={openCategoryModal}
           initialValue={categoryId}
@@ -222,10 +222,6 @@ const ProductFilterScreen = ({ route }: Props) => {
             setLocation(location)
             setDistance(distance)
           }}
-        // onSelect={(category) => {
-        //   setCategoryId(category.id)
-        //   setCategoryTitle(category.title)
-        // }}
         />
 
         {/* @ts-ignore */}
@@ -313,6 +309,7 @@ const ProductFilterScreen = ({ route }: Props) => {
                 checked={eachCondition.id === condition?.id}
                 containerStyle={{
                   padding: 0,
+                  paddingLeft: 1,
                   borderWidth: 0,
                   backgroundColor: 'transparent',
                 }}
@@ -323,7 +320,7 @@ const ProductFilterScreen = ({ route }: Props) => {
 
 
         <AppPrimaryButton containerStyle={{ marginTop: 10 }} text={'Apply Filter'} onPress={() => {
-          navigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES as any, {
+          navigation.navigate(HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA as any, {
             categoryTitle,
             categoryId,
             location,

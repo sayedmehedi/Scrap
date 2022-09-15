@@ -1,6 +1,7 @@
 import React from "react";
 import dayjs from "dayjs";
 import styles from "./styles";
+import truncate from 'lodash.truncate'
 import Share from 'react-native-share'
 import Colors from "../../constants/Colors";
 import { useTimer } from "react-timer-hook";
@@ -74,7 +75,7 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
       }
 
       navigation.setOptions({
-        title: productDetails?.title ?? "",
+        title: truncate(productDetails?.title ?? ""),
         headerRight: () => {
           return (
             <View style={{ flexDirection: "row" }}>
@@ -481,7 +482,7 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
               </View>
             </View>
 
-            {!!productDetails.starting_price && <View style={{ marginVertical: 10 }}>
+            {!!productDetails.starting_price && <View>
               <Text
                 style={{
                   fontSize: 25,
@@ -493,7 +494,6 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
               <View
                 style={{
                   paddingBottom: 10,
-                  marginVertical: 5,
                   borderBottomWidth: 1,
                   borderBottomColor: "#CBCBCB",
                 }}>
@@ -503,7 +503,7 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
               </View>
             </View>}
 
-            {!!productDetails.buy_price && <View style={{ marginVertical: 5 }}>
+            {!!productDetails.buy_price && <View style={{ marginTop: 5 }}>
               <Text
                 style={{
                   fontSize: 25,
@@ -515,7 +515,7 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
               <View
                 style={{
                   paddingBottom: 10,
-                  marginVertical: 5,
+                  // marginVertical: 5,
                   borderBottomWidth: 1,
                   borderBottomColor: "#CBCBCB",
                 }}>

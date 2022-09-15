@@ -303,9 +303,9 @@ const Header = ({ from }: { from: string }) => {
             onPress={() => navigation.goBack()}
             style={{ padding: 10 }}>
             <MaterialIcons
-              name="keyboard-backspace"
-              color={'white'}
               size={22}
+              color={'white'}
+              name="keyboard-backspace"
             />
           </TouchableOpacity>
 
@@ -383,29 +383,6 @@ const Header = ({ from }: { from: string }) => {
             onPress={() => navigation.navigate(RootStackRoutes.SEARCH_PRODUCT)}
             style={{ padding: 5 }}>
             <AntDesign name="search1" size={25} color={'white'} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => setModalVisible(true)}
-            style={{ padding: 5 }}>
-            <View style={{ flexDirection: 'row', paddingHorizontal: 10 }}>
-              <Image
-                source={require('../assets/Images/Arrow.png')}
-                style={{
-                  height: 20,
-                  width: 20,
-                }}
-              />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => navigation.navigate(AuthStackRoutes.PRODUCT_FILTER)}
-            style={{ padding: 5 }}>
-            <Image
-              source={require('../assets/Images/filter.png')}
-              style={{ height: 20, width: 20 }}
-            />
           </TouchableOpacity>
         </View>
       </View>

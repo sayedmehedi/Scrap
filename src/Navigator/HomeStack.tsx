@@ -8,7 +8,7 @@ import ShippingScreen from '../Screen/ShippingScreen';
 import LocalPickupScreen from '../Screen/LocalPickupScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 import AllCategoriesScreen from '../Screen/AllCategoriesScreen';
-import IndividualCategoriesScreen from '../Screen/IndividualCategoriesScreen';
+import ProductisListByCriteriaScreen from '../Screen/ProductisListByCriteriaScreen';
 
 const HomeStack = createStackNavigator<HomeStackParamList>();
 
@@ -43,8 +43,8 @@ const HomeStackNavigator = () => {
         name={HomeStackRoutes.LOCAL_PICKUP} component={LocalPickupScreen} />
 
       <HomeStack.Screen
-        component={IndividualCategoriesScreen}
-        name={HomeStackRoutes.INDIVIDUAL_CATEGORIES}
+        component={ProductisListByCriteriaScreen}
+        name={HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA}
       />
 
       <HomeStack.Screen

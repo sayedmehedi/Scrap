@@ -1,25 +1,49 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import isToday from 'dayjs/plugin/isToday'
+import { useAppSelector } from '@hooks/store';
 import { View, SectionList } from 'react-native';
 import isYesterday from 'dayjs/plugin/isYesterday'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Title, Text, useTheme } from 'react-native-paper';
+import { selectIsAuthenticated } from '@store/slices/authSlice';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { GetNotificationsResponse, AppNotification, PaginationQueryParams } from '@src/types';
+import { AuthStackRoutes, RootStackRoutes } from '@constants/routes';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { GetNotificationsResponse, AppNotification, PaginationQueryParams, RootStackParamList } from '@src/types';
 import { useGetNotificationsQuery, useLazyGetNotificationsQuery } from '@data/laravel/services/auth';
 
 dayjs.extend(isToday)
 dayjs.extend(isYesterday)
 dayjs.extend(relativeTime)
 
-export default function NotificationsScreen() {
+type Props = NativeStackScreenProps<RootStackParamList, typeof RootStackRoutes.NOTIFICATIONS>
+
+export default function NotificationsScreen({ navigation, route }: Props) {
   const theme = useTheme();
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
   const [getNotifications, { isFetching }] = useLazyGetNotificationsQuery({});
-  const { data: getNotificationsResponse, isLoading } = useGetNotificationsQuery({});
+  const { data: getNotificationsResponse, isLoading } = useGetNotificationsQuery({}, {
+    skip: !isAuthenticated
+  });
   const actionCreaterRef = React.useRef<ReturnType<typeof getNotifications> | null>(null);
   const [notificationPages, setNotificationPages] = React.useState<Array<GetNotificationsResponse["notifications"]>>([]);
+
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      navigation.replace(RootStackRoutes.AUTH, {
+        screen: AuthStackRoutes.LOGIN,
+        params: {
+          nextScreen: {
+            name: route.name,
+            params: route.params ?? {}
+          }
+        }
+      })
+    }
+  }, [isAuthenticated])
 
   React.useEffect(() => {
     if (!isLoading && !!getNotificationsResponse) {
@@ -28,7 +52,7 @@ export default function NotificationsScreen() {
   }, [getNotificationsResponse, isLoading])
 
   const getNextNotifications = async () => {
-    if (isFetching || isLoading) {
+    if (isFetching || isLoading || !isAuthenticated) {
       return;
     }
 
@@ -141,7 +165,7 @@ export default function NotificationsScreen() {
     }))
   }, [isLoading, notificationPages])
 
-  return (
+  return isAuthenticated ? (
     <View style={{ padding: 15 }}>
 
       <SectionList<typeof notifications[0]["data"][0]>
@@ -228,5 +252,5 @@ export default function NotificationsScreen() {
         }}
       />
     </View >
-  );
+  ) : null;
 }

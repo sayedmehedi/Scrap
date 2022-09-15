@@ -355,12 +355,13 @@ const RegistrationScreen = ({ navigation }: Props) => {
               style={{
                 marginTop: 5,
                 flexDirection: "row",
-                justifyContent: "space-between",
+                justifyContent: "center",
               }}>
               <TouchableOpacity
                 style={{
                   width: 60,
                   height: 60,
+                  marginRight: 20,
                   alignItems: "center",
                   justifyContent: "center",
                   // @ts-ignore

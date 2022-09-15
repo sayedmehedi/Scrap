@@ -77,6 +77,9 @@ const CategoryList = ({ active, onRowPressed }: { active: number | null, onRowPr
   return (
     <FlatList<typeof categories[0]>
       data={categories}
+      contentContainerStyle={{
+        marginHorizontal: 20
+      }}
       showsVerticalScrollIndicator={false}
       ListEmptyComponent={() => (
         <View>
@@ -112,7 +115,7 @@ const CategoryList = ({ active, onRowPressed }: { active: number | null, onRowPr
               key={item.id}
               activeOpacity={1}
               onPress={() => onPress(item)}
-              style={{ padding: 20, borderBottomWidth: 0.3, marginHorizontal: 10 }}
+              style={{ paddingVertical: 20, borderBottomWidth: 0.3 }}
             >
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text
@@ -124,9 +127,9 @@ const CategoryList = ({ active, onRowPressed }: { active: number | null, onRowPr
                   {item.title}
                 </Text>
                 {open ? (
-                  <FontAwesome name="sort-up" size={12} color={'black'} />
+                  <FontAwesome name="angle-up" size={18} color={'black'} />
                 ) : (
-                  <FontAwesome name="sort-down" size={12} color={'black'} />
+                  <FontAwesome name="angle-down" size={18} color={'black'} />
                 )}
               </View>
               <View style={{ flexDirection: 'row' }}>
@@ -136,10 +139,12 @@ const CategoryList = ({ active, onRowPressed }: { active: number | null, onRowPr
                       <View style={{ paddingLeft: 15 }}>
                         <TouchableOpacity activeOpacity={0.2}></TouchableOpacity>
                         <TouchableOpacity
-                          onPress={() => navigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES, {
-                            categoryId: item.id
+                          onPress={() => navigation.navigate(HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA, {
+                            categoryId: item.id,
+                            categoryTitle: item.title
                           })}
-                          style={{ width: '100%', marginVertical: 7 }}>
+                          style={{ width: '100%', marginVertical: 7 }}
+                        >
                           <Text
                             numberOfLines={2}
                             style={{ fontSize: 14, fontFamily: 'Inter-Light', color: '#403C39' }}>

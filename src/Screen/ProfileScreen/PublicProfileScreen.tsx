@@ -5,11 +5,11 @@ import { useAppSelector } from "@hooks/store";
 import Feather from "react-native-vector-icons/Feather";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import ProfileImageUploader from "./ProfileImageUploader";
 import EachProductItem from "../../Component/EachProductItem";
 import { GetSaleOrArchivedProductsReponse, PaginationQueryParams } from "@src/types";
 import { FlatList, View, Text, ImageBackground, TouchableOpacity } from "react-native";
 import { useGetSaleProductsQuery, useLazyGetSaleProductsQuery } from "@data/laravel/services/product";
-import ProfileImageUploader from "./ProfileImageUploader";
 
 
 

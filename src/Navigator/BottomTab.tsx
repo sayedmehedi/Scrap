@@ -41,18 +41,19 @@ const BottomTab = () => {
   return (
     <HomeTab.Navigator
       screenListeners={({ navigation, route }) => {
-        console.log('navigating to route', route.name);
-
         return {
           tabPress(e) {
             if (route.name !== HomeTabRoutes.HOME && !isAuthenticated) {
               e.preventDefault();
-              navigation.navigate(RootStackRoutes.AUTH, {
+              navigation.replace(RootStackRoutes.AUTH, {
                 screen: AuthStackRoutes.LOGIN,
                 params: {
                   nextScreen: {
-                    name: route.name,
-                    params: route.params
+                    name: RootStackRoutes.HOME,
+                    params: {
+                      screen: route.name,
+                      params: route.params
+                    }
                   }
                 }
               });

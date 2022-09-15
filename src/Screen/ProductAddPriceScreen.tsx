@@ -1,24 +1,27 @@
 import React, { useState } from 'react';
+import { Switch } from 'react-native-paper';
+import { currencyTransform } from '@utils/form';
+import DatePicker from 'react-native-date-picker';
 import { Controller, useForm } from 'react-hook-form';
 import Entypo from 'react-native-vector-icons/Entypo';
+import { Text, useTheme } from 'react-native-paper';
 import { PostItemStackRoutes } from '../constants/routes';
 import { useNavigation } from '@react-navigation/native';
 import SelectionModal from '../Component/SelectionModal';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import AppPrimaryButton from '../Component/AppPrimaryButton';
-import { HelperText, Text, useTheme } from 'react-native-paper';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Image, ListItem, CheckBox } from 'react-native-elements';
 import { TextInput, View, Alert, ScrollView, Pressable } from 'react-native';
 //import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import { Image, ListItem, CheckBox } from 'react-native-elements';
-import DatePicker from 'react-native-date-picker';
-import { Switch } from 'react-native-paper';
+
+
 export default function ProductAddPriceScreen() {
   const theme = useTheme();
   const navigation = useNavigation();
-  const [modalType, setModalType] = React.useState('');
-  const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [modalType, setModalType] = React.useState('');
   const [isSwitchOn, setIsSwitchOn] = React.useState(false);
 
   const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
@@ -26,8 +29,8 @@ export default function ProductAddPriceScreen() {
   const { control } = useForm({
     defaultValues: {
       duration: 0,
-      buynowprice: '0.0',
-      startingPrice: '0.0',
+      buynowprice: 0,
+      startingPrice: 0,
       listingOnSubmit: false,
 
       beginDay: '',
@@ -43,7 +46,7 @@ export default function ProductAddPriceScreen() {
   };
 
   return (
-    <ScrollView style={{ padding: 10 }}>
+    <ScrollView style={{ padding: 15 }}>
       <DatePicker
         modal
         open={open}
@@ -57,23 +60,52 @@ export default function ProductAddPriceScreen() {
           setOpen(false);
         }}
       />
+
+      <SelectionModal
+        onSave={() => { }}
+        initialValue={0}
+        title={'Select Hour'}
+        open={modalType === 'hours'}
+        items={new Array(24).fill(0).map((_, id) => ({
+          id,
+          text: id + 1
+        }))}
+        onClose={() => setModalType('')}
+      />
+
+      <SelectionModal
+        onSave={() => { }}
+        initialValue={0}
+        title={'Select Minutes'}
+        open={modalType === 'minutes'}
+        items={new Array(60).fill(0).map((_, id) => ({
+          id,
+          text: id + 1
+        }))}
+        onClose={() => setModalType('')}
+      />
+
       <Controller
         name={'startingPrice'}
         control={control}
         render={({ field }) => {
           return (
             <React.Fragment>
-              <Text style={{ marginBottom: 10, color: '#222222' }}>
+              <Text style={{ marginBottom: 10, color: '#222222', fontSize: 16 }}>
                 Starting Price
               </Text>
+
               <TextInput
                 keyboardType="numeric"
-                value={field.value}
-                onChangeText={field.onChange}
+                value={currencyTransform.inputFloat(field.value)}
+                onChangeText={(price) => field.onChange(currencyTransform.outputFloat(price))}
                 style={{
-                  padding: 10,
+                  padding: 15,
+                  fontSize: 25,
                   maxHeight: 110,
-                  borderRadius: theme.roundness * 3,
+                  borderWidth: 1,
+                  borderColor: "#C9C9C9",
+                  borderRadius: theme.roundness * 4,
                   backgroundColor: theme.colors.white,
                 }}
               />
@@ -90,17 +122,21 @@ export default function ProductAddPriceScreen() {
         render={({ field }) => {
           return (
             <React.Fragment>
-              <Text style={{ marginBottom: 10, color: '#222222' }}>
+              <Text style={{ marginBottom: 10, color: '#222222', fontSize: 16 }}>
                 Buy now price
               </Text>
+
               <TextInput
                 keyboardType="numeric"
-                value={field.value}
-                onChangeText={field.onChange}
+                value={currencyTransform.inputFloat(field.value)}
+                onChangeText={(price) => field.onChange(currencyTransform.outputFloat(price))}
                 style={{
-                  padding: 10,
+                  padding: 15,
+                  fontSize: 25,
                   maxHeight: 110,
-                  borderRadius: theme.roundness * 3,
+                  borderWidth: 1,
+                  borderColor: "#C9C9C9",
+                  borderRadius: theme.roundness * 4,
                   backgroundColor: theme.colors.white,
                 }}
               />
@@ -123,8 +159,9 @@ export default function ProductAddPriceScreen() {
                     padding: 15,
                     borderRadius: 8,
                     backgroundColor: theme.colors.white,
+                    elevation: 2
                   }}>
-                  <Text style={{ color: '#222222' }}>Select Duration</Text>
+                  <Text style={{ color: '#222222', fontSize: 14 }}>Select Duration</Text>
                   <Text>{field.value?.text}</Text>
                 </View>
               </Pressable>
@@ -159,12 +196,12 @@ export default function ProductAddPriceScreen() {
         }}
       />
 
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, marginLeft: -10 }}>
         <CheckBox
           center
-          checkedIcon="dot-circle-o"
-          uncheckedIcon="circle-o"
           checked={true}
+          uncheckedIcon="circle-o"
+          checkedIcon="dot-circle-o"
           containerStyle={{
             padding: 1,
             paddingLeft: 0,
@@ -174,15 +211,15 @@ export default function ProductAddPriceScreen() {
         <Text>When I submit then, I'll start my listings</Text>
       </View>
 
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5, marginLeft: -10 }}>
         <CheckBox
           center
-          checkedIcon="dot-circle-o"
-          uncheckedIcon="circle-o"
           checked={true}
           checkedColor="#023047"
+          uncheckedIcon="circle-o"
+          checkedIcon="dot-circle-o"
           containerStyle={{
-            padding: 1,
+            padding: 0,
           }}
         />
 
@@ -191,62 +228,100 @@ export default function ProductAddPriceScreen() {
 
       <View
         style={{
-          flexDirection: 'row',
+          marginTop: 12,
+          flexWrap: "wrap",
           alignItems: 'center',
+          flexDirection: 'row',
           justifyContent: 'space-around',
         }}>
+
         <TouchableOpacity
-          onPressOut={() => setOpen(true)}
+          onPress={() => setOpen(true)}
+          containerStyle={{
+            flex: 1,
+            marginRight: 10
+          }}
           style={{
-            height: 40,
-            width: 100,
-            backgroundColor: 'white',
-            marginHorizontal: 5,
-            padding: 3,
+            padding: 10,
+            borderRadius: 5,
+            backgroundColor: "white",
+          }}>
+          <View
+            style={{
+              marginBottom: 10,
+            }}>
+            <Text style={{ fontWeight: "700", textAlign: "center" }}>Day</Text>
+          </View>
+          <View style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            borderRadius: 5,
           }}>
-          <Text>Date</Text>
-          <EvilIcons name="chevron-down" size={25} />
+            <Text style={{ fontWeight: "600" }}>Day</Text>
+
+            <EvilIcons name="chevron-down" size={25} />
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity
+          onPress={() => setModalType("hours")}
+          containerStyle={{
+            flex: 1,
+            marginRight: 10
+          }}
           style={{
-            height: 40,
-            width: 100,
-            backgroundColor: 'white',
-            marginHorizontal: 5,
-            padding: 3,
+            padding: 10,
+            borderRadius: 5,
+            backgroundColor: "white",
+          }}>
+          <View
+            style={{
+              marginBottom: 10,
+            }}>
+            <Text style={{ fontWeight: "700", textAlign: "center" }}>Hours</Text>
+          </View>
+          <View style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            borderRadius: 5,
           }}>
-          <Text>Hour</Text>
-          <EvilIcons name="chevron-down" size={25} />
+            <Text style={{ fontWeight: "600" }}>Hours</Text>
+
+            <EvilIcons name="chevron-down" size={25} />
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity
+          onPress={() => setModalType("minutes")}
+          containerStyle={{
+            flex: 1,
+          }}
           style={{
-            height: 40,
-            width: 100,
-            backgroundColor: 'white',
-            marginHorizontal: 5,
-            padding: 3,
+            padding: 10,
+            borderRadius: 5,
+            backgroundColor: "white",
+          }}>
+          <View
+            style={{
+              marginBottom: 10,
+            }}>
+            <Text style={{ fontWeight: "700", textAlign: "center" }}>Minutes</Text>
+          </View>
+          <View style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            borderRadius: 5,
           }}>
-          <Text>minute</Text>
-          <EvilIcons name="chevron-down" size={25} />
+            <Text style={{ fontWeight: "600", }}>Minutes</Text>
+
+            <EvilIcons name="chevron-down" size={25} />
+          </View>
         </TouchableOpacity>
       </View>
 
       <View
         style={{
+          marginTop: 40,
+          marginBottom: 20,
           flexDirection: 'row',
           alignItems: 'center',
-          marginVertical: 10,
           justifyContent: 'space-between',
         }}>
         <Text>Do you want to show metals current/live price</Text>
@@ -257,16 +332,20 @@ export default function ProductAddPriceScreen() {
         />
       </View>
 
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', }}>
         <TouchableOpacity
+          containerStyle={{
+            flex: 1
+          }}
           style={{
-            backgroundColor: '#E62B56',
             height: 40,
-            width: 100,
-            justifyContent: 'center',
-            alignItems: 'center',
+            minWidth: 100,
+            marginRight: 15,
             borderRadius: 5,
-            margin: 5,
+            marginBottom: 15,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#E62B56',
           }}>
           <Text style={{ fontFamily: 'Inter-Regular', color: 'white' }}>
             Gold
@@ -274,14 +353,18 @@ export default function ProductAddPriceScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
+          containerStyle={{
+            flex: 1
+          }}
           style={{
-            backgroundColor: '#E62B56',
             height: 40,
-            width: 100,
-            justifyContent: 'center',
-            alignItems: 'center',
+            minWidth: 100,
+            marginRight: 15,
             borderRadius: 5,
-            margin: 5,
+            marginBottom: 15,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#E62B56',
           }}>
           <Text style={{ fontFamily: 'Inter-Regular', color: 'white' }}>
             Copper
@@ -289,44 +372,18 @@ export default function ProductAddPriceScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
+          containerStyle={{
+            flex: 1
+          }}
           style={{
-            backgroundColor: '#E62B56',
             height: 40,
-            width: 100,
-            justifyContent: 'center',
-            alignItems: 'center',
+            minWidth: 100,
+            marginRight: 0,
             borderRadius: 5,
-            margin: 5,
-          }}>
-          <Text style={{ fontFamily: 'Inter-Regular', color: 'white' }}>
-            Gold
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={{
+            marginBottom: 15,
+            alignItems: 'center',
+            justifyContent: 'center',
             backgroundColor: '#E62B56',
-            height: 40,
-            width: 100,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 5,
-            margin: 5,
-          }}>
-          <Text style={{ fontFamily: 'Inter-Regular', color: 'white' }}>
-            Gold
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={{
-            backgroundColor: '#E62B56',
-            height: 40,
-            width: 100,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: 5,
-            margin: 5,
           }}>
           <Text style={{ fontFamily: 'Inter-Regular', color: 'white' }}>
             Gold

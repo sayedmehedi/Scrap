@@ -1,6 +1,7 @@
 import React from 'react'
 import { FlatList, View, Text } from 'react-native'
 import EachCateriesItem from '@src/Component/EachCateriesItem'
+import { SCREEN_PADDING_HORIZONTAL } from '@constants/spacing'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
 import { useGetHomeScreenCategoriesQuery } from '@data/laravel/services/category'
 
@@ -28,6 +29,9 @@ const CategoryList = () => {
         <FlatList
             horizontal
             data={categories}
+            contentContainerStyle={{
+                paddingHorizontal: SCREEN_PADDING_HORIZONTAL,
+            }}
             ListEmptyComponent={() => (
                 <View>
                     <Text>No data</Text>

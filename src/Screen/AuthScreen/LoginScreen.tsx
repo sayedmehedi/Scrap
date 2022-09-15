@@ -104,10 +104,10 @@ const LoginScreen = ({ navigation, route }: Props) => {
     if (isAuthenticated) {
       if (route.params?.nextScreen) {
         // @ts-ignore
-        navigation.navigate(route.params?.nextScreen.name, route.params?.nextScreen.params)
+        navigation.replace(route.params?.nextScreen.name, route.params?.nextScreen.params)
       } else {
         // @ts-ignore
-        navigation.navigate(RootStackRoutes.HOME)
+        navigation.replace(RootStackRoutes.HOME)
       }
     }
   }, [route, navigation, isAuthenticated])
@@ -343,13 +343,14 @@ const LoginScreen = ({ navigation, route }: Props) => {
               style={{
                 marginTop: 5,
                 flexDirection: "row",
-                justifyContent: "space-between",
+                justifyContent: "center",
               }}>
               <TouchableOpacity
                 onPress={onGoogleButtonPress}
                 style={{
                   width: 60,
                   height: 60,
+                  marginRight: 20,
                   alignItems: "center",
                   justifyContent: "center",
                   // @ts-ignore

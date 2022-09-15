@@ -1,8 +1,7 @@
 import React from 'react'
 import { useTheme } from 'react-native-paper';
 import useAppSnackbar from '@hooks/useAppSnackbar';
-import { FlatList } from 'react-native-gesture-handler';
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, FlatList } from 'react-native'
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { GetQuestionsResponse, PaginationQueryParams } from '@src/types';
 import { useCreateAskQuestionMutation, useGetQuestionsQuery, useLazyGetQuestionsQuery } from '@data/laravel/services/question';
@@ -11,18 +10,16 @@ interface Props {
     sellerId: number;
     productId: number;
     ListHeaderComponent: React.ComponentType<any> | React.ReactElement<any, string | React.JSXElementConstructor<any>>;
-    ListFooterComponent: React.ComponentType<any> | React.ReactElement<any, string | React.JSXElementConstructor<any>>;
 }
 
 
-export default function QuestionList({ ListFooterComponent, ListHeaderComponent, productId, sellerId }: Props) {
+export default function QuestionList({ ListHeaderComponent, productId, sellerId }: Props) {
     const theme = useTheme();
     const { enqueueSuccessSnackbar } = useAppSnackbar();
     const [getQuestions, { isFetching, }] = useLazyGetQuestionsQuery()
     const { data: getQuestionsResponse, isLoading } = useGetQuestionsQuery({})
     const actionCreaterRef = React.useRef<ReturnType<typeof getQuestions> | null>(null);
     const [questionPages, setQuestionPages] = React.useState<Array<GetQuestionsResponse["items"]>>([]);
-
     const [askQuestion, { isLoading: isAskingQuestion, isSuccess: isAskQuestionSuccess, data: askQuestionData }] = useCreateAskQuestionMutation()
 
     React.useEffect(() => {
@@ -115,11 +112,13 @@ export default function QuestionList({ ListFooterComponent, ListHeaderComponent,
     return (
         <FlatList<typeof questions[0]>
             data={questions}
+            keyboardDismissMode={"none"}
             onEndReached={getNextQuestions}
+            // keyboardShouldPersistTaps={"always"}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ padding: 15 }}
             ListHeaderComponent={ListHeaderComponent}
-            ListFooterComponent={ListFooterComponent}
+            // ListFooterComponent={ListFooterComponent}
             ListFooterComponentStyle={{ marginTop: 15 }}
             ListEmptyComponent={() => (
                 <View>
@@ -142,9 +141,9 @@ export default function QuestionList({ ListFooterComponent, ListHeaderComponent,
                     <TouchableOpacity disabled={isAskingQuestion} onPress={handleAskQuestion.bind(null, item.question)}>
                         <View
                             style={{
-                                padding: 7,
+                                padding: 10,
                                 borderWidth: 1,
-                                borderColor: '#191F2B',
+                                borderColor: 'red',
                                 borderRadius: theme.roundness * 4,
                             }}>
                             <Text style={{ fontSize: 16, textAlign: 'center' }}>

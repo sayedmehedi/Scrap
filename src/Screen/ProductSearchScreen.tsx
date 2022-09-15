@@ -23,13 +23,13 @@ const Item = ({ title, type, id }: { title: string, type: SearchItemType, id: nu
     <Card onPress={() => {
       switch (type) {
         case "attributes":
-          homestackNavigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES, {
+          homestackNavigation.navigate(HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA, {
             attribute_id: id
           });
           break;
 
         case "conditions":
-          homestackNavigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES, {
+          homestackNavigation.navigate(HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA, {
             condition: {
               id,
               title: ""
@@ -38,14 +38,14 @@ const Item = ({ title, type, id }: { title: string, type: SearchItemType, id: nu
           break;
 
         case "categories":
-          homestackNavigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES, {
+          homestackNavigation.navigate(HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA, {
             categoryTitle: title,
             categoryId: id,
           });
           break;
 
         case "sub_categories":
-          homestackNavigation.navigate(HomeStackRoutes.INDIVIDUAL_CATEGORIES, {
+          homestackNavigation.navigate(HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA, {
             categoryTitle: title,
             categoryId: id,
           });

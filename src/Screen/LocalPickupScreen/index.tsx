@@ -22,7 +22,7 @@ const LocalPickupScreen = () => {
     }
 
     const params: FilterProductQueryParams = {
-      is_locale: "1"
+      is_locale: "1",
     }
 
     if (lastProductPage) {
