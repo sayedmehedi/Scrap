@@ -108,7 +108,9 @@ const ConversationListScreen = () => {
               if (item.type === "skeleton") {
                 return (
                   <SkeletonPlaceholder>
-                    <SkeletonPlaceholder.Item />
+                    <SkeletonPlaceholder.Item paddingBottom={15}>
+                      <SkeletonPlaceholder.Item height={100} borderRadius={5} />
+                    </SkeletonPlaceholder.Item>
                   </SkeletonPlaceholder>
                 )
               }

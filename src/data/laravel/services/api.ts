@@ -13,7 +13,7 @@ import {
 import {
   RootState,
   JoteyQueryError,
-  PaginatedResponse,
+  SimplePaginatedResponse,
   FullTextSearchResponse,
 } from "@src/types";
 import {
@@ -27,7 +27,7 @@ const configService = container.get<ConfigService>(ConfigService);
 
 export function providesList<
   O extends {id: string | number},
-  R extends PaginatedResponse<O> | Array<O> | undefined,
+  R extends SimplePaginatedResponse<O> | Array<O> | undefined,
   T extends string,
 >(
   resultsWithIds: R | undefined,
@@ -189,6 +189,7 @@ export const api = createApi({
     QUERY_KEYS.ORDER,
     QUERY_KEYS.SELLER,
     QUERY_KEYS.PRODUCT,
+    QUERY_KEYS.QUESTION,
     QUERY_KEYS.CATEGORY,
     QUERY_KEYS.CONDITION,
     QUERY_KEYS.TRANSACTION,

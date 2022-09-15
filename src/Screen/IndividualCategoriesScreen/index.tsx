@@ -7,7 +7,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import EachProductItem from '../../Component/EachProductItem';
 import { HomeStackRoutes, RootStackRoutes } from '@constants/routes';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useLazyGetFilterProductsQuery } from '@data/laravel/services/product';
+import { useGetFilterProductsQuery, useLazyGetFilterProductsQuery } from '@data/laravel/services/product';
 import { View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity, Image, Modal } from 'react-native';
 import { Condition, FilterProductQueryParams, FilterProductsResponse, HomeStackParamList } from '@src/types';
 
@@ -336,11 +336,18 @@ const IndividualCategoriesScreen = ({ route, navigation }: Props) => {
 };
 
 const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => {
-  const [trigger, { isFetching, isLoading }] = useLazyGetFilterProductsQuery()
-  // const [isFilterProductsLoading, setIsFilterProductsLoading] = React.useState(false);
-  const [productPages, setProductPages] = React.useState<Array<FilterProductsResponse["products"]>>([]);
+  const [trigger, { isFetching, }] = useLazyGetFilterProductsQuery()
   const actionCreaterRef = React.useRef<ReturnType<typeof trigger> | null>(null);
+  const { data: filterProductsResponse, isLoading } = useGetFilterProductsQuery(params)
+  const [productPages, setProductPages] = React.useState<Array<FilterProductsResponse["products"]>>([]);
 
+  React.useEffect(() => {
+    if (!isLoading && !!filterProductsResponse) {
+      setProductPages(() => {
+        return [filterProductsResponse.products]
+      })
+    }
+  }, [filterProductsResponse, isLoading])
 
   const getNextProducts = async () => {
     if (isFetching) {
@@ -357,7 +364,7 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
       params.page = lastProductPage.current_page + 1;
     }
 
-    actionCreaterRef.current = trigger(params,)
+    actionCreaterRef.current = trigger(params, true)
 
     try {
       const productResponse = await actionCreaterRef.current.unwrap()
@@ -371,32 +378,6 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
 
     }
   }
-
-
-
-  React.useEffect(() => {
-    const actionCreator: ReturnType<typeof trigger> = trigger(params, true);
-
-    (async () => {
-
-      try {
-        const productResponse = await actionCreator.unwrap()
-
-        setProductPages(() => {
-
-
-          return [productResponse.products]
-        })
-      } finally {
-
-      }
-    })()
-
-    return () => {
-
-      actionCreator.abort()
-    }
-  }, [params, trigger])
 
   React.useEffect(() => {
     return () => {

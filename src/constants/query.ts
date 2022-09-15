@@ -3,6 +3,7 @@ export enum QUERY_KEYS {
   ORDER = "order",
   SELLER = "seller",
   PRODUCT = "product",
+  QUESTION = "question",
   CATEGORY = "category",
   CONDITION = "condition",
   TRANSACTION = "transaction",

@@ -40,14 +40,14 @@ export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
   >;
 
 export type ProfileStackParamList = {
-  [ProfileStackRoutes.PROFILE_SCREEN]: undefined;
+  [ProfileStackRoutes.ERROR]: undefined;
+  [ProfileStackRoutes.PURCHASES]: undefined;
   [ProfileStackRoutes.TRANSACTION]: undefined;
   [ProfileStackRoutes.OFFER_N_BID]: undefined;
   [ProfileStackRoutes.SAVE_PRODUCT]: undefined;
+  [ProfileStackRoutes.PROFILE_SCREEN]: undefined;
   [ProfileStackRoutes.PUBLIC_PROFILE]: undefined;
   [ProfileStackRoutes.ACCOUNT_SETTING]: undefined;
-  [ProfileStackRoutes.PURCHASES]: undefined;
-  [ProfileStackRoutes.ERROR]: undefined;
 };
 export type ChatStackParamList = {};
 export type PostItemStackParamList = {
@@ -113,7 +113,15 @@ export type RootStackParamList = {
     shippingCost: number;
     productId: string | number;
   };
-  [RootStackRoutes.ASK_QUESTION]: undefined;
+  [RootStackRoutes.ASK_QUESTION]: {
+    sellerId: number | string;
+    sellerName: string;
+    sellerImage: string;
+
+    productId: number | string;
+    productImage: string;
+    productName: string;
+  };
   [RootStackRoutes.NOTIFICATIONS]: undefined;
   [RootStackRoutes.SEARCH_PRODUCT]: undefined;
   [RootStackRoutes.SELLER_REVIEW]: {
@@ -197,7 +205,7 @@ export type JoteyQueryError = {
   };
 };
 
-export type PaginatedResponse<T> = {
+export type SimplePaginatedResponse<T> = {
   data: T[];
   total_rows: number;
   count: number;
@@ -207,6 +215,26 @@ export type PaginatedResponse<T> = {
   last_page: number;
   next_page_url?: string;
   has_more_data: boolean;
+};
+
+export type PaginatedResponse<T> = {
+  data: T[];
+  from: number;
+  last_page: number;
+  current_page: number;
+  last_page_url: string;
+  first_page_url: string;
+  links: Array<{
+    label: string;
+    active: boolean;
+    url: null | string;
+  }>;
+  to: number;
+  path: string;
+  total: number;
+  per_page: number;
+  next_page_url: null | string;
+  prev_page_url: null | string;
 };
 
 export interface User {
@@ -277,7 +305,7 @@ export type FilterProductQueryParams = Partial<{
 }>;
 
 export type FilterProductsResponse = {
-  products: PaginatedResponse<FilterProduct>;
+  products: SimplePaginatedResponse<FilterProduct>;
 };
 
 declare global {
@@ -357,26 +385,26 @@ export interface ProductDetails {
   time_left: string;
   condition: string;
   category: string;
-  sub_category: string;
-  attributes: Record<string, string> | [];
   about: string;
   location: string;
   latitude: number;
-  longitude: number;
-  show_metal_price: boolean;
+  seller: Seller;
   metals: Metal[];
   quantity: number;
-  related_products: PaginatedResponse<FilterProduct>;
-  seller: Seller;
+  longitude: number;
   has_bid: boolean;
-  highest_bidder?: boolean;
   bid_out: boolean;
-  highest_offerer?: boolean;
   has_offer: boolean;
-  bid?: "" | BidOrOffer;
-  offer?: "" | BidOrOffer;
+  sub_category: string;
   is_favourite: boolean;
   shipping_cost: string;
+  bid?: "" | BidOrOffer;
+  offer?: "" | BidOrOffer;
+  highest_bidder?: boolean;
+  show_metal_price: boolean;
+  highest_offerer?: boolean;
+  attributes: Record<string, string> | [];
+  related_products: SimplePaginatedResponse<FilterProduct>;
 }
 
 export interface PaginationQueryParams {
@@ -391,12 +419,12 @@ export interface Condition {
 
 export type ConditionResponse = {
   success: string;
-  items: PaginatedResponse<Condition>;
+  items: SimplePaginatedResponse<Condition>;
 };
 
 export type CategoryListResponse = {
   success: string;
-  items: PaginatedResponse<HomeCategory>;
+  items: SimplePaginatedResponse<HomeCategory>;
 };
 
 export interface PaymentInfo {
@@ -452,7 +480,7 @@ export interface Order {
 
 export type GetPurchaseHistoryResponse = {
   success: string;
-  orders: PaginatedResponse<Order>;
+  orders: SimplePaginatedResponse<Order>;
 };
 
 export interface ConfirmOrderRequest {
@@ -515,16 +543,16 @@ export interface OfferOrBid {
 }
 
 export type GetOfferNBidsResponse = {
-  items: PaginatedResponse<OfferOrBid>;
+  items: SimplePaginatedResponse<OfferOrBid>;
 };
 
 export type GetSavedProductsReponse = {
   success: string;
-  items: PaginatedResponse<FilterProduct>;
+  items: SimplePaginatedResponse<FilterProduct>;
 };
 
 export type GetSaleOrArchivedProductsReponse = {
-  products: PaginatedResponse<FilterProduct>;
+  products: SimplePaginatedResponse<FilterProduct>;
 };
 
 export interface Conversation {
@@ -547,7 +575,7 @@ export interface Conversation {
 }
 
 export type GetConversationsResponse = {
-  messages: PaginatedResponse<Conversation>;
+  messages: SimplePaginatedResponse<Conversation>;
 };
 
 export interface ConversationMessage {
@@ -561,7 +589,7 @@ export interface ConversationMessage {
 }
 
 export type GetConversationDetailsResponse = {
-  messages: PaginatedResponse<ConversationMessage>;
+  messages: SimplePaginatedResponse<ConversationMessage>;
 };
 
 export type SendMessageRequest = {
@@ -577,7 +605,7 @@ export interface AppNotification {
 }
 
 export type GetNotificationsResponse = {
-  notifications: PaginatedResponse<AppNotification>;
+  notifications: SimplePaginatedResponse<AppNotification>;
 };
 
 export interface Transaction {
@@ -588,7 +616,7 @@ export interface Transaction {
 }
 
 export type GetTransactionsResponse = {
-  transactions: PaginatedResponse<Transaction>;
+  transactions: SimplePaginatedResponse<Transaction>;
 };
 
 export type UpdateProfileRequest = {
@@ -614,11 +642,22 @@ export interface SellerReview {
 }
 
 export type GetSellerReviewsResponse = {
-  reviews: PaginatedResponse<SellerReview>;
+  reviews: SimplePaginatedResponse<SellerReview>;
 };
 
 export type CreateSellerReview = {
   seller_id: number;
   rating: number;
   review: string;
+};
+
+export interface Question {
+  id: number;
+  question: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export type GetQuestionsResponse = {
+  items: PaginatedResponse<Question>;
 };

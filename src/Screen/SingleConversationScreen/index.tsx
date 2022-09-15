@@ -230,7 +230,19 @@ const SingleConversationScreen = ({ navigation, route }: Props) => {
             if (item.type === "skeleton") {
               return (
                 <SkeletonPlaceholder>
-                  <SkeletonPlaceholder.Item />
+                  <SkeletonPlaceholder.Item paddingBottom={15} alignSelf={'flex-start'} width={"50%"}>
+                    <SkeletonPlaceholder.Item height={50} borderRadius={5} />
+                  </SkeletonPlaceholder.Item>
+                  <SkeletonPlaceholder.Item paddingBottom={15} alignSelf={'flex-start'} width={"40%"}>
+                    <SkeletonPlaceholder.Item height={50} borderRadius={5} />
+                  </SkeletonPlaceholder.Item>
+                  <SkeletonPlaceholder.Item paddingBottom={15} alignSelf={'flex-start'} width={"60%"}>
+                    <SkeletonPlaceholder.Item height={50} borderRadius={5} />
+                  </SkeletonPlaceholder.Item>
+
+                  <SkeletonPlaceholder.Item paddingBottom={15} alignSelf={'flex-end'} width={"50%"}>
+                    <SkeletonPlaceholder.Item height={50} borderRadius={5} />
+                  </SkeletonPlaceholder.Item>
                 </SkeletonPlaceholder>
               )
             }

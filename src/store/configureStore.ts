@@ -7,8 +7,9 @@ import {notistackSlice} from "./slices/notistackSlice";
 import {orderApi} from "@data/laravel/services/order";
 import {sellerApi} from "@data/laravel/services/seller";
 import {productApi} from "@data/laravel/services/product";
-import {categoryApi} from "@data/laravel/services/category";
 import {setupListeners} from "@reduxjs/toolkit/dist/query";
+import {categoryApi} from "@data/laravel/services/category";
+import {questionApi} from "@data/laravel/services/question";
 import {conditionApi} from "@data/laravel/services/condition";
 import {offerNBidsApi} from "@data/laravel/services/offerNBids";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -18,8 +19,8 @@ import {AppState, AppStateStatus, NativeEventSubscription} from "react-native";
 import {
   FLUSH,
   PURGE,
-  PAUSE,
   PERSIST,
+  PAUSE,
   REGISTER,
   REHYDRATE,
   persistStore,
@@ -70,6 +71,7 @@ export function createStore(
         sellerApi.middleware,
         productApi.middleware,
         categoryApi.middleware,
+        questionApi.middleware,
         conditionApi.middleware,
         offerNBidsApi.middleware,
         rtkQueryErrorLogger,

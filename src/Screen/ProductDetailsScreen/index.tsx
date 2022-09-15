@@ -306,7 +306,14 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
                   />
 
                   <Button
-                    onPress={() => navigation.navigate(RootStackRoutes.ASK_QUESTION)}
+                    onPress={() => navigation.navigate(RootStackRoutes.ASK_QUESTION, {
+                      productImage: image,
+                      productId: productDetails.id,
+                      productName: productDetails.title,
+                      sellerId: productDetails.seller.id,
+                      sellerName: productDetails.seller.name,
+                      sellerImage: productDetails.seller.image,
+                    })}
                     color={theme.colors.accent} style={{ marginTop: 10 }} labelStyle={{
                       textTransform: "capitalize",
                       textDecorationLine: 'underline',
@@ -371,7 +378,14 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
                   />
 
                   <Button
-                    onPress={() => navigation.navigate(RootStackRoutes.ASK_QUESTION)}
+                    onPress={() => navigation.navigate(RootStackRoutes.ASK_QUESTION, {
+                      productImage: image,
+                      productId: productDetails.id,
+                      productName: productDetails.title,
+                      sellerId: productDetails.seller.id,
+                      sellerName: productDetails.seller.name,
+                      sellerImage: productDetails.seller.image,
+                    })}
                     color={theme.colors.accent} style={{ marginTop: 10 }} labelStyle={{
                       textTransform: "capitalize",
                       textDecorationLine: 'underline',
@@ -818,11 +832,6 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
             </View>
 
             <View style={{ padding: 10, marginVertical: 10 }}>
-              {/* <Image
-                style={{ height: 200, width: "100%" }}
-                source={require("../../assets/Images/map.jpeg")}
-              /> */}
-
               <MapView
                 provider={PROVIDER_GOOGLE} // remove if not using Google Maps
                 style={{ height: 200, width: "100%" }}
@@ -885,7 +894,14 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
           </View>
           <TouchableOpacity
             style={styles.askButton}
-            onPress={() => navigation.navigate(RootStackRoutes.ASK_QUESTION)}
+            onPress={() => navigation.navigate(RootStackRoutes.ASK_QUESTION, {
+              productImage: image,
+              productId: productDetails.id,
+              productName: productDetails.title,
+              sellerId: productDetails.seller.id,
+              sellerName: productDetails.seller.name,
+              sellerImage: productDetails.seller.image,
+            })}
           >
             <AntDesign name="questioncircleo" size={25} color={"#FFFFFF"} />
             <Text
