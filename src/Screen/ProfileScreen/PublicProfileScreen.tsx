@@ -101,16 +101,16 @@ const PublicProfileScreen = () => {
             <React.Fragment>
               <View
                 style={{
+                  width: "100%",
                   alignSelf: "center",
                   alignItems: "center",
-                  width: "100%",
                   paddingHorizontal: 10,
                 }}>
                 <ProfileImageUploader />
                 <Text style={{ fontFamily: "Inter-Bold", fontSize: 20 }}>
                   {profile?.name}
                 </Text>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 5 }}>
                   <Rating
                     lock={true}
                     imageSize={15}
@@ -121,19 +121,11 @@ const PublicProfileScreen = () => {
                   <Text style={{ marginLeft: 8 }}>({profile?.rating} rating)</Text>
                 </View>
                 <Text
-                  style={{
-                    fontSize: 12,
-                    color: "#667085",
-                    fontFamily: "Inter-Regular",
-                  }}>
+                  style={{ fontFamily: "Inter-Regular", fontSize: 12, color: "#667085", marginVertical: 5 }}>
                   {profile?.location}
                 </Text>
                 <Text
-                  style={{
-                    fontFamily: "Inter-Regular",
-                    fontSize: 12,
-                    color: "#667085",
-                  }}>
+                  style={{ fontFamily: "Inter-Regular", fontSize: 12, color: "#667085", marginBottom: 5 }}>
                   Joined {profile?.joined_date}
                 </Text>
 

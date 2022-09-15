@@ -36,7 +36,7 @@ type Props = NativeStackScreenProps<
 >;
 
 
-const metalsTableHeadData = ["Metal", "Current Price", "Changes"]
+const metalsTableHeadData = ["Metal", "Unit", "Current Price", "Changes"]
 
 
 const ProductDetailsScreen = ({ route, navigation }: Props) => {
@@ -717,8 +717,8 @@ const ProductDetailsScreen = ({ route, navigation }: Props) => {
                 <Row data={metalsTableHeadData} textStyle={{ margin: 6, color: '#252522', textAlign: "center" }} style={{ borderWidth: 1, height: 40, backgroundColor: "#EFEFEF", borderColor: "#D0D0D0" }} />
                 {
                   ([
-                    ['Copper', '$13.40', [-2.33, -2.33] as [number, number]],
-                    ['Aluminium', '$27.22', [4.20, +3.00] as [number, number]],
+                    ['Copper', "per ounce", '$13.40', [-2.33, -2.33] as [number, number]],
+                    ['Aluminium', "per ounce", '$27.22', [4.20, +3.00] as [number, number]],
                   ]).map((rowData, index) => (
                     <TableWrapper key={index} style={{ flexDirection: "row", borderWidth: 1, borderTopWidth: 0, borderColor: "#D1D1D1", }}>
                       {

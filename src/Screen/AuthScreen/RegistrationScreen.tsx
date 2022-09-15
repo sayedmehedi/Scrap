@@ -4,6 +4,7 @@ import useAppSnackbar from "@hooks/useAppSnackbar";
 import { useTheme, Text } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
+import { ErrorMessage } from "@hookform/error-message";
 import { AuthStackRoutes } from "../../constants/routes";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import { useRegisterMutation } from "@data/laravel/services/auth";
@@ -22,7 +23,6 @@ import {
   setGlobalStyles,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
-import { ErrorMessage } from "@hookform/error-message";
 
 setGlobalStyles.containerStyles = {
   height: 58,
@@ -97,12 +97,12 @@ const RegistrationScreen = ({ navigation }: Props) => {
 
   return (
     <SafeAreaProvider>
-      <ScrollView>
-        <View style={{ flex: 1, paddingHorizontal: 15 }}>
+      <ScrollView contentContainerStyle={{ padding: 15 }}>
+        <View style={{ flex: 1, }}>
           <View style={{ alignItems: "center" }}>
             <View
               style={{
-                paddingVertical: 10,
+                paddingBottom: 10,
               }}>
               <Image
                 style={{ height: 100, width: 100 }}
@@ -120,7 +120,7 @@ const RegistrationScreen = ({ navigation }: Props) => {
             }}>
             <Pressable
               style={{ width: "50%", alignItems: "center" }}
-              onPress={() => navigation.navigate(AuthStackRoutes.LOGIN)}>
+              onPress={() => navigation.navigate(AuthStackRoutes.LOGIN, {})}>
               <Text
                 style={{
                   margin: 15,
@@ -162,146 +162,149 @@ const RegistrationScreen = ({ navigation }: Props) => {
             </View>
           </View>
 
-          <KeyboardAvoidingView
-            style={{ flexWrap: "wrap" }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}>
-            <View style={{ width: "100%", marginBottom: 16 }}>
-              <Controller
-                control={control}
-                name={"name"}
-                render={({ field }) => {
-                  return (
-                    <FloatingLabelInput
-                      label={"Full Name"}
-                      value={field.value}
-                      onChangeText={field.onChange}
-                    />
-                  );
-                }}
-              />
+          <ScrollView>
+            <KeyboardAvoidingView
+              style={{ flexWrap: "wrap" }}
+              behavior={Platform.OS === "ios" ? "padding" : "height"}>
 
-              <ErrorMessage
-                name={"name"}
-                errors={errors}
-                render={({ message }) => (
-                  <Text style={{ color: theme.colors.error, marginTop: 10 }}>
-                    {message}
-                  </Text>
-                )}
-              />
-            </View>
+              <View style={{ width: "100%", marginBottom: 16 }}>
+                <Controller
+                  control={control}
+                  name={"name"}
+                  render={({ field }) => {
+                    return (
+                      <FloatingLabelInput
+                        label={"Full Name"}
+                        value={field.value}
+                        onChangeText={field.onChange}
+                      />
+                    );
+                  }}
+                />
 
-            <View style={{ width: "100%", marginBottom: 16 }}>
-              <Controller
-                control={control}
-                name={"email"}
-                render={({ field }) => {
-                  return (
-                    <FloatingLabelInput
-                      label={"Email"}
-                      value={field.value}
-                      keyboardType={"email-address"}
-                      onChangeText={field.onChange}
-                    />
-                  );
-                }}
-              />
+                <ErrorMessage
+                  name={"name"}
+                  errors={errors}
+                  render={({ message }) => (
+                    <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                      {message}
+                    </Text>
+                  )}
+                />
+              </View>
 
-              <ErrorMessage
-                name={"email"}
-                errors={errors}
-                render={({ message }) => (
-                  <Text style={{ color: theme.colors.error, marginTop: 10 }}>
-                    {message}
-                  </Text>
-                )}
-              />
-            </View>
+              <View style={{ width: "100%", marginBottom: 16 }}>
+                <Controller
+                  control={control}
+                  name={"email"}
+                  render={({ field }) => {
+                    return (
+                      <FloatingLabelInput
+                        label={"Email"}
+                        value={field.value}
+                        keyboardType={"email-address"}
+                        onChangeText={field.onChange}
+                      />
+                    );
+                  }}
+                />
 
-            <View style={{ width: "100%", marginBottom: 16 }}>
-              <Controller
-                control={control}
-                name={"password"}
-                render={({ field }) => {
-                  return (
-                    <FloatingLabelInput
-                      isPassword
-                      label={"Password"}
-                      value={field.value}
-                      togglePassword={togglePassword}
-                      onChangeText={field.onChange}
-                      rightComponent={
-                        <Pressable
-                          style={{
-                            justifyContent: "center",
-                          }}
-                          onPress={() =>
-                            setTogglePassword(prevStae => !prevStae)
-                          }>
-                          <Entypo
-                            size={20}
-                            name={togglePassword ? "eye-with-line" : "eye"}
-                          />
-                        </Pressable>
-                      }
-                    />
-                  );
-                }}
-              />
+                <ErrorMessage
+                  name={"email"}
+                  errors={errors}
+                  render={({ message }) => (
+                    <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                      {message}
+                    </Text>
+                  )}
+                />
+              </View>
 
-              <ErrorMessage
-                name={"password"}
-                errors={errors}
-                render={({ message }) => (
-                  <Text style={{ color: theme.colors.error, marginTop: 10 }}>
-                    {message}
-                  </Text>
-                )}
-              />
-            </View>
+              <View style={{ width: "100%", marginBottom: 16 }}>
+                <Controller
+                  control={control}
+                  name={"password"}
+                  render={({ field }) => {
+                    return (
+                      <FloatingLabelInput
+                        isPassword
+                        label={"Password"}
+                        value={field.value}
+                        togglePassword={togglePassword}
+                        onChangeText={field.onChange}
+                        rightComponent={
+                          <Pressable
+                            style={{
+                              justifyContent: "center",
+                            }}
+                            onPress={() =>
+                              setTogglePassword(prevStae => !prevStae)
+                            }>
+                            <Entypo
+                              size={20}
+                              name={togglePassword ? "eye-with-line" : "eye"}
+                            />
+                          </Pressable>
+                        }
+                      />
+                    );
+                  }}
+                />
 
-            <View style={{ width: "100%" }}>
-              <Controller
-                control={control}
-                name={"password_confirmation"}
-                render={({ field }) => {
-                  return (
-                    <FloatingLabelInput
-                      isPassword
-                      label={"Confirm password"}
-                      value={field.value}
-                      togglePassword={toggleConfirmPassword}
-                      onChangeText={field.onChange}
-                      rightComponent={
-                        <Pressable
-                          style={{
-                            justifyContent: "center",
-                          }}
-                          onPress={() =>
-                            setToggleConfirmPassword(prevStae => !prevStae)
-                          }>
-                          <Entypo
-                            size={20}
-                            name={toggleConfirmPassword ? "eye-with-line" : "eye"}
-                          />
-                        </Pressable>
-                      }
-                    />
-                  );
-                }}
-              />
+                <ErrorMessage
+                  name={"password"}
+                  errors={errors}
+                  render={({ message }) => (
+                    <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                      {message}
+                    </Text>
+                  )}
+                />
+              </View>
 
-              <ErrorMessage
-                name={"password_confirmation"}
-                errors={errors}
-                render={({ message }) => (
-                  <Text style={{ color: theme.colors.error, marginTop: 10 }}>
-                    {message}
-                  </Text>
-                )}
-              />
-            </View>
-          </KeyboardAvoidingView>
+              <View style={{ width: "100%" }}>
+                <Controller
+                  control={control}
+                  name={"password_confirmation"}
+                  render={({ field }) => {
+                    return (
+                      <FloatingLabelInput
+                        isPassword
+                        label={"Confirm password"}
+                        value={field.value}
+                        togglePassword={toggleConfirmPassword}
+                        onChangeText={field.onChange}
+                        rightComponent={
+                          <Pressable
+                            style={{
+                              justifyContent: "center",
+                            }}
+                            onPress={() =>
+                              setToggleConfirmPassword(prevStae => !prevStae)
+                            }>
+                            <Entypo
+                              size={20}
+                              name={toggleConfirmPassword ? "eye-with-line" : "eye"}
+                            />
+                          </Pressable>
+                        }
+                      />
+                    );
+                  }}
+                />
+
+                <ErrorMessage
+                  name={"password_confirmation"}
+                  errors={errors}
+                  render={({ message }) => (
+                    <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                      {message}
+                    </Text>
+                  )}
+                />
+              </View>
+            </KeyboardAvoidingView>
+          </ScrollView>
 
           <View
             style={{
@@ -312,7 +315,7 @@ const RegistrationScreen = ({ navigation }: Props) => {
               justifyContent: "center",
             }}>
             <TouchableOpacity
-              onPress={() => navigation.navigate(AuthStackRoutes.LOGIN)}>
+              onPress={() => navigation.navigate(AuthStackRoutes.LOGIN, {})}>
               <Text
                 style={{
                   color: theme.colors.primary,

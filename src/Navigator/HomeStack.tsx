@@ -1,6 +1,7 @@
 import React from 'react';
 import { forFade } from '@utils/misc';
 import HomeScreen from '../Screen/HomeScreen';
+import { useTheme } from 'react-native-paper';
 import { HomeStackParamList } from '@src/types';
 import { HomeStackRoutes } from '@constants/routes';
 import ShippingScreen from '../Screen/ShippingScreen';
@@ -12,20 +13,54 @@ import IndividualCategoriesScreen from '../Screen/IndividualCategoriesScreen';
 const HomeStack = createStackNavigator<HomeStackParamList>();
 
 const HomeStackNavigator = () => {
+  const theme = useTheme();
+
   return (
     <HomeStack.Navigator
       screenOptions={{
-        headerShown: false,
         cardStyleInterpolator: forFade,
+        headerStyle: {
+          backgroundColor: theme.colors.primary,
+        },
+        headerTitleStyle: {
+          fontSize: 18,
+          fontFamily: 'Inter-Bold',
+          // @ts-ignore
+          color: theme.colors.white,
+        },
+        // @ts-ignore
+        headerTintColor: theme.colors.white,
       }}>
-      <HomeStack.Screen name={HomeStackRoutes.HOME} component={HomeScreen} />
-      <HomeStack.Screen name={HomeStackRoutes.LOCAL_PICKUP} component={LocalPickupScreen} />
+      <HomeStack.Screen
+        options={{
+          headerShown: false
+        }}
+        name={HomeStackRoutes.HOME} component={HomeScreen} />
+      <HomeStack.Screen
+        options={{
+          title: "Local Pickup"
+        }}
+        name={HomeStackRoutes.LOCAL_PICKUP} component={LocalPickupScreen} />
+
       <HomeStack.Screen
         component={IndividualCategoriesScreen}
         name={HomeStackRoutes.INDIVIDUAL_CATEGORIES}
       />
-      <HomeStack.Screen name={HomeStackRoutes.SHIPPING} component={ShippingScreen} />
-      <HomeStack.Screen name={HomeStackRoutes.ALL_CATEGORIES} component={AllCategoriesScreen} />
+
+      <HomeStack.Screen
+        options={{
+          title: "Shipping"
+        }}
+        name={HomeStackRoutes.SHIPPING}
+        component={ShippingScreen} />
+
+      <HomeStack.Screen
+        options={{
+          headerShown: false
+        }}
+        component={AllCategoriesScreen}
+        name={HomeStackRoutes.ALL_CATEGORIES}
+      />
     </HomeStack.Navigator>
   );
 };

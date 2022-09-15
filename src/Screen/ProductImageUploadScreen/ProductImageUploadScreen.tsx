@@ -1,22 +1,27 @@
 import React from 'react';
-import {Image} from 'react-native-elements';
+import useAppSnackbar from '@hooks/useAppSnackbar';
+import { PostItemStackParamList } from '@src/types';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {useNavigation} from '@react-navigation/native';
+import { PostItemStackRoutes } from '../../constants/routes';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import {HelperText, Text, useTheme} from 'react-native-paper';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import { HelperText, Text, useTheme } from 'react-native-paper';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import AppPrimaryButton from '../../Component/AppPrimaryButton';
-import {TextInput, View, Alert, ScrollView} from 'react-native';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {PostItemStackRoutes} from '../../constants/routes';
+import { TextInput, View, Alert, ScrollView, Image } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Asset, ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
-export default function ProductImageUploadScreen() {
+
+type Props = NativeStackScreenProps<PostItemStackParamList, typeof PostItemStackRoutes.UPLOAD_PHOTO>
+
+export default function ProductImageUploadScreen({ navigation }: Props) {
   const theme = useTheme();
-  const [coverImage, setCoverImage] = React.useState(null);
-  const [galleryImages, setGalleryImages] = React.useState([]);
-  const navigation = useNavigation();
+  const { enqueueErrorSnackbar } = useAppSnackbar()
+  const [productTitle, setProductTitle] = React.useState("")
+  const [galleryImages, setGalleryImages] = React.useState<Asset[]>([]);
+  const [coverImage, setCoverImage] = React.useState<Asset | null>(null);
 
-  const handleImageResult = result => {
+  const handleImageResult = (result: ImagePickerResponse) => {
     if (result.errorCode) {
       switch (result.errorCode) {
         case 'camera_unavailable':
@@ -35,14 +40,14 @@ export default function ProductImageUploadScreen() {
     }
     if (!result.didCancel) {
       if (!coverImage) {
-        setCoverImage(result.assets[0]);
+        setCoverImage(result.assets?.[0] ?? null);
       } else {
-        if (galleryImages.length + result.assets.length > 8) {
+        if ((galleryImages.length + (result.assets?.length ?? 0)) > 8) {
           Alert.alert('Error', 'Image limit reached');
           return;
         }
 
-        setGalleryImages(prevImages => [...prevImages, ...result.assets]);
+        setGalleryImages(prevImages => [...prevImages, ...(result.assets ?? [])]);
       }
     }
   };
@@ -57,7 +62,7 @@ export default function ProductImageUploadScreen() {
 
       handleImageResult(result);
     } catch (error) {
-      Alert.alert('Error', error.message);
+      Alert.alert('Error', (error as Error).message);
     }
   };
 
@@ -70,7 +75,7 @@ export default function ProductImageUploadScreen() {
 
       handleImageResult(result);
     } catch (error) {
-      Alert.alert('Error', error.message);
+      Alert.alert('Error', (error as Error).message);
     }
   };
 
@@ -78,16 +83,40 @@ export default function ProductImageUploadScreen() {
     setCoverImage(null);
   };
 
-  const handleRemoveGalleryImage = index => {
+  const handleRemoveGalleryImage = (index: number) => {
     setGalleryImages(prevImages => prevImages.filter((_, i) => i !== index));
   };
 
   const handleNextScreen = () => {
-    navigation.navigate(PostItemStackRoutes.ADD_DETAILS);
+    if (!coverImage) {
+      enqueueErrorSnackbar({
+        text1: "Please add a cover image"
+      })
+      return;
+    }
+
+    if (galleryImages.length === 0) {
+      enqueueErrorSnackbar({
+        text1: "Please add at least one gallery image"
+      })
+      return;
+    }
+
+
+    if (!productTitle) {
+      enqueueErrorSnackbar({
+        text1: "Please add product title"
+      })
+      return;
+    }
+
+    navigation.navigate(PostItemStackRoutes.ADD_DETAILS, {
+      // converIm
+    });
   };
 
   return (
-    <ScrollView style={{paddingHorizontal: 15}}>
+    <ScrollView style={{ paddingHorizontal: 15 }}>
       <View
         style={{
           paddingTop: 30,
@@ -106,7 +135,7 @@ export default function ProductImageUploadScreen() {
             backgroundColor: theme.colors.primary05,
           }}>
           <EvilIcons name={'camera'} size={45} />
-          <Text style={{marginTop: 2}}>Take Image</Text>
+          <Text style={{ marginTop: 2 }}>Take Image</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -121,7 +150,7 @@ export default function ProductImageUploadScreen() {
             backgroundColor: theme.colors.accent05,
           }}>
           <EvilIcons name={'image'} size={45} />
-          <Text style={{marginTop: 2}}>Select Image</Text>
+          <Text style={{ marginTop: 2 }}>Select Image</Text>
         </TouchableOpacity>
       </View>
 
@@ -139,7 +168,7 @@ export default function ProductImageUploadScreen() {
           </Text>
         </TouchableOpacity>
       ) : (
-        <View style={{marginVertical: 15, position: 'relative', zIndex: 0}}>
+        <View style={{ marginVertical: 15, position: 'relative', zIndex: 0 }}>
           <View
             style={{
               top: 10,
@@ -164,7 +193,7 @@ export default function ProductImageUploadScreen() {
           <View>
             <Image
               source={{
-                uri: coverImage.uri,
+                uri: coverImage.uri ?? "",
               }}
               style={{
                 zIndex: 0,
@@ -178,7 +207,7 @@ export default function ProductImageUploadScreen() {
       )}
 
       {galleryImages.length > 0 && (
-        <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
           {galleryImages.map((image, i) => (
             <View
               key={i}
@@ -243,7 +272,7 @@ export default function ProductImageUploadScreen() {
             </TouchableOpacity>
           </View>
 
-          <View style={{flexGrow: 1, width: '100%', marginBottom: 40}}>
+          <View style={{ flexGrow: 1, width: '100%', marginBottom: 40 }}>
             <Text>Using {galleryImages.length}/8 images</Text>
           </View>
         </View>
@@ -251,7 +280,9 @@ export default function ProductImageUploadScreen() {
 
       <View>
         <TextInput
+          value={productTitle}
           placeholder="Product Title"
+          onChangeText={setProductTitle}
           placeholderTextColor={theme.colors.text}
           style={{
             height: 45,
@@ -263,7 +294,7 @@ export default function ProductImageUploadScreen() {
             backgroundColor: theme.colors.white,
           }}
         />
-        <HelperText style={{textAlign: 'center', marginTop: 5}}>
+        <HelperText type='info' style={{ textAlign: 'center', marginTop: 5 }}>
           Example: Brand, Model, Color, Size etc.
         </HelperText>
       </View>
@@ -271,7 +302,7 @@ export default function ProductImageUploadScreen() {
       <AppPrimaryButton
         text={'Next'}
         onPress={handleNextScreen}
-        containerStyle={{marginVertical: 35}}
+        containerStyle={{ marginVertical: 35 }}
       />
     </ScrollView>
   );

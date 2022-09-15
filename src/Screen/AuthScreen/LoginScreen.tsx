@@ -199,77 +199,79 @@ const LoginScreen = ({ navigation, route }: Props) => {
             </Pressable>
           </View>
 
-          <KeyboardAvoidingView
-            style={{ flexWrap: "wrap" }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}>
-            <View style={{ width: "100%", marginBottom: 16 }}>
-              <Controller
-                control={control}
-                name={"email"}
-                render={({ field }) => {
-                  return (
-                    <FloatingLabelInput
-                      label={"Email"}
-                      value={field.value}
-                      onChangeText={field.onChange}
-                    />
-                  );
-                }}
-              />
+          <ScrollView>
+            <KeyboardAvoidingView
+              style={{ flexWrap: "wrap" }}
+              behavior={Platform.OS === "ios" ? "padding" : "height"}>
+              <View style={{ width: "100%", marginBottom: 16 }}>
+                <Controller
+                  control={control}
+                  name={"email"}
+                  render={({ field }) => {
+                    return (
+                      <FloatingLabelInput
+                        label={"Email"}
+                        value={field.value}
+                        onChangeText={field.onChange}
+                      />
+                    );
+                  }}
+                />
 
-              <ErrorMessage
-                errors={errors}
-                name={"email"}
-                render={({ message }) => (
-                  <Text style={{ color: theme.colors.error, marginTop: 10 }}>
-                    {message}
-                  </Text>
-                )}
-              />
-            </View>
+                <ErrorMessage
+                  errors={errors}
+                  name={"email"}
+                  render={({ message }) => (
+                    <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                      {message}
+                    </Text>
+                  )}
+                />
+              </View>
 
-            <View style={{ width: "100%" }}>
-              <Controller
-                control={control}
-                name={"password"}
-                render={({ field }) => {
-                  return (
-                    <FloatingLabelInput
-                      isPassword
-                      label={"Password"}
-                      value={field.value}
-                      togglePassword={togglePassword}
-                      onChangeText={field.onChange}
-                      rightComponent={
-                        <Pressable
-                          style={{
-                            justifyContent: "center",
-                          }}
-                          onPress={() =>
-                            setTogglePassword(prevStae => !prevStae)
-                          }>
-                          <Entypo
-                            size={20}
-                            name={togglePassword ? "eye-with-line" : "eye"}
-                          />
-                        </Pressable>
-                      }
-                    />
-                  );
-                }}
-              />
+              <View style={{ width: "100%" }}>
+                <Controller
+                  control={control}
+                  name={"password"}
+                  render={({ field }) => {
+                    return (
+                      <FloatingLabelInput
+                        isPassword
+                        label={"Password"}
+                        value={field.value}
+                        togglePassword={togglePassword}
+                        onChangeText={field.onChange}
+                        rightComponent={
+                          <Pressable
+                            style={{
+                              justifyContent: "center",
+                            }}
+                            onPress={() =>
+                              setTogglePassword(prevStae => !prevStae)
+                            }>
+                            <Entypo
+                              size={20}
+                              name={togglePassword ? "eye-with-line" : "eye"}
+                            />
+                          </Pressable>
+                        }
+                      />
+                    );
+                  }}
+                />
 
-              <ErrorMessage
-                errors={errors}
-                name={"email"}
-                render={({ message }) => (
-                  <Text style={{ color: theme.colors.error, marginTop: 10 }}>
-                    {message}
-                  </Text>
-                )}
-              />
-            </View>
-          </KeyboardAvoidingView>
+                <ErrorMessage
+                  errors={errors}
+                  name={"email"}
+                  render={({ message }) => (
+                    <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                      {message}
+                    </Text>
+                  )}
+                />
+              </View>
+            </KeyboardAvoidingView>
+          </ScrollView>
 
           <View
             style={{

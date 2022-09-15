@@ -60,7 +60,7 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
         <Text style={{ fontFamily: "Inter-Bold", fontSize: 20 }}>
           {profile?.name}
         </Text>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 5 }}>
           <Rating
             lock={true}
             imageSize={15}
@@ -71,11 +71,11 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
           <Text style={{ marginLeft: 8 }}>({profile?.rating ?? 0} rating)</Text>
         </View>
         <Text
-          style={{ fontFamily: "Inter-Regular", fontSize: 12, color: "#667085" }}>
+          style={{ fontFamily: "Inter-Regular", fontSize: 12, color: "#667085", marginVertical: 5 }}>
           {profile?.location}
         </Text>
         <Text
-          style={{ fontFamily: "Inter-Regular", fontSize: 12, color: "#667085" }}>
+          style={{ fontFamily: "Inter-Regular", fontSize: 12, color: "#667085", marginBottom: 5 }}>
           Joined {profile?.joined_date}
         </Text>
       </View>

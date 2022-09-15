@@ -43,7 +43,9 @@ const App = () => {
             <PreferencesProvider>
               <Navigator />
               <Notifier />
-              <Toast />
+              <Toast
+                position={"bottom"}
+              />
             </PreferencesProvider>
           </AuthProvider>
         </HttpClientConfigure>

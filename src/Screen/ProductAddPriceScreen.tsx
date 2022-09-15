@@ -1,18 +1,18 @@
-import React, {useState} from 'react';
-import {Controller, useForm} from 'react-hook-form';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {PostItemStackRoutes} from '../constants/routes';
-import {useNavigation} from '@react-navigation/native';
+import { PostItemStackRoutes } from '../constants/routes';
+import { useNavigation } from '@react-navigation/native';
 import SelectionModal from '../Component/SelectionModal';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import AppPrimaryButton from '../Component/AppPrimaryButton';
-import {HelperText, Text, useTheme} from 'react-native-paper';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {TextInput, View, Alert, ScrollView, Pressable} from 'react-native';
+import { HelperText, Text, useTheme } from 'react-native-paper';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TextInput, View, Alert, ScrollView, Pressable } from 'react-native';
 //import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {Image, ListItem, CheckBox} from 'react-native-elements';
+import { Image, ListItem, CheckBox } from 'react-native-elements';
 import DatePicker from 'react-native-date-picker';
-import {Switch} from 'react-native-paper';
+import { Switch } from 'react-native-paper';
 export default function ProductAddPriceScreen() {
   const theme = useTheme();
   const navigation = useNavigation();
@@ -23,7 +23,7 @@ export default function ProductAddPriceScreen() {
 
   const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
 
-  const {control} = useForm({
+  const { control } = useForm({
     defaultValues: {
       duration: 0,
       buynowprice: '0.0',
@@ -37,15 +37,18 @@ export default function ProductAddPriceScreen() {
   });
 
   const handleNextScreen = () => {
-    navigation.navigate(PostItemStackRoutes.ADD_DELIVERY_METHOD);
+    navigation.navigate(PostItemStackRoutes.ADD_DELIVERY_METHOD, {
+
+    });
   };
 
   return (
-    <ScrollView style={{padding: 10}}>
+    <ScrollView style={{ padding: 10 }}>
       <DatePicker
         modal
         open={open}
         date={date}
+        mode={"date"}
         onConfirm={date => {
           setOpen(false);
           setDate(date);
@@ -57,10 +60,10 @@ export default function ProductAddPriceScreen() {
       <Controller
         name={'startingPrice'}
         control={control}
-        render={({field}) => {
+        render={({ field }) => {
           return (
             <React.Fragment>
-              <Text style={{marginBottom: 10, color: '#222222'}}>
+              <Text style={{ marginBottom: 10, color: '#222222' }}>
                 Starting Price
               </Text>
               <TextInput
@@ -79,15 +82,15 @@ export default function ProductAddPriceScreen() {
         }}
       />
 
-      <View style={{height: 15}} />
+      <View style={{ height: 15 }} />
 
       <Controller
         name={'buynowprice'}
         control={control}
-        render={({field}) => {
+        render={({ field }) => {
           return (
             <React.Fragment>
-              <Text style={{marginBottom: 10, color: '#222222'}}>
+              <Text style={{ marginBottom: 10, color: '#222222' }}>
                 Buy now price
               </Text>
               <TextInput
@@ -106,12 +109,12 @@ export default function ProductAddPriceScreen() {
         }}
       />
 
-      <View style={{height: 15}} />
+      <View style={{ height: 15 }} />
 
       <Controller
         control={control}
         name={'duration'}
-        render={({field}) => {
+        render={({ field }) => {
           return (
             <React.Fragment>
               <Pressable onPress={() => setModalType('duration')}>
@@ -121,7 +124,7 @@ export default function ProductAddPriceScreen() {
                     borderRadius: 8,
                     backgroundColor: theme.colors.white,
                   }}>
-                  <Text style={{color: '#222222'}}>Select Duration</Text>
+                  <Text style={{ color: '#222222' }}>Select Duration</Text>
                   <Text>{field.value?.text}</Text>
                 </View>
               </Pressable>
@@ -156,7 +159,7 @@ export default function ProductAddPriceScreen() {
         }}
       />
 
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <CheckBox
           center
           checkedIcon="dot-circle-o"
@@ -171,7 +174,7 @@ export default function ProductAddPriceScreen() {
         <Text>When I submit then, I'll start my listings</Text>
       </View>
 
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <CheckBox
           center
           checkedIcon="dot-circle-o"
@@ -254,7 +257,7 @@ export default function ProductAddPriceScreen() {
         />
       </View>
 
-      <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
         <TouchableOpacity
           style={{
             backgroundColor: '#E62B56',
@@ -265,7 +268,7 @@ export default function ProductAddPriceScreen() {
             borderRadius: 5,
             margin: 5,
           }}>
-          <Text style={{fontFamily: 'Inter-Regular', color: 'white'}}>
+          <Text style={{ fontFamily: 'Inter-Regular', color: 'white' }}>
             Gold
           </Text>
         </TouchableOpacity>
@@ -280,7 +283,7 @@ export default function ProductAddPriceScreen() {
             borderRadius: 5,
             margin: 5,
           }}>
-          <Text style={{fontFamily: 'Inter-Regular', color: 'white'}}>
+          <Text style={{ fontFamily: 'Inter-Regular', color: 'white' }}>
             Copper
           </Text>
         </TouchableOpacity>
@@ -295,7 +298,7 @@ export default function ProductAddPriceScreen() {
             borderRadius: 5,
             margin: 5,
           }}>
-          <Text style={{fontFamily: 'Inter-Regular', color: 'white'}}>
+          <Text style={{ fontFamily: 'Inter-Regular', color: 'white' }}>
             Gold
           </Text>
         </TouchableOpacity>
@@ -310,7 +313,7 @@ export default function ProductAddPriceScreen() {
             borderRadius: 5,
             margin: 5,
           }}>
-          <Text style={{fontFamily: 'Inter-Regular', color: 'white'}}>
+          <Text style={{ fontFamily: 'Inter-Regular', color: 'white' }}>
             Gold
           </Text>
         </TouchableOpacity>
@@ -325,7 +328,7 @@ export default function ProductAddPriceScreen() {
             borderRadius: 5,
             margin: 5,
           }}>
-          <Text style={{fontFamily: 'Inter-Regular', color: 'white'}}>
+          <Text style={{ fontFamily: 'Inter-Regular', color: 'white' }}>
             Gold
           </Text>
         </TouchableOpacity>
@@ -334,7 +337,7 @@ export default function ProductAddPriceScreen() {
       <AppPrimaryButton
         text={'Next'}
         onPress={handleNextScreen}
-        containerStyle={{marginVertical: 35}}
+        containerStyle={{ marginVertical: 35 }}
       />
     </ScrollView>
   );

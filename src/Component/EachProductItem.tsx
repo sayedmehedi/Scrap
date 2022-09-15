@@ -30,23 +30,22 @@ const EachProductItem = ({ item, }: { item: FilterProduct & { type: "data" } | {
       onPress={() => navigation.navigate(RootStackRoutes.PRODUCT_DETAILS, {
         productId: item.id,
       })}>
-      <View
+
+
+      <Image
+        resizeMode={"center"}
+        source={{ uri: item.image }}
         style={{
           height: 130,
-          width: itemWidth - 6,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#FFFFFF',
-        }}>
-        <Image
-          resizeMode={"center"}
-          source={{ uri: item.image }}
-          style={{
-            width: 110,
-            height: 120,
-          }}
-        />
-      </View>
+          width: "100%",
+          borderWidth: 6,
+          borderRadius: 6,
+          overflow: "hidden",
+          borderColor: "#FFFFFF",
+        }}
+      />
+
+
       <View
         style={{
           flexDirection: 'row',
