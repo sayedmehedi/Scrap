@@ -82,7 +82,7 @@ const AccountSettingScreen = () => {
           ]}
           text={'Update Password'}
           modalTitle={'Update Password'}
-          icon={<EvilIcons name="lock" size={22} color={'#707070'} />}
+          icon={<EvilIcons name="lock" size={26} color={'#707070'} />}
         />
 
         <AccountSettingsItem

@@ -4,13 +4,14 @@ import { Rating } from "react-native-elements";
 import { useAppSelector } from "@hooks/store";
 import Entypo from "react-native-vector-icons/Entypo";
 import { useNavigation } from "@react-navigation/native";
+import ProfileImageUploader from "./ProfileImageUploader";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useLogoutMutation } from "@data/laravel/services/auth";
 import { selectIsAuthenticated } from "@store/slices/authSlice";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { AuthStackParamList, ProfileStackParamList } from "@src/types";
-import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthStackRoutes, ProfileStackRoutes, RootStackRoutes } from "@constants/routes";
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
   View,
   Text,
@@ -19,7 +20,6 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import ProfileImageUploader from "./ProfileImageUploader";
 
 type Props = NativeStackScreenProps<ProfileStackParamList, typeof ProfileStackRoutes.PROFILE_SCREEN>
 
@@ -54,7 +54,10 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
 
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{
+      backgroundColor: 'white',
+      flex: 1
+    }}>
       <View style={{ alignSelf: "center", alignItems: "center" }}>
         <ProfileImageUploader />
         <Text style={{ fontFamily: "Inter-Bold", fontSize: 20 }}>
@@ -67,7 +70,7 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
             showRating={false}
             startingValue={profile?.rating ?? 0}
           />
-          <Text style={{ marginLeft: 8 }}>({profile?.rating ?? 0} rating)</Text>
+          <Text style={{ marginLeft: 8 }}>({profile?.rating.toFixed(2) ?? 0} rating)</Text>
         </View>
         <Text
           style={{ fontFamily: "Inter-Regular", fontSize: 12, color: "#667085", marginVertical: 5 }}>

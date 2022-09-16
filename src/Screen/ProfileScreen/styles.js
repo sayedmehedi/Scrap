@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderBottomWidth: 0.3,
     borderBottomColor: "#707070",
+    
   },
   editText: {
     color: "#023047",
@@ -39,10 +40,11 @@ const styles = StyleSheet.create({
 
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.4)",
+    
   },
   modalView: {
     backgroundColor: "white",
-    height: "45%",
+    height: 370,
     width: "100%",
     justifyContent: "center",
     alignItems: "center",

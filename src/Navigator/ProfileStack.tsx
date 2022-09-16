@@ -55,7 +55,7 @@ const ProfileStack = () => {
 
       <Profile.Screen
         options={{
-          title: 'Offer And Bid',
+          title: 'Offer & Bid',
         }}
         name="offerAndBid"
         component={OfferAndBidScreen}
