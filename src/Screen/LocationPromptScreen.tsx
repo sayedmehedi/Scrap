@@ -2,13 +2,13 @@ import React from 'react';
 import { View, Image } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { RootStackParamList } from '@src/types';
-import { HomeStackRoutes, HomeTabRoutes, RootStackRoutes } from '@constants/routes';
 import useAppSnackbar from '@hooks/useAppSnackbar';
 import Geolocation from '@react-native-community/geolocation';
 import AppPrimaryButton from '@src/Component/AppPrimaryButton';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useUpdateProfileMutation } from '@data/laravel/services/auth';
+import { HomeStackRoutes, HomeTabRoutes, RootStackRoutes } from '@constants/routes';
 
 type Props = NativeStackScreenProps<RootStackParamList, typeof RootStackRoutes.LOCATION_PROMPT>
 
@@ -18,41 +18,54 @@ const LocationPropmtScreen = ({ navigation, route }: Props) => {
 
   const [updateProfile, { isLoading, isSuccess, data }] = useUpdateProfileMutation()
 
+  const redirectIntended = React.useCallback(() => {
+    if (route.params.nextScreen) {
+      // @ts-ignore
+      navigation.replace(route.params.nextScreen.name, route.params.nextScreen.params)
+    } else {
+      navigation.replace(RootStackRoutes.HOME, {
+        screen: HomeTabRoutes.HOME,
+        params: {
+          screen: HomeStackRoutes.HOME
+        }
+      })
+    }
+  }, [route.params.nextScreen, navigation])
+
   React.useEffect(() => {
     if (isSuccess && !!data) {
       enqueueSuccessSnackbar({
         text1: data.success,
       })
 
-      if (route.params.nextScreen) {
-        // @ts-ignore
-        navigation.replace(route.params.nextScreen.name, route.params.nextScreen.params)
-      } else {
-        navigation.replace(RootStackRoutes.HOME, {
-          screen: HomeTabRoutes.HOME,
-          params: {
-            screen: HomeStackRoutes.HOME
-          }
-        })
-      }
+      redirectIntended()
     }
-  }, [enqueueSuccessSnackbar, isSuccess, data, route, navigation])
+  }, [enqueueSuccessSnackbar, isSuccess, data, redirectIntended])
+
+
 
   const handleCurrentLocation = async () => {
-    Geolocation.getCurrentPosition(
-      info => {
-        const { latitude, longitude } = info.coords
+    Geolocation.requestAuthorization(() => {
+      Geolocation.getCurrentPosition(
+        info => {
+          const { latitude, longitude } = info.coords
 
-        updateProfile({
-          latitude: latitude.toString(),
-          longitude: longitude.toString()
-        })
-      },
+          updateProfile({
+            latitude: latitude.toString(),
+            longitude: longitude.toString()
+          })
+        },
+        error => {
+          enqueueErrorSnackbar({
+            text2: error.message
+          })
+        });
+    },
       error => {
         enqueueErrorSnackbar({
-          text1: error.message
+          text2: error.message
         })
-      });
+      })
   }
 
   return (
@@ -141,17 +154,7 @@ const LocationPropmtScreen = ({ navigation, route }: Props) => {
               color: theme.colors.text,
             }}
             onPress={() => {
-              if (route.params.nextScreen) {
-                // @ts-ignore
-                navigation.replace(route.params.nextScreen.name, route.params.nextScreen.params)
-              } else {
-                navigation.replace(RootStackRoutes.HOME, {
-                  screen: HomeTabRoutes.HOME,
-                  params: {
-                    screen: HomeStackRoutes.HOME
-                  }
-                })
-              }
+              redirectIntended()
             }}
           />
         </View>

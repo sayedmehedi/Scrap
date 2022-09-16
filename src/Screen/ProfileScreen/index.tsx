@@ -54,10 +54,12 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
 
 
   return (
-    <ScrollView contentContainerStyle={{
-      backgroundColor: 'white',
-      flex: 1
-    }}>
+    <ScrollView
+      contentContainerStyle={{
+        // flex: 1,
+        backgroundColor: 'white',
+      }}
+    >
       <View style={{ alignSelf: "center", alignItems: "center" }}>
         <ProfileImageUploader />
         <Text style={{ fontFamily: "Inter-Bold", fontSize: 20 }}>

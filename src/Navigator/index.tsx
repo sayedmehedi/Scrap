@@ -8,13 +8,15 @@ import AuthStackNavigator from './AuthStackNavigator';
 import PlaceBidScreen from '../Screen/PlaceBidScreen';
 import MakeOfferScreen from '../Screen/MakeOfferScreen';
 import AskQuestionScreen from '../Screen/AskQuestionScreen';
-import LocationPropmtScreen from '@src/Screen/LocationPromptScreen';
 import ReviewOfferScreen from '../Screen/ReviewOfferScreen';
+import ChooseCityScreen from '@src/Screen/ChooseCityScreen';
+import ChooseStateScreen from '@src/Screen/ChooseStateScreen';
 import { createStackNavigator, } from '@react-navigation/stack';
 import NotificationsScreen from '../Screen/NotificationsScreen';
 import ProductDetailsScreen from '../Screen/ProductDetailsScreen';
 import ProductSearchScreen from '../Screen/ProductSearchScreen';
 import ChooseCountryScreen from '@src/Screen/ChooseCountryScreen';
+import LocationPropmtScreen from '@src/Screen/LocationPromptScreen';
 import ConfirmPurchaseScreen from '@src/Screen/ConfirmPurchaseScreen';
 import SingleConversationScreen from '../Screen/SingleConversationScreen';
 import SellerReviewScreen from '@src/Screen/ReviewScreen/SellerReviewScreen';
@@ -149,10 +151,26 @@ const Navigator = () => {
 
       <RootStack.Screen
         options={{
-          title: "Back",
+          title: "Choose Country",
         }}
         component={ChooseCountryScreen}
         name={RootStackRoutes.CHOOSE_COUNTRY}
+      />
+
+      <RootStack.Screen
+        options={{
+          title: "Choose City",
+        }}
+        component={ChooseCityScreen}
+        name={RootStackRoutes.CHOOSE_CITY}
+      />
+
+      <RootStack.Screen
+        options={{
+          title: "Choose State",
+        }}
+        component={ChooseStateScreen}
+        name={RootStackRoutes.CHOOSE_STATE}
       />
     </RootStack.Navigator>
   );

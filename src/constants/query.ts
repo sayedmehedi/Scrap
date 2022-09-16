@@ -1,7 +1,10 @@
 export enum QUERY_KEYS {
   AUTH = "auth",
+  CITY = "city",
   ORDER = "order",
+  STATE = "state",
   SELLER = "seller",
+  COUNTRY = "country",
   PRODUCT = "product",
   QUESTION = "question",
   CATEGORY = "category",

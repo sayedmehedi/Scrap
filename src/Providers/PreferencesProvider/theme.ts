@@ -137,6 +137,7 @@ const paperLightTheme = {
 
     text: "#111111",
     tertiary: "#98A2B3",
+    black: "black",
   },
   fonts: configureFonts(fontConfig),
 };
@@ -156,6 +157,7 @@ const paperDarkTheme = {
 
     text: "#111111",
     tertiary: "#98A2B3",
+    black: "black",
   },
   fonts: configureFonts(fontConfig),
 };
@@ -185,6 +187,7 @@ declare global {
       white: string;
       success: string;
       tertiary: string;
+      black: string;
     }
   }
 }

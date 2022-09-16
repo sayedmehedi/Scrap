@@ -687,3 +687,42 @@ export interface Question {
 export type GetQuestionsResponse = {
   items: PaginatedResponse<Question>;
 };
+
+export interface Country {
+  id: number;
+  name: string;
+  code: string;
+  flag?: any;
+  phonecode: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface State {
+  id: number;
+  name: string;
+  short_name?: string;
+  country_id: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface City {
+  id: number;
+  name: string;
+  state_id: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export type GetCountriesResponse = {
+  countries: PaginatedResponse<Country>;
+};
+
+export type GetCitiesResponse = {
+  cities: PaginatedResponse<City>;
+};
+
+export type GetStatesResponse = {
+  states: PaginatedResponse<State>;
+};

@@ -8,6 +8,7 @@ import {orderApi} from "@data/laravel/services/order";
 import {sellerApi} from "@data/laravel/services/seller";
 import {productApi} from "@data/laravel/services/product";
 import {setupListeners} from "@reduxjs/toolkit/dist/query";
+import {countryApi} from "@data/laravel/services/country";
 import {categoryApi} from "@data/laravel/services/category";
 import {questionApi} from "@data/laravel/services/question";
 import {conditionApi} from "@data/laravel/services/condition";
@@ -69,6 +70,7 @@ export function createStore(
         authApi.middleware,
         orderApi.middleware,
         sellerApi.middleware,
+        countryApi.middleware,
         productApi.middleware,
         categoryApi.middleware,
         questionApi.middleware,

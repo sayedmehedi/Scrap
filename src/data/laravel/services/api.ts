@@ -186,8 +186,11 @@ export const api = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: [
     QUERY_KEYS.AUTH,
+    QUERY_KEYS.CITY,
+    QUERY_KEYS.STATE,
     QUERY_KEYS.ORDER,
     QUERY_KEYS.SELLER,
+    QUERY_KEYS.COUNTRY,
     QUERY_KEYS.PRODUCT,
     QUERY_KEYS.QUESTION,
     QUERY_KEYS.CATEGORY,

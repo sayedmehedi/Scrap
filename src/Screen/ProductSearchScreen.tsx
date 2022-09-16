@@ -24,15 +24,17 @@ const Item = ({ title, type, id }: { title: string, type: SearchItemType, id: nu
       switch (type) {
         case "attributes":
           homestackNavigation.navigate(HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA, {
-            attribute_id: id
+            attributeId: id,
+            categoryTitle: title,
           });
           break;
 
         case "conditions":
           homestackNavigation.navigate(HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA, {
+            categoryTitle: title,
             condition: {
               id,
-              title: ""
+              title
             }
           });
           break;
