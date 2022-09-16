@@ -54,7 +54,10 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
 
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{
+      backgroundColor:'white',
+      flex:1
+    }}>
       <View style={{ alignSelf: "center", alignItems: "center" }}>
         <ProfileImageUploader />
         <Text style={{ fontFamily: "Inter-Bold", fontSize: 20 }}>
@@ -62,13 +65,14 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
         </Text>
         <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 5 }}>
           <Rating
+          ratingBackgourColor={'red'}
             lock={true}
             imageSize={15}
             readonly={true}
             showRating={false}
             startingValue={profile?.rating ?? 0}
           />
-          <Text style={{ marginLeft: 8 }}>({profile?.rating ?? 0} rating)</Text>
+          <Text style={{ marginLeft: 8 }}>({profile?.rating.toFixed(2) ?? 0} rating)</Text>
         </View>
         <Text
           style={{ fontFamily: "Inter-Regular", fontSize: 12, color: "#667085", marginVertical: 5 }}>
