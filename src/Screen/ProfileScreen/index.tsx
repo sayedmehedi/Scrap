@@ -62,9 +62,8 @@ const ProfileScreen = ({ navigation: profileNavigation }: Props) => {
         </Text>
         <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 5 }}>
           <Rating
-            lock={true}
+            readonly
             imageSize={15}
-            readonly={true}
             showRating={false}
             startingValue={profile?.rating ?? 0}
           />

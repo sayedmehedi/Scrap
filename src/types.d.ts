@@ -79,10 +79,8 @@ export type AuthStackParamList = {
       params: Record<string, any>;
     };
   };
-  [AuthStackRoutes.LOCATION]: undefined;
   [AuthStackRoutes.REGISTRATION]: undefined;
   [AuthStackRoutes.RESET_PASSWORD]: undefined;
-  [AuthStackRoutes.CHOOSE_LOCATION]: undefined;
   [AuthStackRoutes.FORGOT_PASSWORD]: undefined;
 };
 
@@ -155,6 +153,30 @@ export type RootStackParamList = {
     productImage: string;
     productId: string | number;
     productBuyNowPrice: number;
+  };
+  [RootStackRoutes.LOCATION_PROMPT]: {
+    nextScreen?: {
+      name: string;
+      params: Record<string, any>;
+    };
+  };
+  [RootStackRoutes.CHOOSE_CITY]: {
+    nextScreen?: {
+      name: string;
+      params: Record<string, any>;
+    };
+  };
+  [RootStackRoutes.CHOOSE_STATE]: {
+    nextScreen?: {
+      name: string;
+      params: Record<string, any>;
+    };
+  };
+  [RootStackRoutes.CHOOSE_COUNTRY]: {
+    nextScreen?: {
+      name: string;
+      params: Record<string, any>;
+    };
   };
 };
 

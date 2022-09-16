@@ -5,11 +5,9 @@ import { AuthStackParamList } from "@src/types";
 import { AuthStackRoutes } from "../constants/routes";
 import LoginScreen from "../Screen/AuthScreen/LoginScreen";
 import { createStackNavigator } from "@react-navigation/stack";
-import LocationScreen from "../Screen/AuthScreen/LocationScreen";
 import RegistrationScreen from "../Screen/AuthScreen/RegistrationScreen";
 import ResetPasswordScreen from "../Screen/AuthScreen/ResetPasswordScreen";
 import ForgotPasswordScreen from "../Screen/AuthScreen/ForgotPasswordScreen";
-import ChooseLocationScreen from "../Screen/AuthScreen/ChooseLocationScreen";
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
 
@@ -39,22 +37,6 @@ const AuthStackNavigator = () => {
         }}
         component={LoginScreen}
         name={AuthStackRoutes.LOGIN}
-      />
-
-      <AuthStack.Screen
-        options={{
-          title: "Locations",
-        }}
-        component={LocationScreen}
-        name={AuthStackRoutes.LOCATION}
-      />
-
-      <AuthStack.Screen
-        options={{
-          title: "Back",
-        }}
-        component={ChooseLocationScreen}
-        name={AuthStackRoutes.CHOOSE_LOCATION}
       />
 
       <AuthStack.Screen

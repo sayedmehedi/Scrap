@@ -1,20 +1,21 @@
 import React from "react";
 import auth from "@react-native-firebase/auth";
-import { useAppSelector } from "@hooks/store";
-import { AuthStackParamList } from "@src/types";
-import { useTheme, Text } from "react-native-paper";
 import useAppSnackbar from "@hooks/useAppSnackbar";
+import { useTheme, Text } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
 import { ErrorMessage } from "@hookform/error-message";
-import { selectIsAuthenticated } from "@store/slices/authSlice";
-import { useGetProfileQuery, useLoginMutation } from "@data/laravel/services/auth";
+import { useNavigation } from "@react-navigation/native";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
+import { useLoginMutation } from "@data/laravel/services/auth";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { AuthStackParamList, RootStackParamList, } from "@src/types";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { AuthStackRoutes, RootStackRoutes } from "../../constants/routes";
+import { useAppDispatch, useAppSelector, useAppStore } from "@hooks/store";
 import { addServerErrors, isJoteyQueryError } from "@utils/error-handling";
+import { selectIsAuthenticated, setFirstTimeLoginFalse } from "@store/slices/authSlice";
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
   View,
   Image,
@@ -63,10 +64,15 @@ setGlobalStyles.inputStyles = {
 
 type Props = NativeStackScreenProps<AuthStackParamList, typeof AuthStackRoutes.LOGIN>
 
+type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>
+
 const LoginScreen = ({ navigation, route }: Props) => {
   const theme = useTheme();
+  const store = useAppStore()
+  const dispatch = useAppDispatch()
   const { enqueueSuccessSnackbar } = useAppSnackbar();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const rootNavigation = useNavigation<RootStackNavigationProp>()
   const [togglePassword, setTogglePassword] = React.useState(false);
 
   const [login, { isLoading, isError, error, isSuccess, data }] = useLoginMutation();
@@ -102,15 +108,22 @@ const LoginScreen = ({ navigation, route }: Props) => {
 
   React.useEffect(() => {
     if (isAuthenticated) {
-      if (route.params?.nextScreen) {
+      const { firstTimeLogin } = store.getState().auth
+      if (firstTimeLogin) {
+        rootNavigation.replace(RootStackRoutes.LOCATION_PROMPT, {
+          nextScreen: route.params.nextScreen
+        })
+        dispatch(setFirstTimeLoginFalse())
+      } else if (route.params?.nextScreen) {
         // @ts-ignore
         navigation.replace(route.params?.nextScreen.name, route.params?.nextScreen.params)
       } else {
         // @ts-ignore
         navigation.replace(RootStackRoutes.HOME)
       }
+
     }
-  }, [route, navigation, isAuthenticated])
+  }, [route, navigation, isAuthenticated, store, dispatch])
 
   async function onGoogleButtonPress() {
     // Get the users ID token

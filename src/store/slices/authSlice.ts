@@ -6,6 +6,7 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 type AuthState = {
   user: User | null;
   token: string | null;
+  firstTimeLogin: boolean;
   profile: UserProfile | null;
 };
 
@@ -15,6 +16,7 @@ const slice = createSlice({
     user: null,
     token: null,
     profile: null,
+    firstTimeLogin: true,
   } as AuthState,
   reducers: {
     setCredentials: (
@@ -23,6 +25,9 @@ const slice = createSlice({
     ) => {
       state.user = user;
       state.token = token;
+    },
+    setFirstTimeLoginFalse: state => {
+      state.firstTimeLogin = false;
     },
   },
   extraReducers: builder => {
@@ -53,7 +58,7 @@ const slice = createSlice({
   },
 });
 
-export const {setCredentials} = slice.actions;
+export const {setCredentials, setFirstTimeLoginFalse} = slice.actions;
 
 export default slice.reducer;
 

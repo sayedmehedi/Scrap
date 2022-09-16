@@ -1,9 +1,7 @@
 export const AuthStackRoutes = {
   LOGIN: "login",
-  LOCATION: "location",
   REGISTRATION: "registration",
   RESET_PASSWORD: "resetPassword",
-  CHOOSE_LOCATION: "chooseLocation",
   FORGOT_PASSWORD: "forgotPassword",
 } as const;
 
@@ -12,6 +10,8 @@ export const RootStackRoutes = {
   HOME: "home",
   PLACE_BID: "placeBid",
   MAKE_OFFER: "makeOffer",
+  LOCATION_PROMPT: "locationPrompt",
+
   REVIEW_OFFER: "reviewOffer",
   ASK_QUESTION: "askQuestion",
   NOTIFICATIONS: "notifications",
@@ -21,6 +21,10 @@ export const RootStackRoutes = {
   PRODUCT_DETAILS: "productDetails",
   CONFIRM_PURCHASE: "confirmPurchase",
   SELLER_REVIEW: "sellerReviewScreen",
+
+  CHOOSE_CITY: "chooseCity",
+  CHOOSE_STATE: "chooseState",
+  CHOOSE_COUNTRY: "chooseCountry",
 } as const;
 
 export const PostItemStackRoutes = {

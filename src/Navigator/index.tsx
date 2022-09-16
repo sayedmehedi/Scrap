@@ -8,11 +8,13 @@ import AuthStackNavigator from './AuthStackNavigator';
 import PlaceBidScreen from '../Screen/PlaceBidScreen';
 import MakeOfferScreen from '../Screen/MakeOfferScreen';
 import AskQuestionScreen from '../Screen/AskQuestionScreen';
+import LocationPropmtScreen from '@src/Screen/LocationPromptScreen';
 import ReviewOfferScreen from '../Screen/ReviewOfferScreen';
 import { createStackNavigator, } from '@react-navigation/stack';
 import NotificationsScreen from '../Screen/NotificationsScreen';
 import ProductDetailsScreen from '../Screen/ProductDetailsScreen';
 import ProductSearchScreen from '../Screen/ProductSearchScreen';
+import ChooseCountryScreen from '@src/Screen/ChooseCountryScreen';
 import ConfirmPurchaseScreen from '@src/Screen/ConfirmPurchaseScreen';
 import SingleConversationScreen from '../Screen/SingleConversationScreen';
 import SellerReviewScreen from '@src/Screen/ReviewScreen/SellerReviewScreen';
@@ -135,6 +137,22 @@ const Navigator = () => {
         }}
         component={SellerReviewScreen}
         name={RootStackRoutes.SELLER_REVIEW}
+      />
+
+      <RootStack.Screen
+        options={{
+          title: "Locations",
+        }}
+        component={LocationPropmtScreen}
+        name={RootStackRoutes.LOCATION_PROMPT}
+      />
+
+      <RootStack.Screen
+        options={{
+          title: "Back",
+        }}
+        component={ChooseCountryScreen}
+        name={RootStackRoutes.CHOOSE_COUNTRY}
       />
     </RootStack.Navigator>
   );
