@@ -54,14 +54,31 @@ export default function ProductAddDeliveryMethodScreen({
   const {enqueueSuccessSnackbar} = useAppSnackbar();
   const rootNavigation = useNavigation<RootNavigationProps>();
   const profile = useAppSelector(state => state.auth.profile);
+  const [uploadProgress, setUploadProgress] = React.useState(0);
   const [getPackages, {isFetching}] = useLazyGetPackagesQuery();
   const {data: getMetalsResponse, isLoading: isLoadingCategories} =
     useGetPackagesQuery({});
   const actionCreaterRef = React.useRef<ReturnType<typeof getPackages> | null>(
     null,
   );
-  const [createProduct, {isLoading: isCreatingProduct, isSuccess, data}] =
-    useCreateProductMutation();
+  const [
+    createProduct,
+    {
+      data: createProductResponse,
+      isError: isCreateProductError,
+      isLoading: isCreatingProduct,
+      isSuccess: isProductCreateSuccess,
+    },
+  ] = useCreateProductMutation();
+
+  React.useEffect(() => {
+    if (
+      (!isCreatingProduct && isProductCreateSuccess) ||
+      isCreateProductError
+    ) {
+      setUploadProgress(0);
+    }
+  }, [isProductCreateSuccess, isCreatingProduct, isCreateProductError]);
 
   const [packagePages, setPackagePages] = React.useState<
     Array<GetPackagesResponse["items"]>
@@ -113,13 +130,13 @@ export default function ProductAddDeliveryMethodScreen({
   }, []);
 
   React.useEffect(() => {
-    if (isSuccess && !!data) {
+    if (isProductCreateSuccess && !!createProductResponse) {
       enqueueSuccessSnackbar({
-        text1: data.success,
+        text1: createProductResponse.success,
       });
-      navigation.replace(PostItemStackRoutes.SUCCESS);
+      navigation.navigate(PostItemStackRoutes.SUCCESS);
     }
-  }, [isSuccess, enqueueSuccessSnackbar, data]);
+  }, [isProductCreateSuccess, enqueueSuccessSnackbar, createProductResponse]);
 
   const metals = React.useMemo(() => {
     if (isLoadingCategories) {
@@ -148,7 +165,7 @@ export default function ProductAddDeliveryMethodScreen({
 
   React.useEffect(() => {
     if (profile) {
-      setValue("location", `${profile.city}, ${profile.country}`);
+      setValue("location", `${profile.city.name}, ${profile.country.name}`);
     }
   }, [profile, setValue]);
 
@@ -171,13 +188,17 @@ export default function ProductAddDeliveryMethodScreen({
       starting_price: route.params.startingPrice,
       is_shipping: values.isShipping ? "1" : "0",
       sub_category_id: route.params.subCategoryId,
-      show_metal_price: route.params.showMetalPrice,
       is_list_now: route.params.isListNow ? "1" : "0",
+      show_metal_price: route.params.showMetalPrice ? "1" : "0",
       expected_date_for_list: route.params.expectedDateForList,
       images: [
         route.params.productCoverImage,
         ...route.params.productGalleryImages,
       ],
+      onUploadProgress(event) {
+        const progress = Math.round(event.loaded / event.total) * 100;
+        setUploadProgress(progress);
+      },
     });
   });
 

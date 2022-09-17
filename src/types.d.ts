@@ -563,9 +563,18 @@ export interface UserProfile {
   profile_image: string;
   has_product: boolean;
   is_fb_connected: boolean;
-  country: string;
-  state: string;
-  city: string;
+  country: {
+    id: number;
+    name: string;
+  };
+  state: {
+    id: number;
+    name: string;
+  };
+  city: {
+    id: number;
+    name: string;
+  };
   fb_details?: any;
   joined_date: string;
   total_purchased: number;
@@ -859,7 +868,7 @@ export type CreateProductRequest = {
   details: string;
   is_list_now: "1" | "0";
   expected_date_for_list: null | string;
-  show_metal_price: boolean;
+  show_metal_price: "1" | "0";
   location: string;
   package_id: number;
   is_locale: "1" | "0";
