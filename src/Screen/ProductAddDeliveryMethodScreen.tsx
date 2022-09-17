@@ -1,246 +1,386 @@
 import React from "react";
-import {PostItemStackParamList} from "@src/types";
+import {useAppSelector} from "@hooks/store";
 import {Controller, useForm} from "react-hook-form";
+import useAppSnackbar from "@hooks/useAppSnackbar";
+import {View, TouchableOpacity} from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import {useNavigation} from "@react-navigation/native";
-import SelectionModal from "../Component/SelectionModal";
 import {ListItem, Switch} from "react-native-elements";
-import {PostItemStackRoutes} from "../constants/routes";
-import EvilIcons from "react-native-vector-icons/EvilIcons";
 import {Divider, Text, useTheme} from "react-native-paper";
 import AppPrimaryButton from "../Component/AppPrimaryButton";
-import LocationSelectionModal from "./LocationSelectionModal";
-import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {View, ScrollView, TouchableOpacity} from "react-native";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import {useCreateProductMutation} from "@data/laravel/services/product";
+import {
+  GetPackagesResponse,
+  Package,
+  PaginationQueryParams,
+  PostItemStackParamList,
+  RootStackParamList,
+} from "@src/types";
+import {
+  HomeTabRoutes,
+  PostItemStackRoutes,
+  RootStackRoutes,
+} from "../constants/routes";
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
+import {FlatList} from "react-native-gesture-handler";
+import {
+  useGetPackagesQuery,
+  useLazyGetPackagesQuery,
+} from "@data/laravel/services/package";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
   typeof PostItemStackRoutes.ADD_DELIVERY_METHOD
 >;
 
-export default function ProductAddDeliveryMethodScreen({navigation}: Props) {
-  const theme = useTheme();
-  const [modalType, setModalType] = React.useState("");
+type RootNavigationProps = NativeStackNavigationProp<RootStackParamList>;
 
-  const {control} = useForm({
+type FormValues = {
+  location: string;
+  isLocale: boolean;
+  isShipping: boolean;
+  package: null | Package;
+};
+
+export default function ProductAddDeliveryMethodScreen({
+  route,
+  navigation,
+}: Props) {
+  const theme = useTheme();
+  const {enqueueSuccessSnackbar} = useAppSnackbar();
+  const rootNavigation = useNavigation<RootNavigationProps>();
+  const profile = useAppSelector(state => state.auth.profile);
+  const [getPackages, {isFetching}] = useLazyGetPackagesQuery();
+  const {data: getMetalsResponse, isLoading: isLoadingCategories} =
+    useGetPackagesQuery({});
+  const actionCreaterRef = React.useRef<ReturnType<typeof getPackages> | null>(
+    null,
+  );
+  const [createProduct, {isLoading: isCreatingProduct, isSuccess, data}] =
+    useCreateProductMutation();
+
+  const [packagePages, setPackagePages] = React.useState<
+    Array<GetPackagesResponse["items"]>
+  >([]);
+
+  React.useEffect(() => {
+    if (!isLoadingCategories && !!getMetalsResponse) {
+      setPackagePages(() => {
+        return [getMetalsResponse.items];
+      });
+    }
+  }, [getMetalsResponse, isLoadingCategories]);
+
+  const getNextPackages = async () => {
+    if (isFetching) {
+      return;
+    }
+
+    const lastPage = packagePages[packagePages.length - 1];
+
+    if (lastPage && !lastPage.has_more_data) {
+      return;
+    }
+
+    const params: PaginationQueryParams = {};
+
+    if (lastPage) {
+      params.page = lastPage.current_page + 1;
+    }
+
+    actionCreaterRef.current = getPackages(params, true);
+
+    try {
+      const productResponse = await actionCreaterRef.current.unwrap();
+
+      setPackagePages(prevPages => {
+        return prevPages.concat(productResponse.items);
+      });
+    } finally {
+    }
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (actionCreaterRef.current) {
+        actionCreaterRef.current.abort();
+      }
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (isSuccess && !!data) {
+      enqueueSuccessSnackbar({
+        text1: data.success,
+      });
+      navigation.replace(PostItemStackRoutes.SUCCESS);
+    }
+  }, [isSuccess, enqueueSuccessSnackbar, data]);
+
+  const metals = React.useMemo(() => {
+    if (isLoadingCategories) {
+      return new Array(10).fill(1).map((_, id) => ({
+        id,
+        type: "skeleton" as const,
+      }));
+    }
+
+    return packagePages.flatMap(packagePage =>
+      packagePage.data.map(pkg => ({
+        type: "data" as const,
+        ...pkg,
+      })),
+    );
+  }, [isLoadingCategories, packagePages]);
+
+  const {control, setValue, handleSubmit} = useForm<FormValues>({
     defaultValues: {
       location: "",
-      package: "small",
-      sellNShipIntl: false,
+      package: null,
+      isLocale: false,
+      isShipping: false,
     },
   });
 
-  const handleNextScreen = () => {
-    navigation.navigate(PostItemStackRoutes.SUCCESS);
-  };
+  React.useEffect(() => {
+    if (profile) {
+      setValue("location", `${profile.city}, ${profile.country}`);
+    }
+  }, [profile, setValue]);
+
+  const handlePostItem = handleSubmit(values => {
+    createProduct({
+      location: values.location,
+      latitude: profile?.latitude,
+      longitude: profile?.longitude,
+      package_id: values.package!.id,
+      duration: route.params.duration,
+      quantity: route.params.quantity,
+      title: route.params.productTitle,
+      details: route.params.description,
+      buy_price: route.params.buynowprice,
+      attributes: route.params.attributes,
+      selected_metals: route.params.metals,
+      category_id: route.params.categoryId,
+      is_locale: values.isLocale ? "1" : "0",
+      condition_id: route.params.conditionId,
+      starting_price: route.params.startingPrice,
+      is_shipping: values.isShipping ? "1" : "0",
+      sub_category_id: route.params.subCategoryId,
+      show_metal_price: route.params.showMetalPrice,
+      is_list_now: route.params.isListNow ? "1" : "0",
+      expected_date_for_list: route.params.expectedDateForList,
+      images: [
+        route.params.productCoverImage,
+        ...route.params.productGalleryImages,
+      ],
+    });
+  });
 
   return (
-    <ScrollView style={{padding: 15}}>
-      <Controller
-        name={"location"}
-        control={control}
-        render={({field}) => {
-          return (
-            <React.Fragment>
-              <ListItem
-                hasTVPreferredFocus
-                tvParallaxProperties={{}}
-                Component={TouchableOpacity}
-                containerStyle={{
-                  paddingHorizontal: 0,
-                  backgroundColor: "transparent",
-                }}
-                onPress={() => setModalType("location")}>
-                <ListItem.Content>
-                  <ListItem.Title>Location: {field.value}</ListItem.Title>
-                </ListItem.Content>
-
-                <Entypo name={"edit"} size={15} />
-              </ListItem>
-
-              <LocationSelectionModal
-                onChange={field.onChange}
-                open={modalType === "location"}
-                onClose={() => setModalType("")}
-              />
-
-              <Divider style={{height: 2}} />
-            </React.Fragment>
-          );
-        }}
-      />
-
-      <View style={{height: 15}} />
-
-      <Controller
-        name={"sellNShipIntl"}
-        control={control}
-        render={({field}) => {
-          return (
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}>
-              <View>
-                <Text
-                  style={{
-                    marginBottom: 10,
-                    fontSize: 17,
-                    color: "#222222",
-                  }}>
-                  Sell & Ship International
-                </Text>
-
-                <Text>15% Services fee applies</Text>
-              </View>
-
-              <View>
-                <Switch onValueChange={field.onChange} value={field.value} />
-              </View>
-            </View>
-          );
-        }}
-      />
-
-      <View style={{height: 15}} />
-
+    <View style={{padding: 15}}>
       <Controller
         control={control}
         name={"package"}
         render={({field}) => {
           return (
             <React.Fragment>
-              <ListItem
-                hasTVPreferredFocus
-                tvParallaxProperties={{}}
-                Component={TouchableOpacity}
-                onPress={() => field.onChange("small")}
-                containerStyle={{
-                  paddingLeft: 0,
-                  alignItems: "flex-start",
-                  backgroundColor: "#F7F7F7F",
-                }}>
-                <ListItem.CheckBox
-                  iconType={"material"}
-                  checked={field.value === "small"}
-                  checkedIcon={"radio-button-checked"}
-                  uncheckedIcon={"radio-button-unchecked"}
-                  onPress={() => field.onChange("small")}
-                />
+              <FlatList<typeof metals[0]>
+                data={metals}
+                onEndReached={getNextPackages}
+                ListHeaderComponent={() => (
+                  <React.Fragment>
+                    <Controller
+                      name={"location"}
+                      control={control}
+                      render={({field}) => {
+                        return (
+                          <React.Fragment>
+                            <ListItem
+                              hasTVPreferredFocus
+                              tvParallaxProperties={{}}
+                              Component={TouchableOpacity}
+                              containerStyle={{
+                                paddingHorizontal: 0,
+                                backgroundColor: "transparent",
+                              }}
+                              onPress={() => {
+                                rootNavigation.navigate(
+                                  RootStackRoutes.CHOOSE_COUNTRY,
+                                  {
+                                    nextScreen: {
+                                      name: route.name,
+                                      params: route.params,
+                                    },
+                                  },
+                                );
+                              }}>
+                              <ListItem.Content>
+                                <ListItem.Title>
+                                  Location: {field.value}
+                                </ListItem.Title>
+                              </ListItem.Content>
 
-                <ListItem.Content>
-                  <ListItem.Title
-                    style={{
-                      color:
-                        field.value === "small"
-                          ? theme.colors.primary
-                          : theme.colors.text,
-                    }}>
-                    Small Pckage
-                  </ListItem.Title>
+                              <Entypo name={"edit"} size={15} />
+                            </ListItem>
 
-                  <View
-                    style={{
-                      marginTop: 10,
-                    }}>
-                    <Text>Approx: 9” x 6” x 3”</Text>
-                    <Text>No side over 18” or weight over 20</Text>
-                    <Text>pounds. Buyer Pays $7.99</Text>
-                  </View>
-                </ListItem.Content>
-              </ListItem>
+                            <Divider style={{height: 2}} />
+                          </React.Fragment>
+                        );
+                      }}
+                    />
 
-              <ListItem
-                hasTVPreferredFocus
-                tvParallaxProperties={{}}
-                Component={TouchableOpacity}
-                onPress={() => field.onChange("medium")}
-                containerStyle={{
-                  paddingLeft: 0,
-                  alignItems: "flex-start",
-                  backgroundColor: "#F7F7F7F",
-                }}>
-                <ListItem.CheckBox
-                  iconType={"material"}
-                  checked={field.value === "medium"}
-                  checkedIcon={"radio-button-checked"}
-                  uncheckedIcon={"radio-button-unchecked"}
-                  onPress={() => field.onChange("medium")}
-                />
+                    <View style={{height: 15}} />
 
-                <ListItem.Content>
-                  <ListItem.Title
-                    style={{
-                      color:
-                        field.value === "medium"
-                          ? theme.colors.primary
-                          : theme.colors.text,
-                    }}>
-                    Medium Pckage
-                  </ListItem.Title>
+                    <Controller
+                      name={"isShipping"}
+                      control={control}
+                      render={({field}) => {
+                        return (
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}>
+                            <View>
+                              <Text
+                                style={{
+                                  fontSize: 17,
+                                  color: "#222222",
+                                  marginBottom: 10,
+                                }}>
+                                Sell & Ship International
+                              </Text>
 
-                  <View
-                    style={{
-                      marginTop: 10,
-                    }}>
-                    <Text>Approx: 12” x 9” x 6”</Text>
-                    <Text>No side over 18” or weight over 20 pounds.</Text>
-                    <Text>Buyer Pays $11.99</Text>
-                  </View>
-                </ListItem.Content>
-              </ListItem>
+                              <Text>15% Services fee applies</Text>
+                            </View>
 
-              <ListItem
-                hasTVPreferredFocus
-                tvParallaxProperties={{}}
-                Component={TouchableOpacity}
-                onPress={() => field.onChange("large")}
-                containerStyle={{
-                  paddingLeft: 0,
-                  alignItems: "flex-start",
-                  backgroundColor: "#F7F7F7F",
-                }}>
-                <ListItem.CheckBox
-                  iconType={"material"}
-                  checked={field.value === "large"}
-                  checkedIcon={"radio-button-checked"}
-                  uncheckedIcon={"radio-button-unchecked"}
-                  onPress={() => field.onChange("large")}
-                />
+                            <View>
+                              <Switch
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              />
+                            </View>
+                          </View>
+                        );
+                      }}
+                    />
 
-                <ListItem.Content>
-                  <ListItem.Title
-                    style={{
-                      color:
-                        field.value === "large"
-                          ? theme.colors.primary
-                          : theme.colors.text,
-                    }}>
-                    Large Pckage
-                  </ListItem.Title>
+                    <View style={{height: 15}} />
 
-                  <View
-                    style={{
-                      marginTop: 10,
-                    }}>
-                    <Text>Approx: 14” x 10” x 6”</Text>
-                    <Text>No side over 18” or weight over 20</Text>
-                    <Text>pounds. Buyer Pays $14.99</Text>
-                  </View>
-                </ListItem.Content>
-              </ListItem>
+                    <Divider style={{height: 2}} />
+
+                    <View style={{height: 15}} />
+                    <Controller
+                      name={"isLocale"}
+                      control={control}
+                      render={({field}) => {
+                        return (
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}>
+                            <View>
+                              <Text
+                                style={{
+                                  fontSize: 17,
+                                  marginBottom: 10,
+                                  color: "#222222",
+                                }}>
+                                Local Pickup
+                              </Text>
+                            </View>
+
+                            <View>
+                              <Switch
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              />
+                            </View>
+                          </View>
+                        );
+                      }}
+                    />
+
+                    <View style={{height: 15}} />
+                  </React.Fragment>
+                )}
+                ListFooterComponent={() => (
+                  <AppPrimaryButton
+                    text={"Submit"}
+                    onPress={handlePostItem}
+                    disabled={isCreatingProduct}
+                    containerStyle={{marginVertical: 35}}
+                  />
+                )}
+                renderItem={({item}) => {
+                  if (item.type === "skeleton") {
+                    return (
+                      <SkeletonPlaceholder>
+                        <SkeletonPlaceholder.Item paddingBottom={15}>
+                          <SkeletonPlaceholder.Item
+                            height={100}
+                            borderRadius={5}
+                          />
+                        </SkeletonPlaceholder.Item>
+                      </SkeletonPlaceholder>
+                    );
+                  }
+
+                  return (
+                    <ListItem
+                      hasTVPreferredFocus
+                      tvParallaxProperties={{}}
+                      Component={TouchableOpacity}
+                      onPress={() => field.onChange(item)}
+                      containerStyle={{
+                        paddingLeft: 0,
+                        alignItems: "flex-start",
+                        backgroundColor: "#F7F7F7F",
+                      }}>
+                      <ListItem.CheckBox
+                        iconType={"material"}
+                        checkedIcon={"radio-button-checked"}
+                        checked={field.value?.id === item.id}
+                        onPress={() => field.onChange(item)}
+                        uncheckedIcon={"radio-button-unchecked"}
+                      />
+
+                      <ListItem.Content>
+                        <ListItem.Title
+                          style={{
+                            color:
+                              field.value?.id === item.id
+                                ? theme.colors.primary
+                                : theme.colors.text,
+                          }}>
+                          {item.name}
+                        </ListItem.Title>
+
+                        <View
+                          style={{
+                            marginTop: 10,
+                          }}>
+                          <Text>Approx: {item.size}</Text>
+                          <Text>Weight: {item.weight}</Text>
+                          <Text>pounds. Buyer Pays ${item.price}</Text>
+                        </View>
+                      </ListItem.Content>
+                    </ListItem>
+                  );
+                }}
+              />
             </React.Fragment>
           );
         }}
       />
-
-      <AppPrimaryButton
-        text={"Submit"}
-        onPress={handleNextScreen}
-        containerStyle={{marginVertical: 35}}
-      />
-    </ScrollView>
+    </View>
   );
 }

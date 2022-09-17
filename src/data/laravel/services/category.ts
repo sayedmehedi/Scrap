@@ -2,9 +2,13 @@ import {api} from "./api";
 import {QUERY_KEYS} from "@constants/query";
 import {
   AllCategoryResponse,
-  CategoryListResponse,
   HomeCategoryResponse,
+  CategoryListResponse,
   PaginationQueryParams,
+  GetAttributesByCatIdRequest,
+  GetAttributesByCatIdResponse,
+  GetSubcategoriesByCatIdRequest,
+  GetSubcategoriesByCatIdResponse,
 } from "@src/types";
 
 // Define a service using a base URL and expected endpoints
@@ -61,6 +65,47 @@ export const categoryApi = api.injectEndpoints({
             : [{type: QUERY_KEYS.CATEGORY, id: "LIST"}],
       },
     ),
+    getSubcategoryByCatId: builder.query<
+      GetSubcategoriesByCatIdResponse,
+      GetSubcategoriesByCatIdRequest
+    >({
+      query({categoryId}) {
+        return {
+          url: `sub-categories/${categoryId}`,
+        };
+      },
+      providesTags: (result, _error, {categoryId}) =>
+        result
+          ? [
+              {type: QUERY_KEYS.CATEGORY, id: `CAT-${categoryId}-SUB-CAT-LIST`},
+              ...result.sub_categories.map(({id}) => ({
+                type: QUERY_KEYS.CATEGORY as const,
+                id: `CAT-${categoryId}-SUB-CAT-${id}`,
+              })),
+            ]
+          : [{type: QUERY_KEYS.CATEGORY, id: `CAT-${categoryId}-SUB-CAT-LIST`}],
+    }),
+
+    getAttributesByCatId: builder.query<
+      GetAttributesByCatIdResponse,
+      GetAttributesByCatIdRequest
+    >({
+      query({categoryId}) {
+        return {
+          url: `category-attributes/${categoryId}`,
+        };
+      },
+      providesTags: (result, _error, {categoryId}) =>
+        result
+          ? [
+              {type: QUERY_KEYS.CATEGORY, id: `CAT-${categoryId}-ATTR-LIST`},
+              ...result.attributes.map(({id}) => ({
+                type: QUERY_KEYS.CATEGORY as const,
+                id: `CAT-${categoryId}-ATTR-${id}`,
+              })),
+            ]
+          : [{type: QUERY_KEYS.CATEGORY, id: `CAT-${categoryId}-ATTR-LIST`}],
+    }),
   }),
 });
 
@@ -71,5 +116,7 @@ export const {
   useGetAllCategoriesQuery,
   useLazyGetCategoryListQuery,
   useLazyGetAllCategoriesQuery,
+  useGetAttributesByCatIdQuery,
+  useGetSubcategoryByCatIdQuery,
   useGetHomeScreenCategoriesQuery,
 } = categoryApi;

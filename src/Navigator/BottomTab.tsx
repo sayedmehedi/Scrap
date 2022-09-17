@@ -1,46 +1,61 @@
-import React from 'react';
-import HomeStack from './HomeStack';
-import Colors from '../constants/Colors';
-import ProfileStack from './ProfileStack';
-import { useTheme } from 'react-native-paper';
-import { useAppSelector } from '@hooks/store';
-import { HomeTabParamList } from '@src/types';
-import SellingScreen from '../Screen/SellingScreen';
-import Entypo from 'react-native-vector-icons/Entypo';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import PostItemStackNavigator from './PostItemStackNavigator';
-import { selectIsAuthenticated } from '@store/slices/authSlice';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { View, Text, TouchableNativeFeedback } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import ConversationListScreen from '@src/Screen/ConversationListScreen';
-import { BottomTabBarButtonProps, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React from "react";
+import HomeStack from "./HomeStack";
+import Colors from "../constants/Colors";
+import ProfileStack from "./ProfileStack";
+import {useTheme} from "react-native-paper";
+import {useAppSelector} from "@hooks/store";
+import {HomeTabParamList} from "@src/types";
+import useAppSnackbar from "@hooks/useAppSnackbar";
+import SellingScreen from "../Screen/SellingScreen";
+import Entypo from "react-native-vector-icons/Entypo";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import EvilIcons from "react-native-vector-icons/EvilIcons";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import PostItemStackNavigator from "./PostItemStackNavigator";
+import {selectIsAuthenticated} from "@store/slices/authSlice";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import {View, Text, TouchableNativeFeedback} from "react-native";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import ConversationListScreen from "@src/Screen/ConversationListScreen";
+import {
+  BottomTabBarButtonProps,
+  createBottomTabNavigator,
+} from "@react-navigation/bottom-tabs";
 import {
   HomeTabRoutes,
   AuthStackRoutes,
   RootStackRoutes,
-} from '../constants/routes';
+} from "../constants/routes";
 
 const HomeTab = createBottomTabNavigator<HomeTabParamList>();
 
-const buttonNativeFeedback: React.FC<BottomTabBarButtonProps> = ({ children, style, ...props }) => (
+const buttonNativeFeedback: React.FC<BottomTabBarButtonProps> = ({
+  children,
+  style,
+  ...props
+}) => (
   <TouchableNativeFeedback
     {...props}
-    background={TouchableNativeFeedback.Ripple('#F5DCE7', true)}>
+    background={TouchableNativeFeedback.Ripple("#F5DCE7", true)}>
     <View style={style}>{children}</View>
   </TouchableNativeFeedback>
 );
 
-
 const BottomTab = () => {
   const theme = useTheme();
+  const {enqueueInfoSnackbar} = useAppSnackbar();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const profileHasCityData = useAppSelector(
+    state => !!state.auth.profile?.city,
+  );
+
+  const profileHasCoutryData = useAppSelector(
+    state => !!state.auth.profile?.country,
+  );
 
   return (
     <HomeTab.Navigator
-      screenListeners={({ navigation, route }) => {
+      screenListeners={({navigation, route}) => {
         return {
           tabPress(e) {
             if (route.name !== HomeTabRoutes.HOME && !isAuthenticated) {
@@ -52,23 +67,53 @@ const BottomTab = () => {
                     name: RootStackRoutes.HOME,
                     params: {
                       screen: route.name,
-                      params: route.params
-                    }
-                  }
-                }
+                      params: route.params,
+                    },
+                  },
+                },
               });
+            } else if (route.name === HomeTabRoutes.POST_ITEM) {
+              if (isAuthenticated && !profileHasCityData) {
+                enqueueInfoSnackbar({
+                  text1: "Please add your location info",
+                });
+                e.preventDefault();
+                navigation.replace(RootStackRoutes.CHOOSE_CITY, {
+                  params: {
+                    nextScreen: {
+                      name: route.name,
+                      params: route.params,
+                    },
+                  },
+                });
+              }
+
+              if (isAuthenticated && !profileHasCoutryData) {
+                enqueueInfoSnackbar({
+                  text1: "Please add your location info",
+                });
+                e.preventDefault();
+
+                navigation.replace(RootStackRoutes.CHOOSE_COUNTRY, {
+                  params: {
+                    nextScreen: {
+                      name: route.name,
+                      params: route.params,
+                    },
+                  },
+                });
+              }
             }
           },
         };
       }}
-
       screenOptions={{
         headerStyle: {
           backgroundColor: theme.colors.primary,
         },
         headerTitleStyle: {
           fontSize: 18,
-          fontFamily: 'Inter-Bold',
+          fontFamily: "Inter-Bold",
           // @ts-ignore
           color: theme.colors.white,
         },
@@ -81,7 +126,7 @@ const BottomTab = () => {
           paddingBottom: 0,
           shadowRadius: 3.84,
           shadowOpacity: 0.2,
-          backgroundColor: '#FFFFFF',
+          backgroundColor: "#FFFFFF",
           shadowColor: Colors.PRIMARY_COLOR,
           shadowOffset: {
             width: 0,
@@ -91,30 +136,29 @@ const BottomTab = () => {
         tabBarHideOnKeyboard: true,
         tabBarButton: buttonNativeFeedback,
       }}>
-
       <HomeTab.Screen
         component={HomeStack}
         name={HomeTabRoutes.HOME}
         options={{
           headerShown: false,
           // cardStyleInterpolator: forFade,
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({focused}) => (
             <View
               style={{
-                justifyContent: 'center',
-                alignItems: 'center',
+                justifyContent: "center",
+                alignItems: "center",
                 flex: 1,
               }}>
               <Entypo
                 name="home"
                 size={22}
-                color={focused ? Colors.PRIMARY_COLOR : 'gray'}
+                color={focused ? Colors.PRIMARY_COLOR : "gray"}
               />
               <Text
                 style={{
-                  color: focused ? Colors.PRIMARY_COLOR : 'gray',
+                  color: focused ? Colors.PRIMARY_COLOR : "gray",
                   fontSize: 10,
-                  fontFamily: 'Inter-SemiBold',
+                  fontFamily: "Inter-SemiBold",
                 }}>
                 Home
               </Text>
@@ -125,13 +169,13 @@ const BottomTab = () => {
       <HomeTab.Screen
         name={HomeTabRoutes.CHAT}
         component={ConversationListScreen}
-        options={({ navigation }) => ({
-          title: 'Messages',
+        options={({navigation}) => ({
+          title: "Messages",
           headerRight: () => (
-            <View style={{ paddingRight: 10 }}>
+            <View style={{paddingRight: 10}}>
               <MaterialIcons
                 size={22}
-                color={'white'}
+                color={"white"}
                 name="notifications-none"
                 onPress={() => {
                   navigation.navigate(RootStackRoutes.NOTIFICATIONS);
@@ -139,19 +183,19 @@ const BottomTab = () => {
               />
             </View>
           ),
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({focused}) => (
             <View
-              style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+              style={{alignItems: "center", justifyContent: "center", flex: 1}}>
               <AntDesign
                 size={22}
                 name="message1"
-                color={focused ? Colors.PRIMARY_COLOR : 'gray'}
+                color={focused ? Colors.PRIMARY_COLOR : "gray"}
               />
               <Text
                 style={{
                   fontSize: 10,
-                  fontFamily: 'Inter-SemiBold',
-                  color: focused ? Colors.PRIMARY_COLOR : 'gray',
+                  fontFamily: "Inter-SemiBold",
+                  color: focused ? Colors.PRIMARY_COLOR : "gray",
                 }}>
                 Message
               </Text>
@@ -171,18 +215,18 @@ const BottomTab = () => {
                 flex: 1,
                 width: 80,
                 padding: 15,
-                alignItems: 'center',
+                alignItems: "center",
                 borderTopLeftRadius: 35,
                 borderTopRightRadius: 35,
-                justifyContent: 'center',
+                justifyContent: "center",
                 backgroundColor: Colors.PRIMARY_COLOR,
               }}>
-              <FontAwesome5 name="edit" size={20} color={'white'} />
+              <FontAwesome5 name="edit" size={20} color={"white"} />
               <Text
                 style={{
-                  color: 'white',
+                  color: "white",
                   fontSize: 10,
-                  fontFamily: 'Inter-SemiBold',
+                  fontFamily: "Inter-SemiBold",
                 }}>
                 Post Item
               </Text>
@@ -194,32 +238,36 @@ const BottomTab = () => {
       <HomeTab.Screen
         component={SellingScreen}
         name={HomeTabRoutes.SELLING}
-        options={({ navigation }) => {
+        options={({navigation}) => {
           return {
-            title: 'Selling',
+            title: "Selling",
             // cardStyleInterpolator: forFade,
-            tabBarIcon: ({ focused }) => (
+            tabBarIcon: ({focused}) => (
               <View
-                style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flex: 1,
+                }}>
                 <Ionicons
                   name="pricetag"
                   size={22}
-                  color={focused ? Colors.PRIMARY_COLOR : 'gray'}
+                  color={focused ? Colors.PRIMARY_COLOR : "gray"}
                 />
                 <Text
                   style={{
-                    color: focused ? Colors.PRIMARY_COLOR : 'gray',
+                    color: focused ? Colors.PRIMARY_COLOR : "gray",
                     fontSize: 10,
-                    fontFamily: 'Inter-SemiBold',
+                    fontFamily: "Inter-SemiBold",
                   }}>
                   Selling
                 </Text>
               </View>
             ),
             headerRight: () => (
-              <View style={{ paddingRight: 10 }}>
+              <View style={{paddingRight: 10}}>
                 <MaterialIcons
-                  color={'white'}
+                  color={"white"}
                   size={22}
                   name="notifications-none"
                   onPress={() => {
@@ -228,7 +276,7 @@ const BottomTab = () => {
                 />
               </View>
             ),
-          }
+          };
         }}
       />
 
@@ -237,19 +285,19 @@ const BottomTab = () => {
         name={HomeTabRoutes.PROFILE}
         options={{
           headerShown: false,
-          tabBarIcon: ({ focused }) => (
+          tabBarIcon: ({focused}) => (
             <View
-              style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+              style={{alignItems: "center", justifyContent: "center", flex: 1}}>
               <EvilIcons
                 name="user"
                 size={30}
-                color={focused ? Colors.PRIMARY_COLOR : 'gray'}
+                color={focused ? Colors.PRIMARY_COLOR : "gray"}
               />
               <Text
                 style={{
-                  color: focused ? Colors.PRIMARY_COLOR : 'gray',
+                  color: focused ? Colors.PRIMARY_COLOR : "gray",
                   fontSize: 10,
-                  fontFamily: 'Inter-SemiBold',
+                  fontFamily: "Inter-SemiBold",
                 }}>
                 Profile
               </Text>

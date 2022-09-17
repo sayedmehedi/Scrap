@@ -1,16 +1,16 @@
 import React from "react";
-import { AuthStackParamList } from "@src/types";
+import {AuthStackParamList} from "@src/types";
 import useAppSnackbar from "@hooks/useAppSnackbar";
-import { useTheme, Text } from "react-native-paper";
-import { useForm, Controller } from "react-hook-form";
+import {useTheme, Text} from "react-native-paper";
+import {useForm, Controller} from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
-import { ErrorMessage } from "@hookform/error-message";
-import { AuthStackRoutes } from "../../constants/routes";
+import {ErrorMessage} from "@hookform/error-message";
+import {AuthStackRoutes} from "../../constants/routes";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
-import { useRegisterMutation } from "@data/laravel/services/auth";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { addServerErrors, isJoteyQueryError } from "@utils/error-handling";
+import {useRegisterMutation} from "@data/laravel/services/auth";
+import {SafeAreaProvider} from "react-native-safe-area-context";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {addServerErrors, isJoteyQueryError} from "@utils/error-handling";
 import {
   View,
   Image,
@@ -18,7 +18,7 @@ import {
   Pressable,
   KeyboardAvoidingView,
 } from "react-native";
-import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import {ScrollView, TouchableOpacity} from "react-native-gesture-handler";
 import {
   setGlobalStyles,
   FloatingLabelInput,
@@ -56,34 +56,40 @@ type Props = NativeStackScreenProps<
   typeof AuthStackRoutes.REGISTRATION
 >;
 
-const RegistrationScreen = ({ navigation }: Props) => {
+const RegistrationScreen = ({navigation}: Props) => {
   const theme = useTheme();
-  const { enqueueSuccessSnackbar } = useAppSnackbar();
+  const {enqueueSuccessSnackbar} = useAppSnackbar();
   const [togglePassword, setTogglePassword] = React.useState(false);
-  const [toggleConfirmPassword, setToggleConfirmPassword] = React.useState(false);
+  const [toggleConfirmPassword, setToggleConfirmPassword] =
+    React.useState(false);
 
-  const [register, { isLoading, isError, error, isSuccess, data }] =
+  const [register, {isLoading, isError, error, isSuccess, data}] =
     useRegisterMutation();
 
-  const { control, handleSubmit, setError,
-    formState: { errors }, reset } = useForm({
-      defaultValues: {
-        name: "",
-        email: "",
-        password: "",
-        password_confirmation: ""
-      },
-    });
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: {errors},
+    reset,
+  } = useForm({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      password_confirmation: "",
+    },
+  });
 
   React.useEffect(() => {
-    if (isSuccess && data) {
+    if (isSuccess && !!data) {
       enqueueSuccessSnackbar({
-        text1: data.success
-      })
+        text1: data.success,
+      });
 
-      reset()
+      reset();
     }
-  }, [enqueueSuccessSnackbar, isSuccess, data, reset])
+  }, [enqueueSuccessSnackbar, isSuccess, data, reset]);
 
   React.useEffect(() => {
     if (isError && isJoteyQueryError(error)) {
@@ -91,26 +97,26 @@ const RegistrationScreen = ({ navigation }: Props) => {
     }
   }, [setError, isError, error]);
 
-  const handleRegistration = handleSubmit((values) => {
-    register(values)
+  const handleRegistration = handleSubmit(values => {
+    register(values);
   });
 
   return (
     <SafeAreaProvider>
-      <ScrollView contentContainerStyle={{ padding: 15 }}>
-        <View style={{ flex: 1, }}>
-          <View style={{ alignItems: "center" }}>
+      <ScrollView contentContainerStyle={{padding: 15}}>
+        <View style={{flex: 1}}>
+          <View style={{alignItems: "center"}}>
             <View
               style={{
                 paddingBottom: 10,
               }}>
               <Image
-                style={{ height: 100, width: 100 }}
+                style={{height: 100, width: 100}}
                 source={require("../../assets/Images/logo.png")}
               />
             </View>
 
-            <Text style={{ fontSize: 22, fontWeight: "bold" }}>Sign Up</Text>
+            <Text style={{fontSize: 22, fontWeight: "bold"}}>Sign Up</Text>
           </View>
 
           <View
@@ -119,7 +125,7 @@ const RegistrationScreen = ({ navigation }: Props) => {
               flexDirection: "row",
             }}>
             <Pressable
-              style={{ width: "50%", alignItems: "center" }}
+              style={{width: "50%", alignItems: "center"}}
               onPress={() => navigation.navigate(AuthStackRoutes.LOGIN, {})}>
               <Text
                 style={{
@@ -141,7 +147,7 @@ const RegistrationScreen = ({ navigation }: Props) => {
               />
             </Pressable>
 
-            <View style={{ width: "50%", alignItems: "center" }}>
+            <View style={{width: "50%", alignItems: "center"}}>
               <Text
                 style={{
                   margin: 15,
@@ -164,14 +170,13 @@ const RegistrationScreen = ({ navigation }: Props) => {
 
           <ScrollView>
             <KeyboardAvoidingView
-              style={{ flexWrap: "wrap" }}
+              style={{flexWrap: "wrap"}}
               behavior={Platform.OS === "ios" ? "padding" : "height"}>
-
-              <View style={{ width: "100%", marginBottom: 16 }}>
+              <View style={{width: "100%", marginBottom: 16}}>
                 <Controller
                   control={control}
                   name={"name"}
-                  render={({ field }) => {
+                  render={({field}) => {
                     return (
                       <FloatingLabelInput
                         label={"Full Name"}
@@ -185,19 +190,19 @@ const RegistrationScreen = ({ navigation }: Props) => {
                 <ErrorMessage
                   name={"name"}
                   errors={errors}
-                  render={({ message }) => (
-                    <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                  render={({message}) => (
+                    <Text style={{color: theme.colors.error, marginTop: 10}}>
                       {message}
                     </Text>
                   )}
                 />
               </View>
 
-              <View style={{ width: "100%", marginBottom: 16 }}>
+              <View style={{width: "100%", marginBottom: 16}}>
                 <Controller
                   control={control}
                   name={"email"}
-                  render={({ field }) => {
+                  render={({field}) => {
                     return (
                       <FloatingLabelInput
                         label={"Email"}
@@ -212,19 +217,19 @@ const RegistrationScreen = ({ navigation }: Props) => {
                 <ErrorMessage
                   name={"email"}
                   errors={errors}
-                  render={({ message }) => (
-                    <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                  render={({message}) => (
+                    <Text style={{color: theme.colors.error, marginTop: 10}}>
                       {message}
                     </Text>
                   )}
                 />
               </View>
 
-              <View style={{ width: "100%", marginBottom: 16 }}>
+              <View style={{width: "100%", marginBottom: 16}}>
                 <Controller
                   control={control}
                   name={"password"}
-                  render={({ field }) => {
+                  render={({field}) => {
                     return (
                       <FloatingLabelInput
                         isPassword
@@ -254,19 +259,19 @@ const RegistrationScreen = ({ navigation }: Props) => {
                 <ErrorMessage
                   name={"password"}
                   errors={errors}
-                  render={({ message }) => (
-                    <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                  render={({message}) => (
+                    <Text style={{color: theme.colors.error, marginTop: 10}}>
                       {message}
                     </Text>
                   )}
                 />
               </View>
 
-              <View style={{ width: "100%" }}>
+              <View style={{width: "100%"}}>
                 <Controller
                   control={control}
                   name={"password_confirmation"}
-                  render={({ field }) => {
+                  render={({field}) => {
                     return (
                       <FloatingLabelInput
                         isPassword
@@ -284,7 +289,9 @@ const RegistrationScreen = ({ navigation }: Props) => {
                             }>
                             <Entypo
                               size={20}
-                              name={toggleConfirmPassword ? "eye-with-line" : "eye"}
+                              name={
+                                toggleConfirmPassword ? "eye-with-line" : "eye"
+                              }
                             />
                           </Pressable>
                         }
@@ -296,8 +303,8 @@ const RegistrationScreen = ({ navigation }: Props) => {
                 <ErrorMessage
                   name={"password_confirmation"}
                   errors={errors}
-                  render={({ message }) => (
-                    <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                  render={({message}) => (
+                    <Text style={{color: theme.colors.error, marginTop: 10}}>
                       {message}
                     </Text>
                   )}

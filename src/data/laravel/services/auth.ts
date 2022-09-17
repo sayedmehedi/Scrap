@@ -181,6 +181,7 @@ export const {
   useLogoutMutation,
   useGetProfileQuery,
   useRegisterMutation,
+  useLazyGetProfileQuery,
   useGetTransactionsQuery,
   useGetNotificationsQuery,
   useUpdateProfileMutation,

@@ -923,45 +923,62 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                         backgroundColor: "#EFEFEF",
                       }}
                     />
-                    {metalsLivePrices.map((rowData, index) => (
+                    {metalsLivePrices.length === 0 ? (
                       <TableWrapper
-                        key={index}
                         style={{
-                          flexDirection: "row",
                           borderWidth: 1,
                           borderTopWidth: 0,
+                          flexDirection: "row",
                           borderColor: "#D1D1D1",
                         }}>
                         <Cell
-                          data={rowData[0]}
-                          textStyle={{
-                            margin: 6,
-                            color: "#252522",
-                            // textAlign: "center",
-                          }}
-                        />
-
-                        <Cell
-                          data={rowData[1]}
-                          flex={1.5}
-                          textStyle={{
-                            margin: 6,
-                            color: "#252522",
-                            // textAlign: "center",
-                          }}
-                        />
-
-                        <Cell
-                          data={metalsChangesCell(rowData[2])}
-                          textStyle={{
-                            margin: 6,
-                            color: "#252522",
-                            // textAlign: "center",
-                          }}
-                          flex={2}
+                          flex={1}
+                          data={"No Data"}
+                          style={{padding: 10}}
+                          textStyle={{textAlign: "center"}}
                         />
                       </TableWrapper>
-                    ))}
+                    ) : (
+                      metalsLivePrices.map((rowData, index) => (
+                        <TableWrapper
+                          key={index}
+                          style={{
+                            flexDirection: "row",
+                            borderWidth: 1,
+                            borderTopWidth: 0,
+                            borderColor: "#D1D1D1",
+                          }}>
+                          <Cell
+                            data={rowData[0]}
+                            textStyle={{
+                              margin: 6,
+                              color: "#252522",
+                              // textAlign: "center",
+                            }}
+                          />
+
+                          <Cell
+                            data={rowData[1]}
+                            flex={1.5}
+                            textStyle={{
+                              margin: 6,
+                              color: "#252522",
+                              // textAlign: "center",
+                            }}
+                          />
+
+                          <Cell
+                            data={metalsChangesCell(rowData[2])}
+                            textStyle={{
+                              margin: 6,
+                              color: "#252522",
+                              // textAlign: "center",
+                            }}
+                            flex={2}
+                          />
+                        </TableWrapper>
+                      ))
+                    )}
                     {/* <Rows textStyle={{ margin: 6, color: '#252522' }} style={{ borderWidth: 1, borderTopWidth: 0, borderColor: "#D1D1D1" }} data={} /> */}
                   </Table>
                 )}

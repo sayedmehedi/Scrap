@@ -7,17 +7,17 @@ import {NativeStackScreenProps} from "@react-navigation/native-stack";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
-  typeof RootStackRoutes.CONFIRM_PURCHASE
+  typeof RootStackRoutes.ADD_SHIPPING_ADDRESS
 >;
 
-const ConfirmPurchaseScreen = ({navigation, route}: Props) => {
+const AddShippingAddressScreen = ({navigation, route}: Props) => {
   const profile = useAppSelector(state => state.auth.profile);
 
   return (
     <View>
-      <Text>ConfirmPurchaseScreen</Text>
+      <Text>AddShippingAddressScreen</Text>
     </View>
   );
 };
 
-export default ConfirmPurchaseScreen;
+export default AddShippingAddressScreen;

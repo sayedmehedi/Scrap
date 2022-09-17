@@ -39,8 +39,6 @@ export default function registerHttpClient(container: Container) {
       const baseURL = config.metalsApiBaseUrl;
       const accessKey = config.metalsApiToken;
 
-      console.log("access key", accessKey);
-
       const apiHttpClient = axios.create({
         baseURL,
         headers: {

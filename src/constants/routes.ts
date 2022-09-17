@@ -11,6 +11,7 @@ export const RootStackRoutes = {
   PLACE_BID: "placeBid",
   MAKE_OFFER: "makeOffer",
   LOCATION_PROMPT: "locationPrompt",
+  ADD_SHIPPING_ADDRESS: "addShippingAddress",
 
   REVIEW_OFFER: "reviewOffer",
   ASK_QUESTION: "askQuestion",

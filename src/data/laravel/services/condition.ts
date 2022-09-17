@@ -14,10 +14,12 @@ export const conditionApi = api.injectEndpoints({
       },
       providesTags: (result, error) =>
         result
-          ? result.items.data.map(({id}) => ({
-              type: QUERY_KEYS.CONDITION,
-              id,
-            }))
+          ? result.items.data
+              .map(({id}) => ({
+                type: QUERY_KEYS.CONDITION,
+                id,
+              }))
+              .concat([{type: QUERY_KEYS.CONDITION, id: "LIST"}])
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],

@@ -1,11 +1,12 @@
 import {api} from "./api";
-import axios from "axios";
 import {container} from "@src/appEngine";
 import {QUERY_KEYS} from "@constants/query";
 import {AxiosError, AxiosInstance} from "axios";
+import {ApplicationError} from "@core/domain/ApplicationError";
 import {ServiceProviderTypes} from "@core/serviceProviderTypes";
 import {
   ProductDetails,
+  CreateProductRequest,
   PaginationQueryParams,
   FilterProductsResponse,
   FilterProductQueryParams,
@@ -18,6 +19,8 @@ import {
 const metalsApiClient = container.get<AxiosInstance>(
   ServiceProviderTypes.MetalsApiClient,
 );
+
+const apiClient = container.get<AxiosInstance>(ServiceProviderTypes.HttpClient);
 
 // Define a service using a base URL and expected endpoints
 export const productApi = api.injectEndpoints({
@@ -55,6 +58,69 @@ export const productApi = api.injectEndpoints({
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
+    }),
+    createProduct: builder.mutation<{success: string}, CreateProductRequest>({
+      queryFn(body) {
+        const formData = new FormData();
+
+        formData.append("title", body.title);
+        formData.append("category_id", body.category_id);
+        formData.append("sub_category_id", body.sub_category_id);
+        formData.append("condition_id", body.condition_id);
+        formData.append("details", body.details);
+        formData.append("is_list_now", body.is_list_now);
+        formData.append("expected_date_for_list", body.expected_date_for_list);
+        formData.append("show_metal_price", body.show_metal_price);
+        formData.append("location", body.location);
+        formData.append("package_id", body.package_id);
+        formData.append("is_locale", body.is_locale);
+        formData.append("is_shipping", body.is_shipping);
+        formData.append("latitude", body.latitude);
+        formData.append("longitude", body.longitude);
+        formData.append("selected_metals[]", body.selected_metals);
+
+        Object.entries(body.attributes).forEach((attrId, termId) => {
+          formData.append(`attributes[${attrId}]`, termId);
+        });
+
+        formData.append("starting_price", body.starting_price);
+        formData.append("buy_price", body.buy_price);
+        formData.append("duration", body.duration);
+        formData.append("quantity", body.quantity);
+        formData.append(
+          "images[]",
+          body.images.map(img => ({
+            uri: img.uri,
+            type: img.type,
+            name: img.fileName,
+          })),
+        );
+
+        console.log("formData", {...formData});
+
+        return apiClient
+          .postForm<{success: string}>("products", formData)
+          .then(res => {
+            return {
+              data: {
+                success: res.data.success,
+              },
+            };
+          })
+          .catch((error: ApplicationError) => {
+            return {
+              error: {
+                status: error.status,
+                data: {
+                  field_errors: error.field_errors,
+                  non_field_error: error.non_field_error,
+                },
+              },
+              meta: error.response,
+            };
+          });
+      },
+      invalidatesTags: () => [QUERY_KEYS.PRODUCT],
     }),
     toggleProductFavorite: builder.mutation<
       {success: string},
@@ -132,7 +198,7 @@ export const productApi = api.injectEndpoints({
       GetProductMetalsLivePriceResponse,
       GetProductMetalsLivePriceRequest
     >({
-      queryFn(data) {
+      queryFn(data, {signal}) {
         return metalsApiClient
           .get<GetProductMetalsLivePriceResponse>(
             "https://metals-api.com/api/fluctuation",
@@ -142,6 +208,9 @@ export const productApi = api.injectEndpoints({
                   "lism66o45m1yy7598jgr16763m9sr5si26cn3ywyx7iqvnlhaquggcpnxp26",
                 ...data,
                 symbols: data.symbols.join(","),
+              },
+              headers: {
+                signal,
               },
             },
           )
@@ -210,6 +279,7 @@ export const {
   useGetSaleProductsQuery,
   useGetSavedProductsQuery,
   useGetFilterProductsQuery,
+  useCreateProductMutation,
   useGetProductDetailsQuery,
   useLazyGetSaleProductsQuery,
   useGetArchiveProductsQuery,

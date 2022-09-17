@@ -55,10 +55,40 @@ export type ProfileStackParamList = {
 export type ChatStackParamList = {};
 export type PostItemStackParamList = {
   [PostItemStackRoutes.SUCCESS]: undefined;
-  [PostItemStackRoutes.ADD_PRICE]: undefined;
-  [PostItemStackRoutes.ADD_DETAILS]: undefined;
+  [PostItemStackRoutes.ADD_PRICE]: {
+    categoryId: number;
+    conditionId: number;
+    description: string;
+    subCategoryId: number;
+    attributes: Record<number, string | number>;
+    productTitle: string;
+    productCoverImage: Asset;
+    productGalleryImages: Asset[];
+  };
+  [PostItemStackRoutes.ADD_DETAILS]: {
+    productTitle: string;
+    productCoverImage: Asset;
+    productGalleryImages: Asset[];
+  };
   [PostItemStackRoutes.UPLOAD_PHOTO]: undefined;
-  [PostItemStackRoutes.ADD_DELIVERY_METHOD]: undefined;
+  [PostItemStackRoutes.ADD_DELIVERY_METHOD]: {
+    duration: number;
+    metals: number[];
+    quantity: number;
+    isListNow: boolean;
+    categoryId: number;
+    conditionId: number;
+    description: string;
+    productTitle: string;
+    startingPrice: number;
+    buynowprice: number;
+    subCategoryId: number;
+    showMetalPrice: boolean;
+    productCoverImage: Asset;
+    expectedDateForList: string;
+    productGalleryImages: Asset[];
+    attributes: Record<number, string | number>;
+  };
 };
 
 export type HomeTabParamList = {
@@ -178,6 +208,7 @@ export type RootStackParamList = {
       params: Record<string, any>;
     };
   };
+  [RootStackRoutes.ADD_SHIPPING_ADDRESS]: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -276,10 +307,12 @@ export interface User {
   token: string;
 }
 
-export type LoginResponse = {
-  success: string;
-  user: User;
-};
+export type LoginResponse =
+  | {
+      success: string;
+      user: User;
+    }
+  | {error: string};
 
 export type RegisterResponse = {
   success: string;
@@ -769,4 +802,75 @@ export type GetProductMetalsLivePriceRequest = {
   end_date: string;
   start_date: string;
   symbols: MetalCode[];
+};
+
+export type GetSubcategoriesByCatIdResponse = {
+  sub_categories: Array<{
+    id: number;
+    title: string;
+  }>;
+};
+
+export type GetSubcategoriesByCatIdRequest = {
+  categoryId: number;
+};
+
+export type GetAttributesByCatIdResponse = {
+  attributes: Array<{
+    id: number;
+    title: string;
+    terms: Array<{
+      id: number;
+      attribute_id: number;
+      title: string;
+    }>;
+  }>;
+};
+
+export type GetAttributesByCatIdRequest = {
+  categoryId: number;
+};
+
+export type GetMetalsResponse = {
+  items: SimplePaginatedResponse<
+    Metal & {
+      days: string;
+    }
+  >;
+};
+
+export interface Package {
+  id: number;
+  name: string;
+  size: string;
+  price: number;
+  weight: number;
+}
+
+export type GetPackagesResponse = {
+  items: SimplePaginatedResponse<Package>;
+};
+
+export type CreateProductRequest = {
+  title: string;
+  category_id: number;
+  sub_category_id: number;
+  condition_id: number;
+  details: string;
+  is_list_now: "1" | "0";
+  expected_date_for_list: null | string;
+  show_metal_price: boolean;
+  location: string;
+  package_id: number;
+  is_locale: "1" | "0";
+  is_shipping: "1" | "0";
+  latitude: number;
+  longitude: number;
+  selected_metals: number[];
+  attributes: Record<number, number | string>;
+  starting_price: number;
+  buy_price: number;
+  duration: number;
+  quantity: number;
+  images: Asset[];
 };

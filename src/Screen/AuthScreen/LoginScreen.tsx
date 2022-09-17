@@ -1,21 +1,31 @@
 import React from "react";
 import auth from "@react-native-firebase/auth";
 import useAppSnackbar from "@hooks/useAppSnackbar";
-import { useTheme, Text } from "react-native-paper";
-import { useForm, Controller } from "react-hook-form";
+import {useTheme, Text} from "react-native-paper";
+import {useForm, Controller} from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
-import { ErrorMessage } from "@hookform/error-message";
-import { useNavigation } from "@react-navigation/native";
+import {ErrorMessage} from "@hookform/error-message";
+import {useNavigation} from "@react-navigation/native";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
-import { useLoginMutation } from "@data/laravel/services/auth";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { AuthStackParamList, RootStackParamList, } from "@src/types";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { AuthStackRoutes, RootStackRoutes } from "../../constants/routes";
-import { useAppDispatch, useAppSelector, useAppStore } from "@hooks/store";
-import { addServerErrors, isJoteyQueryError } from "@utils/error-handling";
-import { selectIsAuthenticated, setFirstTimeLoginFalse } from "@store/slices/authSlice";
-import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
+import {SafeAreaProvider} from "react-native-safe-area-context";
+import {AuthStackParamList, RootStackParamList} from "@src/types";
+import {GoogleSignin} from "@react-native-google-signin/google-signin";
+import {AuthStackRoutes, RootStackRoutes} from "../../constants/routes";
+import {useAppDispatch, useAppSelector, useAppStore} from "@hooks/store";
+import {addServerErrors, isJoteyQueryError} from "@utils/error-handling";
+import {
+  selectIsAuthenticated,
+  setFirstTimeLoginFalse,
+} from "@store/slices/authSlice";
+import {
+  useGetProfileQuery,
+  useLazyGetProfileQuery,
+  useLoginMutation,
+} from "@data/laravel/services/auth";
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
 import {
   View,
   Image,
@@ -62,34 +72,40 @@ setGlobalStyles.inputStyles = {
   fontWeight: "600",
 };
 
-type Props = NativeStackScreenProps<AuthStackParamList, typeof AuthStackRoutes.LOGIN>
+type Props = NativeStackScreenProps<
+  AuthStackParamList,
+  typeof AuthStackRoutes.LOGIN
+>;
 
-type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>
+type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-const LoginScreen = ({ navigation, route }: Props) => {
+const LoginScreen = ({navigation, route}: Props) => {
   const theme = useTheme();
-  const store = useAppStore()
-  const dispatch = useAppDispatch()
-  const { enqueueSuccessSnackbar } = useAppSnackbar();
+  const store = useAppStore();
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const rootNavigation = useNavigation<RootStackNavigationProp>()
+  const rootNavigation = useNavigation<RootStackNavigationProp>();
   const [togglePassword, setTogglePassword] = React.useState(false);
+  const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
 
-  const [login, { isLoading, isError, error, isSuccess, data }] = useLoginMutation();
+  const [login, {isLoading, isError, error, isSuccess, data}] =
+    useLoginMutation();
+
+  const [getProfile, {isSuccess: isGettingProfileSuccess, data: profileData}] =
+    useLazyGetProfileQuery();
 
   const {
     reset,
     control,
     setError,
     handleSubmit,
-    formState: { errors },
+    formState: {errors},
   } = useForm({
     defaultValues: {
       email: "",
       password: "",
     },
   });
-
 
   React.useEffect(() => {
     if (isError && isJoteyQueryError(error)) {
@@ -98,37 +114,55 @@ const LoginScreen = ({ navigation, route }: Props) => {
   }, [setError, isError, error]);
 
   React.useEffect(() => {
-    if (isSuccess && data) {
-      reset()
+    if (isSuccess && !!data && "success" in data) {
+      reset();
       enqueueSuccessSnackbar({
-        text1: data.success
-      })
+        text1: data.success,
+      });
     }
-  }, [enqueueSuccessSnackbar, isSuccess, data, reset])
+
+    if (isSuccess && !!data && "error" in data) {
+      enqueueErrorSnackbar({
+        text1: data.error,
+      });
+    }
+  }, [enqueueSuccessSnackbar, isSuccess, data, reset, enqueueErrorSnackbar]);
 
   React.useEffect(() => {
-    if (isAuthenticated) {
-      const { firstTimeLogin } = store.getState().auth
+    if (isAuthenticated && isGettingProfileSuccess && !!profileData) {
+      const {firstTimeLogin} = store.getState().auth;
       if (firstTimeLogin) {
         rootNavigation.replace(RootStackRoutes.LOCATION_PROMPT, {
-          nextScreen: route.params.nextScreen
-        })
-        dispatch(setFirstTimeLoginFalse())
+          nextScreen: route.params.nextScreen,
+        });
+        dispatch(setFirstTimeLoginFalse());
       } else if (route.params?.nextScreen) {
         // @ts-ignore
-        navigation.replace(route.params?.nextScreen.name, route.params?.nextScreen.params)
+        navigation.replace(
+          // @ts-ignore
+          route.params?.nextScreen.name,
+          // @ts-ignore
+          route.params?.nextScreen.params,
+        );
       } else {
         // @ts-ignore
-        navigation.replace(RootStackRoutes.HOME)
+        navigation.replace(RootStackRoutes.HOME);
       }
-
     }
-  }, [route, navigation, isAuthenticated, store, dispatch])
+  }, [
+    store,
+    route,
+    dispatch,
+    navigation,
+    profileData,
+    isAuthenticated,
+    isGettingProfileSuccess,
+  ]);
 
   async function onGoogleButtonPress() {
     // Get the users ID token
     try {
-      const { idToken } = await GoogleSignin.signIn();
+      const {idToken} = await GoogleSignin.signIn();
       console.log(idToken);
 
       // Create a Google credential with the token
@@ -143,24 +177,28 @@ const LoginScreen = ({ navigation, route }: Props) => {
 
   const handleLogin = handleSubmit(values => {
     login(values)
+      .unwrap()
+      .then(() => {
+        getProfile(undefined, false);
+      });
   });
 
   return (
     <SafeAreaProvider>
       <ScrollView>
-        <View style={{ flex: 1, paddingHorizontal: 15 }}>
-          <View style={{ alignItems: "center" }}>
+        <View style={{flex: 1, paddingHorizontal: 15}}>
+          <View style={{alignItems: "center"}}>
             <View
               style={{
                 paddingVertical: 10,
               }}>
               <Image
-                style={{ height: 100, width: 100 }}
+                style={{height: 100, width: 100}}
                 source={require("../../assets/Images/logo.png")}
               />
             </View>
 
-            <Text style={{ fontSize: 22, fontWeight: "bold" }}>Sign In</Text>
+            <Text style={{fontSize: 22, fontWeight: "bold"}}>Sign In</Text>
           </View>
 
           <View
@@ -168,7 +206,7 @@ const LoginScreen = ({ navigation, route }: Props) => {
               paddingBottom: 20,
               flexDirection: "row",
             }}>
-            <View style={{ width: "50%", alignItems: "center" }}>
+            <View style={{width: "50%", alignItems: "center"}}>
               <Text
                 style={{
                   margin: 15,
@@ -189,7 +227,7 @@ const LoginScreen = ({ navigation, route }: Props) => {
             </View>
 
             <Pressable
-              style={{ width: "50%", alignItems: "center" }}
+              style={{width: "50%", alignItems: "center"}}
               onPress={() => navigation.navigate(AuthStackRoutes.REGISTRATION)}>
               <Text
                 style={{
@@ -214,13 +252,13 @@ const LoginScreen = ({ navigation, route }: Props) => {
 
           <ScrollView>
             <KeyboardAvoidingView
-              style={{ flexWrap: "wrap" }}
+              style={{flexWrap: "wrap"}}
               behavior={Platform.OS === "ios" ? "padding" : "height"}>
-              <View style={{ width: "100%", marginBottom: 16 }}>
+              <View style={{width: "100%", marginBottom: 16}}>
                 <Controller
                   control={control}
                   name={"email"}
-                  render={({ field }) => {
+                  render={({field}) => {
                     return (
                       <FloatingLabelInput
                         label={"Email"}
@@ -234,19 +272,19 @@ const LoginScreen = ({ navigation, route }: Props) => {
                 <ErrorMessage
                   errors={errors}
                   name={"email"}
-                  render={({ message }) => (
-                    <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                  render={({message}) => (
+                    <Text style={{color: theme.colors.error, marginTop: 10}}>
                       {message}
                     </Text>
                   )}
                 />
               </View>
 
-              <View style={{ width: "100%" }}>
+              <View style={{width: "100%"}}>
                 <Controller
                   control={control}
                   name={"password"}
-                  render={({ field }) => {
+                  render={({field}) => {
                     return (
                       <FloatingLabelInput
                         isPassword
@@ -276,8 +314,8 @@ const LoginScreen = ({ navigation, route }: Props) => {
                 <ErrorMessage
                   errors={errors}
                   name={"email"}
-                  render={({ message }) => (
-                    <Text style={{ color: theme.colors.error, marginTop: 10 }}>
+                  render={({message}) => (
+                    <Text style={{color: theme.colors.error, marginTop: 10}}>
                       {message}
                     </Text>
                   )}
@@ -294,7 +332,7 @@ const LoginScreen = ({ navigation, route }: Props) => {
               alignItems: "center",
               justifyContent: "space-between",
             }}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{flexDirection: "row", alignItems: "center"}}>
               {/* <Controller
                 control={control}
                 name={"rememberMe"}

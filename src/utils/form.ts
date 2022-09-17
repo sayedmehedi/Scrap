@@ -6,11 +6,21 @@ export const currencyTransform = {
     return isNaN(output) ? 0 : output;
   },
 
-  inputFloat: (value: number) =>
-    isNaN(value) || value === 0 ? "$0.0" : `$${value}`,
+  inputFloat: (value: string) => {
+    return value === "" ? "$0.0" : `$${value}`;
+  },
   outputFloat: (value: string) => {
     const [, price] = value.split("$");
-    const output = parseFloat(price);
-    return isNaN(output) ? 0.0 : output;
+
+    return price;
+  },
+};
+
+export const numberTransform = {
+  input: (value: number) =>
+    isNaN(value) || value === 0 ? "" : value.toString(),
+  output: (value: string) => {
+    const output = parseInt(value, 10);
+    return isNaN(output) ? 0 : output;
   },
 };
