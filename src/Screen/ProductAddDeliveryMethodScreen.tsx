@@ -213,8 +213,11 @@ export default function ProductAddDeliveryMethodScreen({
                                   RootStackRoutes.CHOOSE_COUNTRY,
                                   {
                                     nextScreen: {
-                                      name: route.name,
-                                      params: route.params,
+                                      name: HomeTabRoutes.POST_ITEM,
+                                      params: {
+                                        screen: route.name,
+                                        params: route.params,
+                                      },
                                     },
                                   },
                                 );
