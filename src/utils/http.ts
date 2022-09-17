@@ -31,4 +31,28 @@ export default function registerHttpClient(container: Container) {
       return apiHttpClient;
     })
     .inSingletonScope();
+
+  container
+    .bind<AxiosInstance>(ServiceProviderTypes.MetalsApiClient)
+    .toDynamicValue(context => {
+      const config = context.container.get(ConfigService);
+      const baseURL = config.metalsApiBaseUrl;
+      const accessKey = config.metalsApiToken;
+
+      console.log("access key", accessKey);
+
+      const apiHttpClient = axios.create({
+        baseURL,
+        headers: {
+          Accept: config.accept,
+          "Content-Type": config.contentType,
+        },
+        params: {
+          access_key: accessKey,
+        },
+      });
+
+      return apiHttpClient;
+    })
+    .inSingletonScope();
 }

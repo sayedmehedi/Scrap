@@ -726,3 +726,47 @@ export type GetCitiesResponse = {
 export type GetStatesResponse = {
   states: PaginatedResponse<State>;
 };
+
+export type MetalCode =
+  | "XAU"
+  | "XAG"
+  | "XPT"
+  | "XCU"
+  | "ALU"
+  | "ZNC"
+  | "TIN"
+  | "IRON";
+
+export type GetProductMetalsLivePriceResponse =
+  | {
+      success: true;
+      fluctuation: boolean;
+      start_date: string;
+      end_date: string;
+      base: string;
+      rates: Record<
+        MetalCode,
+        {
+          change: number;
+          end_rate: number;
+          start_rate: number;
+          change_pct: number;
+        }
+      >;
+      unit: string;
+    }
+  | {
+      success: false;
+      error: {
+        code: number;
+        type: string;
+        info: string;
+      };
+    };
+
+export type GetProductMetalsLivePriceRequest = {
+  base: string;
+  end_date: string;
+  start_date: string;
+  symbols: MetalCode[];
+};

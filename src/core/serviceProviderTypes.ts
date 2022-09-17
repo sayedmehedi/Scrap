@@ -6,6 +6,8 @@ export const ServiceProviderTypes = {
   RtcEngine: Symbol("RtcEngine"),
   RtmAdapter: Symbol("RtmAdapter"),
 
+  MetalsApiClient: Symbol("MetalsApiClient"),
+
   SmsService: Symbol("SmsService"),
   HttpClient: Symbol("HttpClient"),
   AuthService: Symbol("AuthService"),

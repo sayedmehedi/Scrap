@@ -1,32 +1,31 @@
-import React from 'react';
-import {Image, ListItem, Switch} from 'react-native-elements';
-import {Controller, useForm} from 'react-hook-form';
-import Entypo from 'react-native-vector-icons/Entypo';
-import {PostItemStackRoutes} from '../constants/routes';
-import {useNavigation} from '@react-navigation/native';
-import SelectionModal from '../Component/SelectionModal';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import AppPrimaryButton from '../Component/AppPrimaryButton';
-import {Divider, HelperText, Text, Title, useTheme} from 'react-native-paper';
-import {
-  TextInput,
-  View,
-  Alert,
-  ScrollView,
-  Pressable,
-  TouchableOpacity,
-} from 'react-native';
-import LocationSelectionModal from './LocationSelectionModal';
+import React from "react";
+import {PostItemStackParamList} from "@src/types";
+import {Controller, useForm} from "react-hook-form";
+import Entypo from "react-native-vector-icons/Entypo";
+import {useNavigation} from "@react-navigation/native";
+import SelectionModal from "../Component/SelectionModal";
+import {ListItem, Switch} from "react-native-elements";
+import {PostItemStackRoutes} from "../constants/routes";
+import EvilIcons from "react-native-vector-icons/EvilIcons";
+import {Divider, Text, useTheme} from "react-native-paper";
+import AppPrimaryButton from "../Component/AppPrimaryButton";
+import LocationSelectionModal from "./LocationSelectionModal";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {View, ScrollView, TouchableOpacity} from "react-native";
 
-export default function ProductAddDeliveryMethodScreen() {
+type Props = NativeStackScreenProps<
+  PostItemStackParamList,
+  typeof PostItemStackRoutes.ADD_DELIVERY_METHOD
+>;
+
+export default function ProductAddDeliveryMethodScreen({navigation}: Props) {
   const theme = useTheme();
-  const navigation = useNavigation();
-  const [modalType, setModalType] = React.useState('');
+  const [modalType, setModalType] = React.useState("");
 
   const {control} = useForm({
     defaultValues: {
-      location: '',
-      package: 'small',
+      location: "",
+      package: "small",
       sellNShipIntl: false,
     },
   });
@@ -38,28 +37,31 @@ export default function ProductAddDeliveryMethodScreen() {
   return (
     <ScrollView style={{padding: 15}}>
       <Controller
-        name={'location'}
+        name={"location"}
         control={control}
         render={({field}) => {
           return (
             <React.Fragment>
               <ListItem
+                hasTVPreferredFocus
+                tvParallaxProperties={{}}
                 Component={TouchableOpacity}
                 containerStyle={{
-                  backgroundColor: 'transparent',
+                  paddingHorizontal: 0,
+                  backgroundColor: "transparent",
                 }}
-                onPress={() => setModalType('location')}>
+                onPress={() => setModalType("location")}>
                 <ListItem.Content>
                   <ListItem.Title>Location: {field.value}</ListItem.Title>
                 </ListItem.Content>
 
-                <Entypo name={'edit'} size={15} />
+                <Entypo name={"edit"} size={15} />
               </ListItem>
 
               <LocationSelectionModal
                 onChange={field.onChange}
-                open={modalType === 'location'}
-                onClose={() => setModalType('')}
+                open={modalType === "location"}
+                onClose={() => setModalType("")}
               />
 
               <Divider style={{height: 2}} />
@@ -71,22 +73,22 @@ export default function ProductAddDeliveryMethodScreen() {
       <View style={{height: 15}} />
 
       <Controller
-        name={'sellNShipIntl'}
+        name={"sellNShipIntl"}
         control={control}
         render={({field}) => {
           return (
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}>
               <View>
                 <Text
                   style={{
                     marginBottom: 10,
                     fontSize: 17,
-                    color: '#222222',
+                    color: "#222222",
                   }}>
                   Sell & Ship International
                 </Text>
@@ -106,30 +108,33 @@ export default function ProductAddDeliveryMethodScreen() {
 
       <Controller
         control={control}
-        name={'package'}
+        name={"package"}
         render={({field}) => {
           return (
             <React.Fragment>
               <ListItem
+                hasTVPreferredFocus
+                tvParallaxProperties={{}}
                 Component={TouchableOpacity}
-                onPress={() => field.onChange('small')}
+                onPress={() => field.onChange("small")}
                 containerStyle={{
-                  backgroundColor: '#F7F7F7F',
-                  alignItems: 'flex-start',
+                  paddingLeft: 0,
+                  alignItems: "flex-start",
+                  backgroundColor: "#F7F7F7F",
                 }}>
                 <ListItem.CheckBox
-                  iconType={'material'}
-                  checked={field.value === 'small'}
-                  checkedIcon={'radio-button-checked'}
-                  uncheckedIcon={'radio-button-unchecked'}
-                  onPress={() => field.onChange('small')}
+                  iconType={"material"}
+                  checked={field.value === "small"}
+                  checkedIcon={"radio-button-checked"}
+                  uncheckedIcon={"radio-button-unchecked"}
+                  onPress={() => field.onChange("small")}
                 />
 
                 <ListItem.Content>
                   <ListItem.Title
                     style={{
                       color:
-                        field.value === 'small'
+                        field.value === "small"
                           ? theme.colors.primary
                           : theme.colors.text,
                     }}>
@@ -148,25 +153,28 @@ export default function ProductAddDeliveryMethodScreen() {
               </ListItem>
 
               <ListItem
+                hasTVPreferredFocus
+                tvParallaxProperties={{}}
                 Component={TouchableOpacity}
-                onPress={() => field.onChange('medium')}
+                onPress={() => field.onChange("medium")}
                 containerStyle={{
-                  backgroundColor: '#F7F7F7F',
-                  alignItems: 'flex-start',
+                  paddingLeft: 0,
+                  alignItems: "flex-start",
+                  backgroundColor: "#F7F7F7F",
                 }}>
                 <ListItem.CheckBox
-                  iconType={'material'}
-                  checked={field.value === 'medium'}
-                  checkedIcon={'radio-button-checked'}
-                  uncheckedIcon={'radio-button-unchecked'}
-                  onPress={() => field.onChange('medium')}
+                  iconType={"material"}
+                  checked={field.value === "medium"}
+                  checkedIcon={"radio-button-checked"}
+                  uncheckedIcon={"radio-button-unchecked"}
+                  onPress={() => field.onChange("medium")}
                 />
 
                 <ListItem.Content>
                   <ListItem.Title
                     style={{
                       color:
-                        field.value === 'medium'
+                        field.value === "medium"
                           ? theme.colors.primary
                           : theme.colors.text,
                     }}>
@@ -185,25 +193,28 @@ export default function ProductAddDeliveryMethodScreen() {
               </ListItem>
 
               <ListItem
+                hasTVPreferredFocus
+                tvParallaxProperties={{}}
                 Component={TouchableOpacity}
-                onPress={() => field.onChange('large')}
+                onPress={() => field.onChange("large")}
                 containerStyle={{
-                  backgroundColor: '#F7F7F7F',
-                  alignItems: 'flex-start',
+                  paddingLeft: 0,
+                  alignItems: "flex-start",
+                  backgroundColor: "#F7F7F7F",
                 }}>
                 <ListItem.CheckBox
-                  iconType={'material'}
-                  checked={field.value === 'large'}
-                  checkedIcon={'radio-button-checked'}
-                  uncheckedIcon={'radio-button-unchecked'}
-                  onPress={() => field.onChange('large')}
+                  iconType={"material"}
+                  checked={field.value === "large"}
+                  checkedIcon={"radio-button-checked"}
+                  uncheckedIcon={"radio-button-unchecked"}
+                  onPress={() => field.onChange("large")}
                 />
 
                 <ListItem.Content>
                   <ListItem.Title
                     style={{
                       color:
-                        field.value === 'large'
+                        field.value === "large"
                           ? theme.colors.primary
                           : theme.colors.text,
                     }}>
@@ -226,7 +237,7 @@ export default function ProductAddDeliveryMethodScreen() {
       />
 
       <AppPrimaryButton
-        text={'Submit'}
+        text={"Submit"}
         onPress={handleNextScreen}
         containerStyle={{marginVertical: 35}}
       />

@@ -149,11 +149,8 @@ export const authApi = api.injectEndpoints({
         }
 
         return apiClient
-          .post<{success: string}>("update-profile", body, {
+          .postForm<{success: string}>("update-profile", body, {
             onUploadProgress,
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
           })
           .then(res => {
             return {
