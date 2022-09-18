@@ -55,9 +55,13 @@ export default function ProductAddDeliveryMethodScreen({
   const rootNavigation = useNavigation<RootNavigationProps>();
   const profile = useAppSelector(state => state.auth.profile);
   const [uploadProgress, setUploadProgress] = React.useState(0);
-  const [getPackages, {isFetching}] = useLazyGetPackagesQuery();
-  const {data: getMetalsResponse, isLoading: isLoadingCategories} =
-    useGetPackagesQuery({});
+  const [getPackages, {isFetching: isFetchingNextPage}] =
+    useLazyGetPackagesQuery();
+  const {
+    data: getMetalsResponse,
+    isLoading: isLoadingCategories,
+    isFetching: isFetchingInitial,
+  } = useGetPackagesQuery({});
   const actionCreaterRef = React.useRef<ReturnType<typeof getPackages> | null>(
     null,
   );
@@ -93,21 +97,19 @@ export default function ProductAddDeliveryMethodScreen({
   }, [getMetalsResponse, isLoadingCategories]);
 
   const getNextPackages = async () => {
-    if (isFetching) {
+    if (isFetchingNextPage || isFetchingInitial) {
       return;
     }
 
     const lastPage = packagePages[packagePages.length - 1];
 
-    if (lastPage && !lastPage.has_more_data) {
+    if (!lastPage || (lastPage && !lastPage.has_more_data)) {
       return;
     }
 
     const params: PaginationQueryParams = {};
 
-    if (lastPage) {
-      params.page = lastPage.current_page + 1;
-    }
+    params.page = lastPage.current_page + 1;
 
     actionCreaterRef.current = getPackages(params, true);
 

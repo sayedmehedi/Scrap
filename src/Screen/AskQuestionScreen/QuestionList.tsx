@@ -30,8 +30,13 @@ export default function QuestionList({
 }: Props) {
   const theme = useTheme();
   const {enqueueSuccessSnackbar} = useAppSnackbar();
-  const [getQuestions, {isFetching}] = useLazyGetQuestionsQuery();
-  const {data: getQuestionsResponse, isLoading} = useGetQuestionsQuery({});
+  const [getQuestions, {isFetching: isFetchingNextPage}] =
+    useLazyGetQuestionsQuery();
+  const {
+    data: getQuestionsResponse,
+    isLoading,
+    isFetching: isFetchingInitial,
+  } = useGetQuestionsQuery({});
   const actionCreaterRef = React.useRef<ReturnType<typeof getQuestions> | null>(
     null,
   );
@@ -41,9 +46,9 @@ export default function QuestionList({
   const [
     askQuestion,
     {
+      data: askQuestionData,
       isLoading: isAskingQuestion,
       isSuccess: isAskQuestionSuccess,
-      data: askQuestionData,
     },
   ] = useCreateAskQuestionMutation();
 
@@ -64,24 +69,23 @@ export default function QuestionList({
   }, [getQuestionsResponse, isLoading]);
 
   const getNextQuestions = async () => {
-    if (isFetching) {
+    if (isFetchingNextPage || isFetchingInitial) {
       return;
     }
 
     const lastProductPage = questionPages[questionPages.length - 1];
 
     if (
-      lastProductPage &&
-      lastProductPage.current_page === lastProductPage.last_page
+      !lastProductPage ||
+      (lastProductPage &&
+        lastProductPage.current_page === lastProductPage.last_page)
     ) {
       return;
     }
 
     const params: PaginationQueryParams = {};
 
-    if (lastProductPage) {
-      params.page = lastProductPage.current_page + 1;
-    }
+    params.page = lastProductPage.current_page + 1;
 
     actionCreaterRef.current = getQuestions(params, true);
 

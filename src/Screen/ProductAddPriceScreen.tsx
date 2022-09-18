@@ -568,9 +568,12 @@ function MetalList({
   onSelect: (item: {id: string; value: Metal}) => void;
 }) {
   const theme = useTheme();
-  const [getMetals, {isFetching}] = useLazyGetMetalsQuery();
-  const {data: getMetalsResponse, isLoading: isLoadingCategories} =
-    useGetMetalsQuery({});
+  const [getMetals, {isFetching: isFetchingNextPage}] = useLazyGetMetalsQuery();
+  const {
+    data: getMetalsResponse,
+    isLoading: isLoadingCategories,
+    isFetching: isFetchingInitial,
+  } = useGetMetalsQuery({});
   const actionCreaterRef = React.useRef<ReturnType<typeof getMetals> | null>(
     null,
   );
@@ -588,21 +591,22 @@ function MetalList({
   }, [getMetalsResponse, isLoadingCategories]);
 
   const getNextMetals = async () => {
-    if (isFetching) {
+    if (isFetchingNextPage || isFetchingInitial) {
       return;
     }
 
     const lastProductPage = metalsPages[metalsPages.length - 1];
 
-    if (lastProductPage && !lastProductPage.has_more_data) {
+    if (
+      !lastProductPage ||
+      (lastProductPage && !lastProductPage.has_more_data)
+    ) {
       return;
     }
 
     const params: PaginationQueryParams = {};
 
-    if (lastProductPage) {
-      params.page = lastProductPage.current_page + 1;
-    }
+    params.page = lastProductPage.current_page + 1;
 
     actionCreaterRef.current = getMetals(params, true);
 

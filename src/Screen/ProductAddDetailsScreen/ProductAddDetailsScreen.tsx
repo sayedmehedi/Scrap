@@ -450,9 +450,13 @@ function ConditionSelectionModal({
   initialValue?: {id: number; text: string} | null;
   onSave: (item: {id: number; text: string} | null) => void;
 }) {
-  const [getConditions, {isFetching}] = useLazyGetConditionsQuery();
-  const {data: categoryListResponse, isLoading: isLoadingCategories} =
-    useGetConditionsQuery({});
+  const [getConditions, {isFetching: isFetchingNextPage}] =
+    useLazyGetConditionsQuery();
+  const {
+    data: categoryListResponse,
+    isLoading: isLoadingCategories,
+    isFetching: isFetchingInitial,
+  } = useGetConditionsQuery({});
   const conditionActionCreaterRef = React.useRef<ReturnType<
     typeof getConditions
   > | null>(null);
@@ -470,21 +474,22 @@ function ConditionSelectionModal({
   }, [categoryListResponse, isLoadingCategories]);
 
   const getNextConditions = async () => {
-    if (isFetching) {
+    if (isFetchingNextPage || isFetchingInitial) {
       return;
     }
 
     const lastConditionPage = conditionPages[conditionPages.length - 1];
 
-    if (lastConditionPage && !lastConditionPage.has_more_data) {
+    if (
+      !lastConditionPage ||
+      (lastConditionPage && !lastConditionPage.has_more_data)
+    ) {
       return;
     }
 
     const params: PaginationQueryParams = {};
 
-    if (lastConditionPage) {
-      params.page = lastConditionPage.current_page + 1;
-    }
+    params.page = lastConditionPage.current_page + 1;
 
     conditionActionCreaterRef.current = getConditions(params, true);
 
@@ -557,9 +562,13 @@ function CategorySelectionModal({
   onSave: (item: {id: number; text: string} | null) => void;
   initialValue?: {id: number; text: string} | null;
 }) {
-  const [getCategories, {isFetching}] = useLazyGetCategoryListQuery();
-  const {data: categoryListResponse, isLoading: isLoadingCategories} =
-    useGetCategoryListQuery({});
+  const [getCategories, {isFetching: isFetchingNextPage}] =
+    useLazyGetCategoryListQuery();
+  const {
+    data: categoryListResponse,
+    isLoading: isLoadingCategories,
+    isFetching: isFetchingInitial,
+  } = useGetCategoryListQuery({});
   const categoryActionCreaterRef = React.useRef<ReturnType<
     typeof getCategories
   > | null>(null);
@@ -577,21 +586,22 @@ function CategorySelectionModal({
   }, [categoryListResponse, isLoadingCategories]);
 
   const getNextCategories = async () => {
-    if (isFetching) {
+    if (isFetchingNextPage || isFetchingInitial) {
       return;
     }
 
     const lastProductPage = categoryPages[categoryPages.length - 1];
 
-    if (lastProductPage && !lastProductPage.has_more_data) {
+    if (
+      !lastProductPage ||
+      (lastProductPage && !lastProductPage.has_more_data)
+    ) {
       return;
     }
 
     const params: PaginationQueryParams = {};
 
-    if (lastProductPage) {
-      params.page = lastProductPage.current_page + 1;
-    }
+    params.page = lastProductPage.current_page + 1;
 
     categoryActionCreaterRef.current = getCategories(params, true);
 

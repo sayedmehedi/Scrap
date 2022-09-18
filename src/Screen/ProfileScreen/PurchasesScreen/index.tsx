@@ -1,82 +1,98 @@
-import React from 'react';
-import EachPurchases from './EachPurchases';
-import { View, FlatList } from 'react-native';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { GetPurchaseHistoryResponse, PaginationQueryParams } from '@src/types';
-import { useGetPurchaseHistoryQuery, useLazyGetPurchaseHistoryQuery } from '@data/laravel/services/order';
+import React from "react";
+import EachPurchases from "./EachPurchases";
+import {View, FlatList} from "react-native";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import {GetPurchaseHistoryResponse, PaginationQueryParams} from "@src/types";
+import {
+  useGetPurchaseHistoryQuery,
+  useLazyGetPurchaseHistoryQuery,
+} from "@data/laravel/services/order";
 
 const PurchasesScreen = () => {
-  const [getPurchaseHistory, { isFetching }] = useLazyGetPurchaseHistoryQuery()
-  const { data: purchaseHistoryResponse, isLoading } = useGetPurchaseHistoryQuery({});
-  const [purchaseHistoryPages, setPurchaseHistoryPages] = React.useState<Array<GetPurchaseHistoryResponse["orders"]>>([]);
-  const actionCreaterRef = React.useRef<ReturnType<typeof getPurchaseHistory> | null>(null);
-
+  const [getPurchaseHistory, {isFetching: isFetchingNextPage}] =
+    useLazyGetPurchaseHistoryQuery();
+  const {
+    data: purchaseHistoryResponse,
+    isLoading,
+    isFetching: isFetchingInitial,
+  } = useGetPurchaseHistoryQuery({});
+  const [purchaseHistoryPages, setPurchaseHistoryPages] = React.useState<
+    Array<GetPurchaseHistoryResponse["orders"]>
+  >([]);
+  const actionCreaterRef = React.useRef<ReturnType<
+    typeof getPurchaseHistory
+  > | null>(null);
 
   React.useEffect(() => {
     if (!isLoading && !!purchaseHistoryResponse) {
-      setPurchaseHistoryPages([purchaseHistoryResponse.orders])
+      setPurchaseHistoryPages([purchaseHistoryResponse.orders]);
     }
-  }, [purchaseHistoryResponse])
+  }, [purchaseHistoryResponse]);
 
   const getNextPurchaseHistory = async () => {
-    if (isFetching || isLoading) {
+    if (isFetchingNextPage || isFetchingInitial) {
       return;
     }
 
-    const lastProductPage = purchaseHistoryPages[purchaseHistoryPages.length - 1]
+    const lastProductPage =
+      purchaseHistoryPages[purchaseHistoryPages.length - 1];
 
-    if (lastProductPage && !lastProductPage.has_more_data) {
+    if (
+      !lastProductPage ||
+      (lastProductPage && !lastProductPage.has_more_data)
+    ) {
       return;
     }
 
-    const params: PaginationQueryParams = {}
+    const params: PaginationQueryParams = {};
 
-    if (lastProductPage) {
-      params.page = lastProductPage.current_page + 1;
-    }
+    params.page = lastProductPage.current_page + 1;
 
-    actionCreaterRef.current = getPurchaseHistory(params, true)
+    actionCreaterRef.current = getPurchaseHistory(params, true);
 
     try {
-      const productResponse = await actionCreaterRef.current.unwrap()
+      const productResponse = await actionCreaterRef.current.unwrap();
 
       setPurchaseHistoryPages(prevPages => {
-        return prevPages.concat(productResponse.orders)
-      })
+        return prevPages.concat(productResponse.orders);
+      });
     } finally {
     }
-  }
+  };
 
   React.useEffect(() => {
     return () => {
       if (actionCreaterRef.current) {
-
-        actionCreaterRef.current.abort()
+        actionCreaterRef.current.abort();
       }
-    }
-  }, [])
+    };
+  }, []);
 
   const purchaseHistories = React.useMemo(() => {
     if (isLoading) {
-      return [{
-        id: 1,
-        type: "skeleton" as const
-      },
-      {
-        id: 2,
-        type: "skeleton" as const
-      },
-      {
-        id: 3,
-        type: "skeleton" as const
-      }]
+      return [
+        {
+          id: 1,
+          type: "skeleton" as const,
+        },
+        {
+          id: 2,
+          type: "skeleton" as const,
+        },
+        {
+          id: 3,
+          type: "skeleton" as const,
+        },
+      ];
     }
 
-    return purchaseHistoryResponse?.orders.data.map(ord => ({
-      type: "data" as const,
-      ...ord
-    })) ?? []
-  }, [isLoading, purchaseHistoryResponse])
+    return (
+      purchaseHistoryResponse?.orders.data.map(ord => ({
+        type: "data" as const,
+        ...ord,
+      })) ?? []
+    );
+  }, [isLoading, purchaseHistoryResponse]);
 
   return (
     <>
@@ -85,7 +101,7 @@ const PurchasesScreen = () => {
           data={purchaseHistories}
           onEndReached={getNextPurchaseHistory}
           showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => {
+          renderItem={({item}) => {
             if (item.type === "skeleton") {
               return (
                 <SkeletonPlaceholder>
@@ -93,10 +109,10 @@ const PurchasesScreen = () => {
                     <SkeletonPlaceholder.Item height={100} borderRadius={5} />
                   </SkeletonPlaceholder.Item>
                 </SkeletonPlaceholder>
-              )
+              );
             }
 
-            return <EachPurchases item={item} />
+            return <EachPurchases item={item} />;
           }}
         />
       </View>
