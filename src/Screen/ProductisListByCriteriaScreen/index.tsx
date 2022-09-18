@@ -1,15 +1,15 @@
 import React from "react";
 import truncate from "lodash.truncate";
-import { useTheme } from "react-native-paper";
-import { CheckBox } from "react-native-elements";
+import {ActivityIndicator, useTheme} from "react-native-paper";
+import {CheckBox} from "react-native-elements";
 import Entypo from "react-native-vector-icons/Entypo";
 import Feather from "react-native-vector-icons/Feather";
-import { useNavigation } from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { SCREEN_PADDING_HORIZONTAL } from "@constants/spacing";
+import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
 import EachProductItem from "../../Component/EachProductItem";
-import { HomeStackRoutes, RootStackRoutes } from "@constants/routes";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import {HomeStackRoutes, RootStackRoutes} from "@constants/routes";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {
   useGetFilterProductsQuery,
   useLazyGetFilterProductsQuery,
@@ -31,7 +31,7 @@ import {
   HomeStackParamList,
 } from "@src/types";
 
-const { width } = Dimensions.get("window");
+const {width} = Dimensions.get("window");
 const itemWidth = width / 3;
 
 type Props = NativeStackScreenProps<
@@ -39,7 +39,7 @@ type Props = NativeStackScreenProps<
   typeof HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA
 >;
 
-const ProductisListByCriteriaScreen = ({ route, navigation }: Props) => {
+const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
   const theme = useTheme();
   const rootNavigation = useNavigation();
   const [modalVisible, setModalVisible] = React.useState(false);
@@ -90,14 +90,14 @@ const ProductisListByCriteriaScreen = ({ route, navigation }: Props) => {
               onPress={() =>
                 rootNavigation.navigate(RootStackRoutes.SEARCH_PRODUCT)
               }
-              style={{ padding: 5 }}>
+              style={{padding: 5}}>
               <AntDesign name="search1" size={25} color={"white"} />
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => setModalVisible(!modalVisible)}
-              style={{ padding: 5 }}>
-              <View style={{ flexDirection: "row", paddingHorizontal: 10 }}>
+              style={{padding: 5}}>
+              <View style={{flexDirection: "row", paddingHorizontal: 10}}>
                 <Image
                   source={require("@assets/Images/Arrow.png")}
                   style={{
@@ -121,9 +121,9 @@ const ProductisListByCriteriaScreen = ({ route, navigation }: Props) => {
                   categoryTitle: route.params.categoryTitle,
                 })
               }
-              style={{ padding: 5 }}>
+              style={{padding: 5}}>
               <Image
-                style={{ height: 20, width: 20 }}
+                style={{height: 20, width: 20}}
                 source={require("@assets/Images/filter.png")}
               />
             </TouchableOpacity>
@@ -243,14 +243,14 @@ const ProductisListByCriteriaScreen = ({ route, navigation }: Props) => {
                 <Entypo name="cross" size={25} color={"#222222"} />
               </TouchableOpacity>
 
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ fontFamily: "Inter-SemiBold", fontSize: 16 }}>
+              <View style={{alignItems: "center"}}>
+                <Text style={{fontFamily: "Inter-SemiBold", fontSize: 16}}>
                   Sort By
                 </Text>
               </View>
 
-              <View style={{ padding: 20 }}>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{padding: 20}}>
+                <View style={{flexDirection: "row", alignItems: "center"}}>
                   <CheckBox
                     center
                     checkedColor="gray"
@@ -265,7 +265,7 @@ const ProductisListByCriteriaScreen = ({ route, navigation }: Props) => {
 
                   <Text>Low Price</Text>
                 </View>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View style={{flexDirection: "row", alignItems: "center"}}>
                   <CheckBox
                     center
                     checkedColor="gray"
@@ -280,7 +280,7 @@ const ProductisListByCriteriaScreen = ({ route, navigation }: Props) => {
 
                   <Text>High Price</Text>
                 </View>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View style={{flexDirection: "row", alignItems: "center"}}>
                   <CheckBox
                     center
                     checkedColor="gray"
@@ -296,7 +296,7 @@ const ProductisListByCriteriaScreen = ({ route, navigation }: Props) => {
                   <Text>Oldest</Text>
                 </View>
 
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View style={{flexDirection: "row", alignItems: "center"}}>
                   <CheckBox
                     center
                     checkedColor="gray"
@@ -321,9 +321,9 @@ const ProductisListByCriteriaScreen = ({ route, navigation }: Props) => {
 
   return (
     <>
-      <View style={{ flex: 1, backgroundColor: "#F7F7F7" }}>
+      <View style={{flex: 1, backgroundColor: "#F7F7F7"}}>
         {!hideFilterActions && (
-          <View style={{ flexDirection: "row" }}>
+          <View style={{flexDirection: "row"}}>
             <TouchableOpacity
               style={[
                 styles.tabButton,
@@ -389,15 +389,19 @@ const ProductisListByCriteriaScreen = ({ route, navigation }: Props) => {
             marginVertical: 15,
             alignSelf: "center",
           }}>
-          {productType === "is_shipping" ? <Image
-            resizeMode={"contain"}
-            style={{ height: 18, width: 18 }}
-            source={require('@assets/Images/van.png')}
-          /> : <Image
-            resizeMode={"contain"}
-            style={{ height: 18, width: 18 }}
-            source={require('@assets/Images/map1.png')}
-          />}
+          {productType === "is_shipping" ? (
+            <Image
+              resizeMode={"contain"}
+              style={{height: 18, width: 18}}
+              source={require("@assets/Images/van.png")}
+            />
+          ) : (
+            <Image
+              resizeMode={"contain"}
+              style={{height: 18, width: 18}}
+              source={require("@assets/Images/map1.png")}
+            />
+          )}
           {productType === "all" ? (
             <Text
               style={{
@@ -439,13 +443,17 @@ const ProductisListByCriteriaScreen = ({ route, navigation }: Props) => {
   );
 };
 
-const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => {
-  const [trigger, { isFetching }] = useLazyGetFilterProductsQuery();
+const ProductList = ({params = {}}: {params?: FilterProductQueryParams}) => {
+  const [trigger, {isFetching: isFetchingNextPage}] =
+    useLazyGetFilterProductsQuery();
   const actionCreaterRef = React.useRef<ReturnType<typeof trigger> | null>(
     null,
   );
-  const { data: filterProductsResponse, isLoading } =
-    useGetFilterProductsQuery(params);
+  const {
+    isLoading,
+    data: filterProductsResponse,
+    isFetching: isFetchingInitial,
+  } = useGetFilterProductsQuery(params);
   const [productPages, setProductPages] = React.useState<
     Array<FilterProductsResponse["products"]>
   >([]);
@@ -459,25 +467,31 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
   }, [filterProductsResponse, isLoading]);
 
   const getNextProducts = async () => {
-    if (isFetching) {
+    if (isFetchingNextPage || isFetchingInitial) {
       return;
     }
 
     const lastProductPage = productPages[productPages.length - 1];
 
-    if (lastProductPage && !lastProductPage.has_more_data) {
+    if (
+      !lastProductPage ||
+      (!!lastProductPage && !lastProductPage.has_more_data)
+    ) {
       return;
     }
 
-    if (lastProductPage) {
-      params.page = lastProductPage.current_page + 1;
-    }
+    const newParams = {
+      ...params,
+      page: lastProductPage.current_page + 1,
+    };
 
-    actionCreaterRef.current = trigger(params, true);
+    console.log("lastProductPage", newParams.page);
+
+    actionCreaterRef.current = trigger(newParams, true);
 
     try {
       const productResponse = await actionCreaterRef.current.unwrap();
-
+      console.log("got next page", newParams.page, productResponse.products);
       setProductPages(prevPages => {
         return prevPages.concat(productResponse.products);
       });
@@ -520,24 +534,37 @@ const ProductList = ({ params = {} }: { params?: FilterProductQueryParams }) => 
   }, [isLoading, productPages]);
 
   return (
-    <FlatList<typeof products[0]>
-      numColumns={3}
-      data={products}
-      contentContainerStyle={{
-        paddingLeft: SCREEN_PADDING_HORIZONTAL,
-      }}
-      columnWrapperStyle={{
-        marginBottom: 20,
-      }}
-      onEndReached={getNextProducts}
-      showsVerticalScrollIndicator={false}
-      ListEmptyComponent={() => (
-        <View>
-          <Text style={{ textAlign: "center" }}>No data</Text>
+    <React.Fragment>
+      {isFetchingNextPage ? (
+        <View
+          style={{
+            padding: 10,
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+          <ActivityIndicator size={"small"} />
         </View>
-      )}
-      renderItem={({ item }) => <EachProductItem item={item} />}
-    />
+      ) : null}
+
+      <FlatList<typeof products[0]>
+        numColumns={3}
+        data={products}
+        contentContainerStyle={{
+          paddingLeft: SCREEN_PADDING_HORIZONTAL,
+        }}
+        columnWrapperStyle={{
+          marginBottom: 20,
+        }}
+        onEndReached={getNextProducts}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={() => (
+          <View>
+            <Text style={{textAlign: "center"}}>No data</Text>
+          </View>
+        )}
+        renderItem={({item}) => <EachProductItem item={item} />}
+      />
+    </React.Fragment>
   );
 };
 

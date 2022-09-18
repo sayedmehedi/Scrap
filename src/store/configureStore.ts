@@ -45,23 +45,8 @@ export function createStore(
     preloadedState: preloadedState as any,
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware({
-        immutableCheck: {
-          ignoredPaths: ["firebase", "firestore"],
-        },
-        serializableCheck: {
-          ignoredActions: [
-            FLUSH,
-            REHYDRATE,
-            PAUSE,
-            PERSIST,
-            PURGE,
-            REGISTER,
-            notistackSlice.actions.enquerSnackbar.type,
-            notistackSlice.actions.closeSnackbar.type,
-            notistackSlice.actions.removeSnackbar.type,
-          ],
-          ignoredPaths: [],
-        },
+        immutableCheck: false,
+        serializableCheck: false,
         thunk: {
           extraArgument: {},
         },

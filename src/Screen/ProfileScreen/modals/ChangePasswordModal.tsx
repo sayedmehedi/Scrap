@@ -2,11 +2,12 @@ import React from "react";
 import styles from "../styles";
 import {useTheme} from "react-native-paper";
 import Toast from "react-native-toast-message";
+import {ChangePasswordRequest} from "@src/types";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {Controller, useForm} from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
 import AppPrimaryButton from "../../../Component/AppPrimaryButton";
-import {useUpdateProfileMutation} from "@data/laravel/services/auth";
+import {useChangePasswordMutation} from "@data/laravel/services/auth";
 import {
   View,
   Text,
@@ -16,7 +17,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-export default function AccountSettingsModal({
+export default function ChangePasswordModal({
   open,
   title,
   subtitle,
@@ -30,10 +31,10 @@ export default function AccountSettingsModal({
   inputs: Array<TextInputProps & {name: string; error?: string}>;
 }) {
   const theme = useTheme();
-  const {enqueueSuccessSnackbar} = useAppSnackbar();
   const {setValue, control, handleSubmit, setError} = useForm();
-  const [updateProfile, {isLoading, isSuccess, data}] =
-    useUpdateProfileMutation();
+  const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
+  const [changePassword, {isLoading, isSuccess, data}] =
+    useChangePasswordMutation();
 
   React.useEffect(() => {
     inputs.forEach(input => {
@@ -51,16 +52,23 @@ export default function AccountSettingsModal({
   }, [inputs]);
 
   React.useEffect(() => {
-    if (isSuccess && !!data) {
+    if (isSuccess && !!data && "success" in data) {
       enqueueSuccessSnackbar({
         text1: data.success,
       });
       onClose();
     }
-  }, [enqueueSuccessSnackbar, isSuccess, data]);
+
+    if (isSuccess && !!data && "error" in data) {
+      enqueueErrorSnackbar({
+        text1: "Error",
+        text2: data.error,
+      });
+    }
+  }, [enqueueSuccessSnackbar, enqueueErrorSnackbar, isSuccess, data]);
 
   const handleUpdate = handleSubmit(values => {
-    updateProfile(values);
+    changePassword(values as ChangePasswordRequest);
   });
 
   return (

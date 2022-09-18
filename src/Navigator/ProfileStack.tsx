@@ -1,18 +1,18 @@
-import React from 'react';
-import { forFade } from '@utils/misc';
-import { useTheme } from 'react-native-paper';
-import ErrorScreen from '../Screen/ErrorScreen';
-import ProfileScreen from '../Screen/ProfileScreen';
-import { ProfileStackParamList } from '@src/types';
-import { createStackNavigator } from '@react-navigation/stack';
-import PurchasesScreen from '../Screen/ProfileScreen/PurchasesScreen';
-import OfferAndBidScreen from '../Screen/ProfileScreen/OfferAndBidScreen';
-import SaveProductScreen from '../Screen/ProfileScreen/SaveProductScreen';
-import PublicProfileScreen from '../Screen/ProfileScreen/PublicProfileScreen';
-import AccountSettingScreen from '../Screen/ProfileScreen/AccountSettingScreen';
-import TransactionsScreen from '@src/Screen/ProfileScreen/TransactionListScreen';
-import { ProfileStackRoutes } from '@constants/routes';
-
+import React from "react";
+import {forFade} from "@utils/misc";
+import {useTheme} from "react-native-paper";
+import ErrorScreen from "../Screen/ErrorScreen";
+import ProfileScreen from "../Screen/ProfileScreen";
+import {ProfileStackParamList} from "@src/types";
+import {createStackNavigator} from "@react-navigation/stack";
+import PurchasesScreen from "../Screen/ProfileScreen/PurchasesScreen";
+import OfferAndBidScreen from "../Screen/ProfileScreen/OfferAndBidScreen";
+import SaveProductScreen from "../Screen/ProfileScreen/SaveProductScreen";
+import PublicProfileScreen from "../Screen/ProfileScreen/PublicProfileScreen";
+import AccountSettingScreen from "../Screen/ProfileScreen/AccountSettingScreen";
+import TransactionsScreen from "@src/Screen/ProfileScreen/TransactionListScreen";
+import {ProfileStackRoutes} from "@constants/routes";
+import ContactUsScreen from "@src/Screen/ProfileScreen/ContactUsScreen";
 
 const Profile = createStackNavigator<ProfileStackParamList>();
 
@@ -28,26 +28,26 @@ const ProfileStack = () => {
         },
         headerTitleStyle: {
           fontSize: 18,
-          fontFamily: 'Inter-Bold',
+          fontFamily: "Inter-Bold",
           // @ts-ignore
           color: theme.colors.white,
         },
-        headerTitleAlign: 'center',
+        headerTitleAlign: "center",
         // @ts-ignore
         headerTintColor: theme.colors.white,
         cardStyleInterpolator: forFade,
       }}>
       <Profile.Screen
         options={{
-          title: 'My Account',
+          title: "My Account",
         }}
-        name="profileScreen"
+        name={ProfileStackRoutes.PROFILE_SCREEN}
         component={ProfileScreen}
       />
 
       <Profile.Screen
         options={{
-          title: 'Transactions',
+          title: "Transactions",
         }}
         component={TransactionsScreen}
         name={ProfileStackRoutes.TRANSACTION}
@@ -55,52 +55,50 @@ const ProfileStack = () => {
 
       <Profile.Screen
         options={{
-          title: 'Offer & Bid',
+          title: "Offer & Bid",
         }}
-        name="offerAndBid"
+        name={ProfileStackRoutes.OFFER_N_BID}
         component={OfferAndBidScreen}
       />
 
       <Profile.Screen
         options={{
-          title: 'Save Product',
+          title: "Save Product",
         }}
-        name="saveProduct"
+        name={ProfileStackRoutes.SAVE_PRODUCT}
         component={SaveProductScreen}
       />
 
       <Profile.Screen
         options={{
-          title: 'Public Profile',
+          title: "Public Profile",
         }}
-        name="publicProfile"
+        name={ProfileStackRoutes.PUBLIC_PROFILE}
         component={PublicProfileScreen}
       />
 
       <Profile.Screen
         options={{
-          title: 'Account Settings',
+          title: "Account Settings",
         }}
-        name="accountSetting"
+        name={ProfileStackRoutes.ACCOUNT_SETTING}
         component={AccountSettingScreen}
       />
       <Profile.Screen
         options={{
-          title: 'Error',
+          title: "Contact",
         }}
-
-        name="error"
-        component={ErrorScreen}
+        name={ProfileStackRoutes.CONTACT}
+        component={ContactUsScreen}
       />
 
       <Profile.Screen
-        name='purchases'
+        name={ProfileStackRoutes.PURCHASES}
         options={{
-          title: "Purchase History"
+          title: "Purchase History",
         }}
         component={PurchasesScreen}
       />
-
     </Profile.Navigator>
   );
 };

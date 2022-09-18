@@ -5,10 +5,11 @@ import {RootStackParamList} from "@src/types";
 import {RootStackRoutes} from "@constants/routes";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {Text, Title, useTheme} from "react-native-paper";
+import {View, Image, TextInput, FlatList} from "react-native";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
-import {View, Image, TextInput} from "react-native";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {useCreateAskQuestionMutation} from "@data/laravel/services/question";
+import {ScrollView} from "react-native-gesture-handler";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -44,35 +45,6 @@ const AskQuestionScreen = ({route}: Props) => {
       seller_id: +route.params.sellerId,
     });
   }, [route.params.productId, route.params.sellerId, question]);
-
-  const ListFooterComponent = React.useMemo(() => {
-    return (
-      <View style={{padding: 15}}>
-        <TextInput
-          multiline
-          value={question}
-          numberOfLines={6}
-          textAlign={"center"}
-          textAlignVertical={"top"}
-          onChangeText={setQuestion}
-          placeholder="Write your message"
-          style={{
-            borderWidth: 1,
-            borderColor: "#191F2B",
-            borderRadius: theme.roundness * 3,
-          }}
-        />
-
-        <View style={{marginTop: 30, marginBottom: 25}}>
-          <AppPrimaryButton
-            text={"Send Message"}
-            onPress={handleAskQuestion}
-            disabled={!question || isAskingQuestion}
-          />
-        </View>
-      </View>
-    );
-  }, [handleAskQuestion, question, isAskingQuestion]);
 
   const ListHeaderComponent = React.useMemo(() => {
     return (
@@ -131,13 +103,39 @@ const AskQuestionScreen = ({route}: Props) => {
   ]);
 
   return (
-    <View>
-      <QuestionList
-        sellerId={+route.params.sellerId}
-        productId={+route.params.productId}
-        ListHeaderComponent={ListHeaderComponent}
-        ListFooterComponent={ListFooterComponent}
-      />
+    <View style={{flex: 1}}>
+      <View style={{flex: 1}}>
+        <QuestionList
+          sellerId={+route.params.sellerId}
+          productId={+route.params.productId}
+          ListHeaderComponent={ListHeaderComponent}
+        />
+      </View>
+
+      <View style={{padding: 15, paddingTop: 0}}>
+        <TextInput
+          multiline
+          value={question}
+          numberOfLines={6}
+          textAlign={"center"}
+          textAlignVertical={"top"}
+          onChangeText={setQuestion}
+          placeholder="Write your message"
+          style={{
+            borderWidth: 1,
+            borderColor: "#191F2B",
+            borderRadius: theme.roundness * 3,
+          }}
+        />
+
+        <View style={{marginTop: 30, marginBottom: 25}}>
+          <AppPrimaryButton
+            text={"Send Message"}
+            onPress={handleAskQuestion}
+            disabled={!question || isAskingQuestion}
+          />
+        </View>
+      </View>
     </View>
   );
 };

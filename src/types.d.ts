@@ -43,7 +43,7 @@ export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
   >;
 
 export type ProfileStackParamList = {
-  [ProfileStackRoutes.ERROR]: undefined;
+  [ProfileStackRoutes.CONTACT]: undefined;
   [ProfileStackRoutes.PURCHASES]: undefined;
   [ProfileStackRoutes.TRANSACTION]: undefined;
   [ProfileStackRoutes.OFFER_N_BID]: undefined;
@@ -110,7 +110,9 @@ export type AuthStackParamList = {
     };
   };
   [AuthStackRoutes.REGISTRATION]: undefined;
-  [AuthStackRoutes.RESET_PASSWORD]: undefined;
+  [AuthStackRoutes.RESET_PASSWORD]: {
+    email: string;
+  };
   [AuthStackRoutes.FORGOT_PASSWORD]: undefined;
 };
 
@@ -297,14 +299,14 @@ export interface User {
   id: number;
   name: string;
   user_type: number;
-  phone?: any;
+  phone?: string;
   email: string;
-  location?: any;
-  latitude?: any;
-  longitude?: any;
   status: number;
-  profile_image: string;
   token: string;
+  profile_image: string;
+  location?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export type LoginResponse =
@@ -563,9 +565,18 @@ export interface UserProfile {
   profile_image: string;
   has_product: boolean;
   is_fb_connected: boolean;
-  country: string;
-  state: string;
-  city: string;
+  country: {
+    id: number;
+    name: string;
+  };
+  state: {
+    id: number;
+    name: string;
+  };
+  city: {
+    id: number;
+    name: string;
+  };
   fb_details?: any;
   joined_date: string;
   total_purchased: number;
@@ -859,7 +870,7 @@ export type CreateProductRequest = {
   details: string;
   is_list_now: "1" | "0";
   expected_date_for_list: null | string;
-  show_metal_price: boolean;
+  show_metal_price: "1" | "0";
   location: string;
   package_id: number;
   is_locale: "1" | "0";
@@ -873,4 +884,34 @@ export type CreateProductRequest = {
   duration: number;
   quantity: number;
   images: Asset[];
+};
+
+export interface Duration {
+  id: number;
+  days: string;
+}
+
+export type GetDurationsResponse = {
+  success: string;
+  items: SimplePaginatedResponse<Duration>;
+};
+
+export type ChangePasswordRequest = {
+  password: string;
+  old_password: string;
+  password_confirmation: string;
+};
+
+export type ResetPasswordRequest = {
+  password: string;
+  password_confirmation: string;
+  email: string;
+  otp: string;
+};
+
+export type ContactUsRequest = {
+  name: string;
+  email: string;
+  subject: string;
+  description: string;
 };

@@ -59,8 +59,11 @@ export const productApi = api.injectEndpoints({
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
-    createProduct: builder.mutation<{success: string}, CreateProductRequest>({
-      queryFn(body) {
+    createProduct: builder.mutation<
+      {success: string},
+      CreateProductRequest & {onUploadProgress?: (event: ProgressEvent) => void}
+    >({
+      queryFn({onUploadProgress, ...body}) {
         const formData = new FormData();
 
         formData.append("title", body.title);
@@ -70,14 +73,23 @@ export const productApi = api.injectEndpoints({
         formData.append("details", body.details);
         formData.append("is_list_now", body.is_list_now);
         formData.append("expected_date_for_list", body.expected_date_for_list);
-        formData.append("show_metal_price", body.show_metal_price);
-        formData.append("location", body.location);
         formData.append("package_id", body.package_id);
         formData.append("is_locale", body.is_locale);
         formData.append("is_shipping", body.is_shipping);
+
+        formData.append("location", body.location);
+        //? location dile egulao lagbe
         formData.append("latitude", body.latitude);
         formData.append("longitude", body.longitude);
-        formData.append("selected_metals[]", body.selected_metals);
+
+        console.log("selected metals", body.selected_metals);
+        formData.append("show_metal_price", body.show_metal_price);
+        // ? show_metal_price dile egula lagbe
+        body.selected_metals.forEach(metal => {
+          console.log("appending metal", metal.toString());
+
+          formData.append("selected_metals[]", metal.toString());
+        });
 
         Object.entries(body.attributes).forEach((attrId, termId) => {
           formData.append(`attributes[${attrId}]`, termId);
@@ -87,19 +99,20 @@ export const productApi = api.injectEndpoints({
         formData.append("buy_price", body.buy_price);
         formData.append("duration", body.duration);
         formData.append("quantity", body.quantity);
-        formData.append(
-          "images[]",
-          body.images.map(img => ({
+
+        body.images.forEach(img => {
+          console.log("appending image", img);
+          formData.append("images[]", {
             uri: img.uri,
             type: img.type,
             name: img.fileName,
-          })),
-        );
-
-        console.log("formData", {...formData});
+          });
+        });
 
         return apiClient
-          .postForm<{success: string}>("products", formData)
+          .postForm<{success: string}>("products", formData, {
+            onUploadProgress,
+          })
           .then(res => {
             return {
               data: {

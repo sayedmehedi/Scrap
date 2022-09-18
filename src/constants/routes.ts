@@ -60,5 +60,5 @@ export const ProfileStackRoutes = {
   PUBLIC_PROFILE: "publicProfile",
   ACCOUNT_SETTING: "accountSetting",
   PURCHASES: "purchases",
-  ERROR: "error",
+  CONTACT: "contact",
 } as const;

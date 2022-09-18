@@ -1,5 +1,6 @@
 import React from "react";
 import {useAppSelector} from "@hooks/store";
+import {Overlay} from "react-native-elements";
 import {Controller, useForm} from "react-hook-form";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {View, TouchableOpacity} from "react-native";
@@ -10,6 +11,7 @@ import {Divider, Text, useTheme} from "react-native-paper";
 import AppPrimaryButton from "../Component/AppPrimaryButton";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {useCreateProductMutation} from "@data/laravel/services/product";
+import CircularProgress from "react-native-circular-progress-indicator";
 import {
   GetPackagesResponse,
   Package,
@@ -54,14 +56,35 @@ export default function ProductAddDeliveryMethodScreen({
   const {enqueueSuccessSnackbar} = useAppSnackbar();
   const rootNavigation = useNavigation<RootNavigationProps>();
   const profile = useAppSelector(state => state.auth.profile);
-  const [getPackages, {isFetching}] = useLazyGetPackagesQuery();
-  const {data: getMetalsResponse, isLoading: isLoadingCategories} =
-    useGetPackagesQuery({});
+  const [uploadProgress, setUploadProgress] = React.useState(0);
+  const [getPackages, {isFetching: isFetchingNextPage}] =
+    useLazyGetPackagesQuery();
+  const {
+    data: getMetalsResponse,
+    isLoading: isLoadingCategories,
+    isFetching: isFetchingInitial,
+  } = useGetPackagesQuery({});
   const actionCreaterRef = React.useRef<ReturnType<typeof getPackages> | null>(
     null,
   );
-  const [createProduct, {isLoading: isCreatingProduct, isSuccess, data}] =
-    useCreateProductMutation();
+  const [
+    createProduct,
+    {
+      data: createProductResponse,
+      isError: isCreateProductError,
+      isLoading: isCreatingProduct,
+      isSuccess: isProductCreateSuccess,
+    },
+  ] = useCreateProductMutation();
+
+  React.useEffect(() => {
+    if (
+      (!isCreatingProduct && isProductCreateSuccess) ||
+      isCreateProductError
+    ) {
+      setUploadProgress(0);
+    }
+  }, [isProductCreateSuccess, isCreatingProduct, isCreateProductError]);
 
   const [packagePages, setPackagePages] = React.useState<
     Array<GetPackagesResponse["items"]>
@@ -76,21 +99,19 @@ export default function ProductAddDeliveryMethodScreen({
   }, [getMetalsResponse, isLoadingCategories]);
 
   const getNextPackages = async () => {
-    if (isFetching) {
+    if (isFetchingNextPage || isFetchingInitial) {
       return;
     }
 
     const lastPage = packagePages[packagePages.length - 1];
 
-    if (lastPage && !lastPage.has_more_data) {
+    if (!lastPage || (lastPage && !lastPage.has_more_data)) {
       return;
     }
 
     const params: PaginationQueryParams = {};
 
-    if (lastPage) {
-      params.page = lastPage.current_page + 1;
-    }
+    params.page = lastPage.current_page + 1;
 
     actionCreaterRef.current = getPackages(params, true);
 
@@ -113,13 +134,13 @@ export default function ProductAddDeliveryMethodScreen({
   }, []);
 
   React.useEffect(() => {
-    if (isSuccess && !!data) {
+    if (isProductCreateSuccess && !!createProductResponse) {
       enqueueSuccessSnackbar({
-        text1: data.success,
+        text1: createProductResponse.success,
       });
-      navigation.replace(PostItemStackRoutes.SUCCESS);
+      navigation.navigate(PostItemStackRoutes.SUCCESS);
     }
-  }, [isSuccess, enqueueSuccessSnackbar, data]);
+  }, [isProductCreateSuccess, enqueueSuccessSnackbar, createProductResponse]);
 
   const metals = React.useMemo(() => {
     if (isLoadingCategories) {
@@ -141,14 +162,14 @@ export default function ProductAddDeliveryMethodScreen({
     defaultValues: {
       location: "",
       package: null,
-      isLocale: false,
+      isLocale: true,
       isShipping: false,
     },
   });
 
   React.useEffect(() => {
     if (profile) {
-      setValue("location", `${profile.city}, ${profile.country}`);
+      setValue("location", `${profile.city.name}, ${profile.country.name}`);
     }
   }, [profile, setValue]);
 
@@ -171,18 +192,43 @@ export default function ProductAddDeliveryMethodScreen({
       starting_price: route.params.startingPrice,
       is_shipping: values.isShipping ? "1" : "0",
       sub_category_id: route.params.subCategoryId,
-      show_metal_price: route.params.showMetalPrice,
       is_list_now: route.params.isListNow ? "1" : "0",
+      show_metal_price: route.params.showMetalPrice ? "1" : "0",
       expected_date_for_list: route.params.expectedDateForList,
       images: [
         route.params.productCoverImage,
         ...route.params.productGalleryImages,
       ],
+      onUploadProgress(event) {
+        const progress = Math.round(event.loaded / event.total) * 100;
+        setUploadProgress(progress);
+      },
     });
   });
 
   return (
     <View style={{padding: 15}}>
+      <Overlay
+        isVisible={isCreatingProduct}
+        overlayStyle={{
+          width: "80%",
+          elevation: 0,
+          height: "50%",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "transparent",
+        }}>
+        <CircularProgress
+          radius={50}
+          maxValue={100}
+          duration={2000}
+          titleColor={"black"}
+          value={uploadProgress}
+          activeStrokeColor={"white"}
+          progressValueColor={"white"}
+        />
+      </Overlay>
+
       <Controller
         control={control}
         name={"package"}
@@ -213,15 +259,22 @@ export default function ProductAddDeliveryMethodScreen({
                                   RootStackRoutes.CHOOSE_COUNTRY,
                                   {
                                     nextScreen: {
-                                      name: route.name,
-                                      params: route.params,
+                                      name: HomeTabRoutes.POST_ITEM,
+                                      params: {
+                                        screen: route.name,
+                                        params: route.params,
+                                      },
                                     },
                                   },
                                 );
                               }}>
                               <ListItem.Content>
                                 <ListItem.Title>
-                                  Location: {field.value}
+                                  <Text style={{fontWeight: "700"}}>
+                                    {" "}
+                                    Location:
+                                  </Text>{" "}
+                                  {field.value}
                                 </ListItem.Title>
                               </ListItem.Content>
 
@@ -234,48 +287,8 @@ export default function ProductAddDeliveryMethodScreen({
                       }}
                     />
 
-                    <View style={{height: 15}} />
+                    <View style={{height: 10}} />
 
-                    <Controller
-                      name={"isShipping"}
-                      control={control}
-                      render={({field}) => {
-                        return (
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                            }}>
-                            <View>
-                              <Text
-                                style={{
-                                  fontSize: 17,
-                                  color: "#222222",
-                                  marginBottom: 10,
-                                }}>
-                                Sell & Ship International
-                              </Text>
-
-                              <Text>15% Services fee applies</Text>
-                            </View>
-
-                            <View>
-                              <Switch
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              />
-                            </View>
-                          </View>
-                        );
-                      }}
-                    />
-
-                    <View style={{height: 15}} />
-
-                    <Divider style={{height: 2}} />
-
-                    <View style={{height: 15}} />
                     <Controller
                       name={"isLocale"}
                       control={control}
@@ -293,6 +306,7 @@ export default function ProductAddDeliveryMethodScreen({
                                   fontSize: 17,
                                   marginBottom: 10,
                                   color: "#222222",
+                                  fontWeight: "700",
                                 }}>
                                 Local Pickup
                               </Text>
@@ -309,7 +323,80 @@ export default function ProductAddDeliveryMethodScreen({
                       }}
                     />
 
-                    <View style={{height: 15}} />
+                    <View style={{height: 5}} />
+
+                    <Divider style={{height: 2}} />
+
+                    <View style={{height: 5}} />
+
+                    <Controller
+                      name={"isShipping"}
+                      control={control}
+                      render={({field}) => {
+                        return (
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}>
+                            <View>
+                              <Text
+                                style={{
+                                  fontSize: 17,
+                                  color: "#222222",
+                                  marginBottom: 2,
+                                  fontWeight: "700",
+                                }}>
+                                International Shipping
+                              </Text>
+
+                              <Text style={{fontSize: 12}}>
+                                15% Services fee applies
+                              </Text>
+                            </View>
+
+                            <View>
+                              <Switch
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              />
+                            </View>
+                          </View>
+                        );
+                      }}
+                    />
+
+                    <View style={{height: 10}} />
+
+                    <Divider style={{height: 2}} />
+
+                    <View style={{height: 10}} />
+
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}>
+                      <View>
+                        <Text
+                          style={{
+                            fontSize: 17,
+                            color: "#222222",
+                            marginBottom: 2,
+                            fontWeight: "700",
+                          }}>
+                          What length package will you use?
+                        </Text>
+
+                        <Text style={{fontSize: 12}}>
+                          Buyer can pay for delivery label
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={{height: 10}} />
                   </React.Fragment>
                 )}
                 ListFooterComponent={() => (
@@ -342,14 +429,15 @@ export default function ProductAddDeliveryMethodScreen({
                       onPress={() => field.onChange(item)}
                       containerStyle={{
                         paddingLeft: 0,
+                        paddingBottom: 0,
                         alignItems: "flex-start",
                         backgroundColor: "#F7F7F7F",
                       }}>
                       <ListItem.CheckBox
                         iconType={"material"}
                         checkedIcon={"radio-button-checked"}
-                        checked={field.value?.id === item.id}
                         onPress={() => field.onChange(item)}
+                        checked={field.value?.id === item.id}
                         uncheckedIcon={"radio-button-unchecked"}
                       />
 
@@ -360,14 +448,12 @@ export default function ProductAddDeliveryMethodScreen({
                               field.value?.id === item.id
                                 ? theme.colors.primary
                                 : theme.colors.text,
+                            fontWeight: "700",
                           }}>
                           {item.name}
                         </ListItem.Title>
 
-                        <View
-                          style={{
-                            marginTop: 10,
-                          }}>
+                        <View>
                           <Text>Approx: {item.size}</Text>
                           <Text>Weight: {item.weight}</Text>
                           <Text>pounds. Buyer Pays ${item.price}</Text>

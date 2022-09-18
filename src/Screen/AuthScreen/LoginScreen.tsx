@@ -1,5 +1,4 @@
 import React from "react";
-import auth from "@react-native-firebase/auth";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {useTheme, Text} from "react-native-paper";
 import {useForm, Controller} from "react-hook-form";
@@ -9,7 +8,6 @@ import {useNavigation} from "@react-navigation/native";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {AuthStackParamList, RootStackParamList} from "@src/types";
-import {GoogleSignin} from "@react-native-google-signin/google-signin";
 import {AuthStackRoutes, RootStackRoutes} from "../../constants/routes";
 import {useAppDispatch, useAppSelector, useAppStore} from "@hooks/store";
 import {addServerErrors, isJoteyQueryError} from "@utils/error-handling";
@@ -18,9 +16,8 @@ import {
   setFirstTimeLoginFalse,
 } from "@store/slices/authSlice";
 import {
-  useGetProfileQuery,
-  useLazyGetProfileQuery,
   useLoginMutation,
+  useLazyGetProfileQuery,
 } from "@data/laravel/services/auth";
 import {
   NativeStackNavigationProp,
@@ -39,11 +36,7 @@ import {
   setGlobalStyles,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
-
-GoogleSignin.configure({
-  webClientId:
-    "1098035251669-j4gopt4e5ce00kc8jd16hh3ua6mlg75h.apps.googleusercontent.com",
-});
+import GoogleSignInBtn from "@src/Component/GoogleSignInBtn";
 
 setGlobalStyles.containerStyles = {
   height: 58,
@@ -158,22 +151,6 @@ const LoginScreen = ({navigation, route}: Props) => {
     isAuthenticated,
     isGettingProfileSuccess,
   ]);
-
-  async function onGoogleButtonPress() {
-    // Get the users ID token
-    try {
-      const {idToken} = await GoogleSignin.signIn();
-      console.log(idToken);
-
-      // Create a Google credential with the token
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-      // Sign-in the user with the credential
-      return auth().signInWithCredential(googleCredential);
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   const handleLogin = handleSubmit(values => {
     login(values)
@@ -396,19 +373,12 @@ const LoginScreen = ({navigation, route}: Props) => {
                 flexDirection: "row",
                 justifyContent: "center",
               }}>
-              <TouchableOpacity
-                onPress={onGoogleButtonPress}
+              <View
                 style={{
-                  width: 60,
-                  height: 60,
                   marginRight: 20,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  // @ts-ignore
-                  backgroundColor: theme.colors.white,
                 }}>
-                <Image source={require("../../assets/Images/google.png")} />
-              </TouchableOpacity>
+                <GoogleSignInBtn />
+              </View>
 
               <TouchableOpacity
                 style={{

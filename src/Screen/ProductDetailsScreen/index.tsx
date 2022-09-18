@@ -277,8 +277,8 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
       <View
         style={{
           flex: 1,
+          alignItems: "center",
           backgroundColor: "#F7F7F7",
-          alignContent: "center",
           justifyContent: "center",
         }}>
         <Text>Product not found</Text>

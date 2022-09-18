@@ -1,29 +1,35 @@
-import React from 'react';
-import truncate from "lodash.truncate"
-import { FilterProduct } from '@src/types';
-import { RootStackRoutes } from '@constants/routes';
-import { useNavigation } from '@react-navigation/native';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { View, Text, Image, Dimensions, Pressable } from 'react-native';
+import React from "react";
+import truncate from "lodash.truncate";
+import {FilterProduct} from "@src/types";
+import {RootStackRoutes} from "@constants/routes";
+import {useNavigation} from "@react-navigation/native";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import {View, Text, Image, Dimensions, Pressable} from "react-native";
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get("window");
 const itemWidth = width / 3;
 
-const MARGIN_RIGHT = 10
-const BORDER_WIDTH = 6
+const MARGIN_RIGHT = 10;
+const BORDER_WIDTH = 6;
 
-const EachProductItem = ({ item, }: { item: FilterProduct & { type: "data" } | { id: number; type: "skeleton" }, }) => {
+const EachProductItem = ({
+  item,
+}: {
+  item: (FilterProduct & {type: "data"}) | {id: number; type: "skeleton"};
+}) => {
   const navigation = useNavigation();
 
   if (item.type === "skeleton") {
-    return <SkeletonPlaceholder>
-      <SkeletonPlaceholder.Item width={itemWidth - 6}>
-        <SkeletonPlaceholder.Item width={110} height={120} />
-        <SkeletonPlaceholder.Item width={50} height={4} marginTop={5} />
-        <SkeletonPlaceholder.Item width={80} height={7} marginTop={5} />
-        <SkeletonPlaceholder.Item width={30} height={7} marginTop={5} />
-      </SkeletonPlaceholder.Item>
-    </SkeletonPlaceholder>
+    return (
+      <SkeletonPlaceholder>
+        <SkeletonPlaceholder.Item width={itemWidth - 6}>
+          <SkeletonPlaceholder.Item width={110} height={120} />
+          <SkeletonPlaceholder.Item width={50} height={4} marginTop={5} />
+          <SkeletonPlaceholder.Item width={80} height={7} marginTop={5} />
+          <SkeletonPlaceholder.Item width={30} height={7} marginTop={5} />
+        </SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
+    );
   }
 
   return (
@@ -34,12 +40,14 @@ const EachProductItem = ({ item, }: { item: FilterProduct & { type: "data" } | {
         marginRight: MARGIN_RIGHT,
         width: itemWidth - MARGIN_RIGHT - BORDER_WIDTH,
       }}
-      onPress={() => navigation.navigate(RootStackRoutes.PRODUCT_DETAILS, {
-        productId: item.id,
-      })}>
+      onPress={() =>
+        navigation.navigate(RootStackRoutes.PRODUCT_DETAILS, {
+          productId: item.id,
+        })
+      }>
       <Image
         resizeMode={"center"}
-        source={{ uri: item.image }}
+        source={{uri: item.image}}
         style={{
           height: 130,
           width: "100%",
@@ -53,33 +61,47 @@ const EachProductItem = ({ item, }: { item: FilterProduct & { type: "data" } | {
       <View
         style={{
           marginTop: 10,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          alignItems: "center",
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}>
-        <Text style={{ fontSize: 10, fontFamily: 'Inter-Regular', color: '#023047' }}>
+        <Text
+          style={{fontSize: 10, fontFamily: "Inter-Regular", color: "#023047"}}>
           {truncate(item.location, {
-            length: 19
+            length: 19,
           })}
         </Text>
-        {item.is_locale && <Image
-          resizeMode={"contain"}
-          style={{ height: 10, width: 10 }}
-          source={require('../assets/Images/map1.png')}
-        />}
+        {item.is_locale && (
+          <Image
+            resizeMode={"contain"}
+            style={{height: 10, width: 10}}
+            source={require("../assets/Images/map1.png")}
+          />
+        )}
 
-        {item.is_shipping && <Image
-          resizeMode={"contain"}
-          style={{ height: 10, width: 10 }}
-          source={require('@assets/Images/van.png')}
-        />}
+        {item.is_shipping && (
+          <Image
+            resizeMode={"contain"}
+            style={{height: 10, width: 10}}
+            source={require("@assets/Images/van.png")}
+          />
+        )}
       </View>
       <Text
-        style={{ fontSize: 11, fontFamily: 'Inter-Bold', color: '#023047', marginBottom: 5, marginTop: 3 }}>
+        style={{
+          fontSize: 11,
+          fontFamily: "Inter-Bold",
+          color: "#023047",
+          marginBottom: 5,
+          marginTop: 3,
+        }}>
         {truncate(item.title, {
-          length: 20
-        })}</Text>
-      <Text style={{ fontSize: 11, fontFamily: 'Inter-Bold', color: '#023047', }}>${item.price}</Text>
+          length: 20,
+        })}
+      </Text>
+      <Text style={{fontSize: 11, fontFamily: "Inter-Bold", color: "#023047"}}>
+        ${item.price}
+      </Text>
     </Pressable>
   );
 };
