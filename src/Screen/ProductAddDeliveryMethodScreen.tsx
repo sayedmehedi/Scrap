@@ -325,7 +325,7 @@ export default function ProductAddDeliveryMethodScreen({
                               }}
                               onPress={() => {
                                 rootNavigation.navigate(
-                                  RootStackRoutes.CHOOSE_COUNTRY,
+                                  RootStackRoutes.CHOOSE_LOCATION,
                                   {
                                     nextScreen: {
                                       name: HomeTabRoutes.POST_ITEM,
