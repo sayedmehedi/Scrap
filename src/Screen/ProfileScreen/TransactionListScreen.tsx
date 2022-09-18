@@ -1,11 +1,11 @@
 import React from "react";
 import dayjs from "dayjs";
 import isToday from "dayjs/plugin/isToday";
-import {View, SectionList, StyleSheet} from "react-native";
+import {Title, Text} from "react-native-paper";
 import isYesterday from "dayjs/plugin/isYesterday";
 import relativeTime from "dayjs/plugin/relativeTime";
-import {Title, Text, useTheme} from "react-native-paper";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import {View, SectionList, StyleSheet} from "react-native";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {
   AppNotification,
@@ -22,15 +22,21 @@ dayjs.extend(isToday);
 dayjs.extend(isYesterday);
 dayjs.extend(relativeTime);
 
+const getTransactionStatusColor = (item: Transaction) =>
+  item.status === 0 ? "#F04E26" : "#51B764";
+
 export default function TransactionsScreen() {
-  const theme = useTheme();
   const [getTransactions, {isFetching: isFetchingNextPage}] =
     useLazyGetTransactionsQuery({});
   const {
-    data: getTransactionsResponse,
+    refetch,
     isLoading,
+    data: getTransactionsResponse,
     isFetching: isFetchingInitial,
   } = useGetTransactionsQuery({});
+
+  useRefreshOnFocus(refetch);
+
   const actionCreaterRef = React.useRef<ReturnType<
     typeof getTransactions
   > | null>(null);
@@ -175,6 +181,7 @@ export default function TransactionsScreen() {
     <View style={{backgroundColor: "white", flex: 1, padding: 10}}>
       <SectionList<typeof transactions[0]["data"][0]>
         sections={transactions}
+        showsVerticalScrollIndicator={false}
         keyExtractor={(item, index) => `${item.id + index}`}
         contentContainerStyle={{
           paddingBottom: 50,
@@ -217,7 +224,7 @@ export default function TransactionsScreen() {
                 paddingHorizontal: 20,
                 borderColor: "#F1F1F1",
                 backgroundColor: "white",
-                justifyContent: "space-around",
+                justifyContent: "space-between",
               }}>
               <View>
                 <Text
@@ -226,7 +233,7 @@ export default function TransactionsScreen() {
                     color: "#262B2E",
                     fontFamily: "SatoshiVariable-Bold",
                   }}>
-                  item.clubName
+                  {item.product_name ?? "No product"}
                 </Text>
                 <View style={{flexDirection: "row", marginVertical: 4}}>
                   <Text
@@ -235,27 +242,25 @@ export default function TransactionsScreen() {
                       color: "#8A8D9F",
                       fontFamily: "Satoshi-Regular",
                     }}>
-                    item.tableName |
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: "#8A8D9F",
-                      fontFamily: "Satoshi-Regular",
-                    }}>
-                    {" "}
-                    item.numberOfGuest Guest
+                    {item.date}
                   </Text>
                 </View>
                 <View style={{flexDirection: "row", alignItems: "center"}}>
-                  <View style={styles.dot} />
+                  <View
+                    style={[
+                      styles.dot,
+                      {
+                        backgroundColor: getTransactionStatusColor(item),
+                      },
+                    ]}
+                  />
                   <Text
                     style={{
                       fontSize: 10,
-                      color: "#FE2121",
+                      color: getTransactionStatusColor(item),
                       fontFamily: "Satoshi-Regular",
                     }}>
-                    item.status
+                    {item.status === 0 ? "Failed" : "Success"}
                   </Text>
                 </View>
               </View>
@@ -281,60 +286,6 @@ export default function TransactionsScreen() {
               </View>
             </View>
           );
-
-          // return (
-          //     <View
-          //         style={{
-          //             padding: 15,
-          //             marginBottom: 15,
-          //             flexDirection: 'row',
-          //             borderRadius: theme.roundness * 3,
-          //             // @ts-ingore
-          //             backgroundColor: theme.colors.white,
-          //         }}>
-          //         <View
-          //             style={{
-          //                 width: 35,
-          //                 height: 35,
-          //                 //   marginRight: 15,
-          //                 borderRadius: 1000,
-          //                 alignItems: 'center',
-          //                 justifyContent: 'center',
-          //                 backgroundColor: 'rgba(81, 183, 100, 0.25)',
-          //             }}>
-          //             <MaterialIcons
-          //                 size={22}
-          //                 color={'#51B764'}
-          //                 name="notifications-none"
-          //             />
-          //         </View>
-
-          //         <View style={{ flex: 1, paddingLeft: 15 }}>
-          //             <View
-          //                 style={{
-          //                     marginBottom: 15,
-          //                     alignItems: 'center',
-          //                     flexDirection: 'row',
-          //                     justifyContent: 'space-between',
-          //                 }}>
-          //                 <Text
-          //                     style={{
-          //                         fontSize: 16,
-          //                         color: '#F04E26',
-          //                         fontWeight: '700',
-          //                     }}>
-          //                     {item.payment_method}
-          //                 </Text>
-          //             </View>
-
-          //             <Text style={{
-          //                 color: theme.colors.tertiary
-          //             }}>
-          //                 ${item.amount}
-          //             </Text>
-          //         </View>
-          //     </View>
-          // )
         }}
       />
     </View>
@@ -346,7 +297,6 @@ const styles = StyleSheet.create({
     height: 8,
     width: 8,
     borderRadius: 4,
-    backgroundColor: "#FE2121",
     marginRight: 10,
   },
 });

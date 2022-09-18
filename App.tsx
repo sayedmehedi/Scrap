@@ -9,6 +9,7 @@ import SplashScreen from "react-native-splash-screen";
 import {persistor, store} from "@store/configureStore";
 import {enableLatestRenderer} from "react-native-maps";
 import AuthProvider from "@src/Providers/AuthProvider";
+import {useNetInfo} from "@react-native-community/netinfo";
 import {PersistGate} from "redux-persist/integration/react";
 import {useNavigationContainerRef} from "@react-navigation/native";
 import RootStackNavigator from "./src/Navigator/RootStackNavigator";
@@ -19,7 +20,6 @@ import {
   useFlipper,
   useReduxDevToolsExtension,
 } from "@react-navigation/devtools";
-import {useNetInfo} from "@react-native-community/netinfo";
 
 enableLatestRenderer();
 

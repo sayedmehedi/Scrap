@@ -660,6 +660,7 @@ export interface AppNotification {
   id: number;
   title: string;
   message: string;
+  style: "success" | "danger";
 }
 
 export type GetNotificationsResponse = {
@@ -671,6 +672,9 @@ export interface Transaction {
   amount: string;
   payment_method: string;
   date: string;
+  product_name: string;
+  product_id: number;
+  status: number;
 }
 
 export type GetTransactionsResponse = {

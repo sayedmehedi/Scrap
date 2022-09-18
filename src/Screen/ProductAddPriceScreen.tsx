@@ -260,270 +260,272 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
       <View style={{height: 15}} />
 
       {!!startingPrice && (
-        <Controller
-          control={control}
-          name={"duration"}
-          render={({field}) => {
-            return (
-              <React.Fragment>
-                <Pressable onPress={() => setModalType("duration")}>
-                  <View
-                    style={{
-                      padding: 15,
-                      borderRadius: 8,
-                      backgroundColor: theme.colors.white,
-                      elevation: 2,
-                    }}>
-                    <Text style={{color: "#222222", fontSize: 14}}>
-                      Select Duration
-                    </Text>
-                    <Text>{field.value?.label}</Text>
-                  </View>
-                </Pressable>
+        <React.Fragment>
+          <Controller
+            control={control}
+            name={"duration"}
+            render={({field}) => {
+              return (
+                <React.Fragment>
+                  <Pressable onPress={() => setModalType("duration")}>
+                    <View
+                      style={{
+                        padding: 15,
+                        borderRadius: 8,
+                        backgroundColor: theme.colors.white,
+                        elevation: 2,
+                      }}>
+                      <Text style={{color: "#222222", fontSize: 14}}>
+                        Select Duration
+                      </Text>
+                      <Text>{field.value?.label}</Text>
+                    </View>
+                  </Pressable>
 
-                <DurationSelectionModal
-                  onSave={field.onChange}
-                  initialValue={field.value}
-                  open={modalType === "duration"}
-                  onClose={() => setModalType("")}
-                />
-              </React.Fragment>
-            );
-          }}
-        />
+                  <DurationSelectionModal
+                    onSave={field.onChange}
+                    initialValue={field.value}
+                    open={modalType === "duration"}
+                    onClose={() => setModalType("")}
+                  />
+                </React.Fragment>
+              );
+            }}
+          />
+
+          <View
+            style={{
+              marginTop: 20,
+              marginLeft: -10,
+              flexDirection: "row",
+              alignItems: "center",
+            }}>
+            <Controller
+              control={control}
+              name={"isListNow"}
+              render={({field}) => {
+                return (
+                  <CheckBox
+                    center
+                    checked={field.value}
+                    uncheckedIcon={"circle-o"}
+                    checkedIcon={"dot-circle-o"}
+                    containerStyle={{
+                      padding: 1,
+                      paddingLeft: 0,
+                    }}
+                    onPress={() => field.onChange(true)}
+                  />
+                );
+              }}
+            />
+
+            <Text>When I submit then, I'll start my listings</Text>
+          </View>
+
+          <View
+            style={{
+              marginTop: 5,
+              marginLeft: -10,
+              flexDirection: "row",
+              alignItems: "center",
+            }}>
+            <Controller
+              control={control}
+              name={"isListNow"}
+              render={({field}) => {
+                return (
+                  <CheckBox
+                    center
+                    checked={!field.value}
+                    uncheckedIcon={"circle-o"}
+                    checkedIcon={"dot-circle-o"}
+                    containerStyle={{
+                      padding: 1,
+                      paddingLeft: 0,
+                    }}
+                    onPress={() => field.onChange(false)}
+                  />
+                );
+              }}
+            />
+
+            <Text>Expected to begin on</Text>
+          </View>
+
+          <View
+            style={{
+              marginTop: 12,
+              flexWrap: "wrap",
+              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "space-around",
+            }}>
+            <Controller
+              control={control}
+              name={"beginDay"}
+              render={({field}) => {
+                return (
+                  <React.Fragment>
+                    <TouchableOpacity
+                      onPress={() => setOpen(true)}
+                      style={{
+                        flex: 1,
+                        padding: 10,
+                        borderRadius: 5,
+                        backgroundColor: "white",
+                      }}>
+                      <View
+                        style={{
+                          marginBottom: 10,
+                        }}>
+                        <Text style={{fontWeight: "700", textAlign: "left"}}>
+                          Day
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}>
+                        <Text style={{fontWeight: "600"}}>
+                          {field.value
+                            ? dayjs(field.value).format("ddd,MMM DD")
+                            : ""}
+                        </Text>
+
+                        <EvilIcons name="chevron-down" size={25} />
+                      </View>
+                    </TouchableOpacity>
+
+                    <DatePicker
+                      modal
+                      open={open}
+                      mode={"date"}
+                      date={field.value}
+                      onConfirm={date => {
+                        field.onChange(date);
+                        setOpen(false);
+                      }}
+                      onCancel={() => {
+                        setOpen(false);
+                      }}
+                    />
+                  </React.Fragment>
+                );
+              }}
+            />
+
+            <Controller
+              control={control}
+              name={"beginHour"}
+              render={({field}) => {
+                return (
+                  <React.Fragment>
+                    <TouchableOpacity
+                      onPress={() => setModalType("hours")}
+                      style={{
+                        flex: 1,
+                        padding: 10,
+                        borderRadius: 5,
+                        marginHorizontal: 10,
+                        backgroundColor: "white",
+                      }}>
+                      <View
+                        style={{
+                          marginBottom: 10,
+                        }}>
+                        <Text style={{fontWeight: "700", textAlign: "left"}}>
+                          Hours
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}>
+                        <Text style={{fontWeight: "600"}}>
+                          {field.value?.label}
+                        </Text>
+
+                        <EvilIcons name="chevron-down" size={25} />
+                      </View>
+                    </TouchableOpacity>
+
+                    <SelectionModal
+                      title={"Select Hour"}
+                      open={modalType === "hours"}
+                      onSave={item => field.onChange(item)}
+                      items={new Array(24).fill(0).map((_, id) => ({
+                        id,
+                        type: "data",
+                        value: id + 1,
+                        label: `${id + 1}:00 hrs`,
+                      }))}
+                      onClose={() => setModalType("")}
+                    />
+                  </React.Fragment>
+                );
+              }}
+            />
+
+            <Controller
+              control={control}
+              name={"beginMinute"}
+              render={({field}) => {
+                return (
+                  <React.Fragment>
+                    <TouchableOpacity
+                      onPress={() => setModalType("minutes")}
+                      style={{
+                        flex: 1,
+                        padding: 10,
+                        borderRadius: 5,
+                        backgroundColor: "white",
+                      }}>
+                      <View
+                        style={{
+                          marginBottom: 10,
+                        }}>
+                        <Text style={{fontWeight: "700", textAlign: "left"}}>
+                          Minutes
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}>
+                        <Text style={{fontWeight: "600"}}>
+                          {field.value?.label}
+                        </Text>
+
+                        <EvilIcons name="chevron-down" size={25} />
+                      </View>
+                    </TouchableOpacity>
+
+                    <SelectionModal
+                      title={"Select Minutes"}
+                      open={modalType === "minutes"}
+                      onSave={item => field.onChange(item)}
+                      items={new Array(6).fill(1).map((_, id) => {
+                        const minute = (id + 1) * 10;
+                        return {
+                          id,
+                          type: "data",
+                          value: minute,
+                          label: `00:${minute} min`,
+                        };
+                      })}
+                      onClose={() => setModalType("")}
+                    />
+                  </React.Fragment>
+                );
+              }}
+            />
+          </View>
+        </React.Fragment>
       )}
-
-      <View
-        style={{
-          marginTop: 20,
-          marginLeft: -10,
-          flexDirection: "row",
-          alignItems: "center",
-        }}>
-        <Controller
-          control={control}
-          name={"isListNow"}
-          render={({field}) => {
-            return (
-              <CheckBox
-                center
-                checked={field.value}
-                uncheckedIcon={"circle-o"}
-                checkedIcon={"dot-circle-o"}
-                containerStyle={{
-                  padding: 1,
-                  paddingLeft: 0,
-                }}
-                onPress={() => field.onChange(true)}
-              />
-            );
-          }}
-        />
-
-        <Text>When I submit then, I'll start my listings</Text>
-      </View>
-
-      <View
-        style={{
-          marginTop: 5,
-          marginLeft: -10,
-          flexDirection: "row",
-          alignItems: "center",
-        }}>
-        <Controller
-          control={control}
-          name={"isListNow"}
-          render={({field}) => {
-            return (
-              <CheckBox
-                center
-                checked={!field.value}
-                uncheckedIcon={"circle-o"}
-                checkedIcon={"dot-circle-o"}
-                containerStyle={{
-                  padding: 1,
-                  paddingLeft: 0,
-                }}
-                onPress={() => field.onChange(false)}
-              />
-            );
-          }}
-        />
-
-        <Text>Expected to begin on</Text>
-      </View>
-
-      <View
-        style={{
-          marginTop: 12,
-          flexWrap: "wrap",
-          alignItems: "center",
-          flexDirection: "row",
-          justifyContent: "space-around",
-        }}>
-        <Controller
-          control={control}
-          name={"beginDay"}
-          render={({field}) => {
-            return (
-              <React.Fragment>
-                <TouchableOpacity
-                  onPress={() => setOpen(true)}
-                  style={{
-                    flex: 1,
-                    padding: 10,
-                    borderRadius: 5,
-                    backgroundColor: "white",
-                  }}>
-                  <View
-                    style={{
-                      marginBottom: 10,
-                    }}>
-                    <Text style={{fontWeight: "700", textAlign: "left"}}>
-                      Day
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}>
-                    <Text style={{fontWeight: "600"}}>
-                      {field.value
-                        ? dayjs(field.value).format("ddd,MMM DD")
-                        : ""}
-                    </Text>
-
-                    <EvilIcons name="chevron-down" size={25} />
-                  </View>
-                </TouchableOpacity>
-
-                <DatePicker
-                  modal
-                  open={open}
-                  mode={"date"}
-                  date={field.value}
-                  onConfirm={date => {
-                    field.onChange(date);
-                    setOpen(false);
-                  }}
-                  onCancel={() => {
-                    setOpen(false);
-                  }}
-                />
-              </React.Fragment>
-            );
-          }}
-        />
-
-        <Controller
-          control={control}
-          name={"beginHour"}
-          render={({field}) => {
-            return (
-              <React.Fragment>
-                <TouchableOpacity
-                  onPress={() => setModalType("hours")}
-                  style={{
-                    flex: 1,
-                    padding: 10,
-                    borderRadius: 5,
-                    marginHorizontal: 10,
-                    backgroundColor: "white",
-                  }}>
-                  <View
-                    style={{
-                      marginBottom: 10,
-                    }}>
-                    <Text style={{fontWeight: "700", textAlign: "left"}}>
-                      Hours
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}>
-                    <Text style={{fontWeight: "600"}}>
-                      {field.value?.label}
-                    </Text>
-
-                    <EvilIcons name="chevron-down" size={25} />
-                  </View>
-                </TouchableOpacity>
-
-                <SelectionModal
-                  title={"Select Hour"}
-                  open={modalType === "hours"}
-                  onSave={item => field.onChange(item)}
-                  items={new Array(24).fill(0).map((_, id) => ({
-                    id,
-                    type: "data",
-                    value: id + 1,
-                    label: `${id + 1}:00 hrs`,
-                  }))}
-                  onClose={() => setModalType("")}
-                />
-              </React.Fragment>
-            );
-          }}
-        />
-
-        <Controller
-          control={control}
-          name={"beginMinute"}
-          render={({field}) => {
-            return (
-              <React.Fragment>
-                <TouchableOpacity
-                  onPress={() => setModalType("minutes")}
-                  style={{
-                    flex: 1,
-                    padding: 10,
-                    borderRadius: 5,
-                    backgroundColor: "white",
-                  }}>
-                  <View
-                    style={{
-                      marginBottom: 10,
-                    }}>
-                    <Text style={{fontWeight: "700", textAlign: "left"}}>
-                      Minutes
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}>
-                    <Text style={{fontWeight: "600"}}>
-                      {field.value?.label}
-                    </Text>
-
-                    <EvilIcons name="chevron-down" size={25} />
-                  </View>
-                </TouchableOpacity>
-
-                <SelectionModal
-                  title={"Select Minutes"}
-                  open={modalType === "minutes"}
-                  onSave={item => field.onChange(item)}
-                  items={new Array(6).fill(1).map((_, id) => {
-                    const minute = (id + 1) * 10;
-                    return {
-                      id,
-                      type: "data",
-                      value: minute,
-                      label: `00:${minute} min`,
-                    };
-                  })}
-                  onClose={() => setModalType("")}
-                />
-              </React.Fragment>
-            );
-          }}
-        />
-      </View>
 
       <Controller
         control={control}
