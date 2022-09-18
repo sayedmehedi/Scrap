@@ -24,8 +24,6 @@ export const RootStackRoutes = {
   SELLER_REVIEW: "sellerReviewScreen",
 
   CHOOSE_LOCATION: "chooseLocation",
-  CHOOSE_STATE: "chooseState",
-  CHOOSE_COUNTRY: "chooseCountry",
 } as const;
 
 export const PostItemStackRoutes = {
