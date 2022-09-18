@@ -7,12 +7,15 @@ export const currencyTransform = {
   },
 
   inputFloat: (value: string) => {
-    return value === "" ? "$0.0" : `$${value}`;
+    console.log("input is", value);
+    return `$${value}`;
   },
   outputFloat: (value: string) => {
-    const [, price] = value.split("$");
+    if (!/^\$\d*\.?\d*$/.test(value)) {
+      return 0;
+    }
 
-    return price;
+    return value.replace(/\$/, "");
   },
 };
 

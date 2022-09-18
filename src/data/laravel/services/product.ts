@@ -60,7 +60,7 @@ export const productApi = api.injectEndpoints({
           : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
     createProduct: builder.mutation<
-      {success: string},
+      {success: string} | {error: string},
       CreateProductRequest & {onUploadProgress?: (event: ProgressEvent) => void}
     >({
       queryFn({onUploadProgress, ...body}) {
@@ -83,21 +83,27 @@ export const productApi = api.injectEndpoints({
         formData.append("longitude", body.longitude);
 
         console.log("selected metals", body.selected_metals);
-        formData.append("show_metal_price", body.show_metal_price);
-        // ? show_metal_price dile egula lagbe
-        body.selected_metals.forEach(metal => {
-          console.log("appending metal", metal.toString());
 
-          formData.append("selected_metals[]", metal.toString());
-        });
+        if (body.show_metal_price === "1") {
+          formData.append("show_metal_price", body.show_metal_price);
+          // ? show_metal_price dile egula lagbe
+          body.selected_metals.forEach(metal => {
+            console.log("appending metal", metal.toString());
+
+            formData.append("selected_metals[]", metal.toString());
+          });
+        }
 
         Object.entries(body.attributes).forEach((attrId, termId) => {
           formData.append(`attributes[${attrId}]`, termId);
         });
 
-        formData.append("starting_price", body.starting_price);
+        if (!!body.starting_price) {
+          formData.append("starting_price", body.starting_price);
+          formData.append("duration", body.duration);
+        }
+
         formData.append("buy_price", body.buy_price);
-        formData.append("duration", body.duration);
         formData.append("quantity", body.quantity);
 
         body.images.forEach(img => {
@@ -124,10 +130,7 @@ export const productApi = api.injectEndpoints({
             return {
               error: {
                 status: error.status,
-                data: {
-                  field_errors: error.field_errors,
-                  non_field_error: error.non_field_error,
-                },
+                data: error.getFormattedMessage(),
               },
               meta: error.response,
             };

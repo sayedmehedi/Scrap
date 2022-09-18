@@ -7,6 +7,7 @@ import {
 
 export class ApplicationError extends Error {
   constructor(private readonly data: AxiosError<ServerErrorType>) {
+    console.log("staaaaaatus", data.status);
     super(data.message);
   }
 
@@ -19,6 +20,7 @@ export class ApplicationError extends Error {
   }
 
   get field_errors(): Record<string, string> {
+    console.log("isValidationError", this.isValidationError());
     if (this.isValidationError()) {
       const validationError = this.response!.data as ServerValidationError;
 
@@ -51,8 +53,7 @@ export class ApplicationError extends Error {
     }
 
     if (this.isValidationError()) {
-      const validationError = this.response!.data as ServerValidationError;
-      return validationError.message;
+      return "Invalid data";
     }
 
     if (this.isUnauthorizedError()) {
@@ -63,27 +64,15 @@ export class ApplicationError extends Error {
   }
 
   isNotFoundError(): boolean {
-    if (this.response) {
-      return this.response.status === 404;
-    }
-
-    return false;
+    return this.status === 404;
   }
 
   isValidationError(): boolean {
-    if (this.response) {
-      return this.response.status === 422;
-    }
-
-    return false;
+    return this.status === 422;
   }
 
   isUnauthorizedError() {
-    if (this.response) {
-      return this.response.status === 401;
-    }
-
-    return false;
+    return this.status === 401;
   }
 
   isRequestCancellationError() {

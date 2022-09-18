@@ -7,7 +7,7 @@ import {View, TouchableOpacity} from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import {useNavigation} from "@react-navigation/native";
 import {ListItem, Switch} from "react-native-elements";
-import {Divider, Text, useTheme} from "react-native-paper";
+import {Divider, HelperText, Text, Title, useTheme} from "react-native-paper";
 import AppPrimaryButton from "../Component/AppPrimaryButton";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {useCreateProductMutation} from "@data/laravel/services/product";
@@ -28,11 +28,12 @@ import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
-import {FlatList} from "react-native-gesture-handler";
+import {FlatList, ScrollView} from "react-native-gesture-handler";
 import {
   useGetPackagesQuery,
   useLazyGetPackagesQuery,
 } from "@data/laravel/services/package";
+import {isJoteyQueryError} from "@utils/error-handling";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -53,10 +54,11 @@ export default function ProductAddDeliveryMethodScreen({
   navigation,
 }: Props) {
   const theme = useTheme();
-  const {enqueueSuccessSnackbar} = useAppSnackbar();
   const rootNavigation = useNavigation<RootNavigationProps>();
   const profile = useAppSelector(state => state.auth.profile);
   const [uploadProgress, setUploadProgress] = React.useState(0);
+  const [showFieldErrors, setShowFieldErrors] = React.useState(false);
+  const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
   const [getPackages, {isFetching: isFetchingNextPage}] =
     useLazyGetPackagesQuery();
   const {
@@ -70,12 +72,19 @@ export default function ProductAddDeliveryMethodScreen({
   const [
     createProduct,
     {
+      error: createProductError,
       data: createProductResponse,
       isError: isCreateProductError,
       isLoading: isCreatingProduct,
       isSuccess: isProductCreateSuccess,
     },
   ] = useCreateProductMutation();
+
+  React.useEffect(() => {
+    if (isCreateProductError && isJoteyQueryError(createProductError)) {
+      setShowFieldErrors(true);
+    }
+  }, [isCreateProductError, createProductError]);
 
   React.useEffect(() => {
     if (
@@ -134,13 +143,33 @@ export default function ProductAddDeliveryMethodScreen({
   }, []);
 
   React.useEffect(() => {
-    if (isProductCreateSuccess && !!createProductResponse) {
+    if (
+      isProductCreateSuccess &&
+      !!createProductResponse &&
+      "success" in createProductResponse
+    ) {
       enqueueSuccessSnackbar({
         text1: createProductResponse.success,
       });
       navigation.navigate(PostItemStackRoutes.SUCCESS);
     }
-  }, [isProductCreateSuccess, enqueueSuccessSnackbar, createProductResponse]);
+
+    if (
+      isProductCreateSuccess &&
+      !!createProductResponse &&
+      "error" in createProductResponse
+    ) {
+      enqueueErrorSnackbar({
+        text1: "Error",
+        text2: createProductResponse.error,
+      });
+    }
+  }, [
+    isProductCreateSuccess,
+    enqueueSuccessSnackbar,
+    createProductResponse,
+    enqueueErrorSnackbar,
+  ]);
 
   const metals = React.useMemo(() => {
     if (isLoadingCategories) {
@@ -209,7 +238,9 @@ export default function ProductAddDeliveryMethodScreen({
   return (
     <View style={{padding: 15}}>
       <Overlay
-        isVisible={isCreatingProduct}
+        isVisible={
+          isCreatingProduct && !isProductCreateSuccess && !isCreateProductError
+        }
         overlayStyle={{
           width: "80%",
           elevation: 0,
@@ -227,6 +258,43 @@ export default function ProductAddDeliveryMethodScreen({
           activeStrokeColor={"white"}
           progressValueColor={"white"}
         />
+      </Overlay>
+
+      <Overlay
+        overlayStyle={{
+          width: "80%",
+          elevation: 0,
+          minHeight: "50%",
+        }}
+        isVisible={showFieldErrors}
+        onRequestClose={() => {
+          setShowFieldErrors(false);
+        }}>
+        <Title style={{paddingBottom: 10}}>Invlaid Data</Title>
+        <Divider style={{height: 2}} />
+
+        <ScrollView
+          contentContainerStyle={{
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+          {isJoteyQueryError(createProductError) &&
+            Object.values(createProductError.data.field_errors).map(
+              (error, i) => {
+                return (
+                  <View
+                    key={i}
+                    style={{
+                      paddingVertical: 10,
+                      borderBottomWidth: 1,
+                      borderBottomColor: "grey",
+                    }}>
+                    <HelperText type={"error"}>{error}</HelperText>
+                  </View>
+                );
+              },
+            )}
+        </ScrollView>
       </Overlay>
 
       <Controller
