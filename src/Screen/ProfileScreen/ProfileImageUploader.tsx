@@ -98,7 +98,7 @@ export default function ProfileImageUploader() {
                     source={{
                         uri: profile?.profile_image
                     }}
-                    icon={{ name: "camerao", }}
+                   
                 />
             </TouchableOpacity>
 
