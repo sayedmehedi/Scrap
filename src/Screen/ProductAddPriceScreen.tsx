@@ -77,7 +77,6 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
     },
   });
 
-  const buyNowPrice = watch("buynowprice");
   const startingPrice = watch("startingPrice");
   const showMetalPrice = watch("showMetalPrice");
 
@@ -142,88 +141,84 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
 
   const ListHeaderComponent = (
     <React.Fragment>
-      {!buyNowPrice && (
-        <React.Fragment>
-          <Controller
-            control={control}
-            name={"startingPrice"}
-            render={({field}) => {
-              return (
-                <React.Fragment>
-                  <Text
-                    style={{
-                      marginBottom: 10,
-                      color: "#222222",
-                      fontSize: 16,
-                    }}>
-                    Starting Price
-                  </Text>
+      <React.Fragment>
+        <Controller
+          control={control}
+          name={"startingPrice"}
+          render={({field}) => {
+            return (
+              <React.Fragment>
+                <Text
+                  style={{
+                    marginBottom: 10,
+                    color: "#222222",
+                    fontSize: 16,
+                  }}>
+                  Starting Price
+                </Text>
 
-                  <TextInput
-                    keyboardType="numeric"
-                    value={currencyTransform.inputFloat(field.value)}
-                    onChangeText={price =>
-                      field.onChange(currencyTransform.outputFloat(price))
-                    }
-                    style={{
-                      padding: 15,
-                      fontSize: 25,
-                      maxHeight: 110,
-                      borderWidth: 1,
-                      borderColor: "#C9C9C9",
-                      borderRadius: theme.roundness * 4,
-                      backgroundColor: theme.colors.white,
-                    }}
-                  />
-                </React.Fragment>
-              );
-            }}
-          />
+                <TextInput
+                  keyboardType="numeric"
+                  value={currencyTransform.inputFloat(field.value)}
+                  onChangeText={price =>
+                    field.onChange(currencyTransform.outputFloat(price))
+                  }
+                  style={{
+                    padding: 15,
+                    fontSize: 25,
+                    maxHeight: 110,
+                    borderWidth: 1,
+                    borderColor: "#C9C9C9",
+                    borderRadius: theme.roundness * 4,
+                    backgroundColor: theme.colors.white,
+                  }}
+                />
+              </React.Fragment>
+            );
+          }}
+        />
 
-          <View style={{height: 15}} />
-        </React.Fragment>
-      )}
+        <View style={{height: 15}} />
+      </React.Fragment>
 
-      {!startingPrice && (
-        <React.Fragment>
-          <Controller
-            control={control}
-            name={"buynowprice"}
-            render={({field}) => {
-              return (
-                <React.Fragment>
-                  <Text
-                    style={{
-                      marginBottom: 10,
-                      color: "#222222",
-                      fontSize: 16,
-                    }}>
-                    Buy now price
-                  </Text>
+      <React.Fragment>
+        <Controller
+          control={control}
+          name={"buynowprice"}
+          render={({field}) => {
+            return (
+              <React.Fragment>
+                <Text
+                  style={{
+                    marginBottom: 10,
+                    color: "#222222",
+                    fontSize: 16,
+                  }}>
+                  Buy now price
+                </Text>
 
-                  <TextInput
-                    keyboardType="numeric"
-                    value={currencyTransform.inputFloat(field.value)}
-                    onChangeText={price =>
-                      field.onChange(currencyTransform.outputFloat(price))
-                    }
-                    style={{
-                      padding: 15,
-                      fontSize: 25,
-                      maxHeight: 110,
-                      borderWidth: 1,
-                      borderColor: "#C9C9C9",
-                      borderRadius: theme.roundness * 4,
-                      backgroundColor: theme.colors.white,
-                    }}
-                  />
-                </React.Fragment>
-              );
-            }}
-          />
-          <View style={{height: 15}} />
-        </React.Fragment>
-      )}
+                <TextInput
+                  keyboardType="numeric"
+                  value={currencyTransform.inputFloat(field.value)}
+                  onChangeText={price =>
+                    field.onChange(currencyTransform.outputFloat(price))
+                  }
+                  style={{
+                    padding: 15,
+                    fontSize: 25,
+                    maxHeight: 110,
+                    borderWidth: 1,
+                    borderColor: "#C9C9C9",
+                    borderRadius: theme.roundness * 4,
+                    backgroundColor: theme.colors.white,
+                  }}
+                />
+              </React.Fragment>
+            );
+          }}
+        />
+        <View style={{height: 15}} />
+      </React.Fragment>
 
       <Controller
         name={"quantity"}
