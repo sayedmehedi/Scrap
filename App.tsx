@@ -19,6 +19,7 @@ import {
   useFlipper,
   useReduxDevToolsExtension,
 } from "@react-navigation/devtools";
+import {useNetInfo} from "@react-native-community/netinfo";
 
 enableLatestRenderer();
 
@@ -28,6 +29,7 @@ GoogleSignin.configure({
 });
 
 const App = () => {
+  const state = useNetInfo();
   const navigationRef = useNavigationContainerRef();
 
   useFlipper(navigationRef);
@@ -36,6 +38,16 @@ const App = () => {
   React.useEffect(() => {
     SplashScreen.hide();
   }, []);
+
+  React.useEffect(() => {
+    if (!state.isConnected) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Check your internet connection",
+      });
+    }
+  }, [state]);
 
   return (
     <Provider store={store}>

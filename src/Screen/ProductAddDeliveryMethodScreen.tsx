@@ -34,6 +34,7 @@ import {
   useGetPackagesQuery,
   useLazyGetPackagesQuery,
 } from "@data/laravel/services/package";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -62,10 +63,13 @@ export default function ProductAddDeliveryMethodScreen({
   const [getPackages, {isFetching: isFetchingNextPage}] =
     useLazyGetPackagesQuery();
   const {
+    refetch,
     data: getMetalsResponse,
     isLoading: isLoadingCategories,
     isFetching: isFetchingInitial,
   } = useGetPackagesQuery({});
+
+  useRefreshOnFocus(refetch);
   const actionCreaterRef = React.useRef<ReturnType<typeof getPackages> | null>(
     null,
   );

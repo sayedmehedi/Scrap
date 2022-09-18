@@ -26,6 +26,7 @@ import {
   useLazyGetCategoryListQuery,
   useGetSubcategoryByCatIdQuery,
 } from "@data/laravel/services/category";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -478,12 +479,16 @@ function ConditionSelectionModal({
   const [getConditions, {isFetching: isFetchingNextPage}] =
     useLazyGetConditionsQuery();
   const {
+    refetch,
     data: categoryListResponse,
     isLoading: isLoadingCondition,
     isFetching: isFetchingInitial,
   } = useGetConditionsQuery({
     limit: 15,
   });
+
+  useRefreshOnFocus(refetch);
+
   const conditionActionCreaterRef = React.useRef<ReturnType<
     typeof getConditions
   > | null>(null);
@@ -596,11 +601,16 @@ function CategorySelectionModal({
 }) {
   const [getCategories, {isFetching: isFetchingNextPage}] =
     useLazyGetCategoryListQuery();
+
   const {
+    refetch,
     data: categoryListResponse,
     isLoading: isLoadingCategories,
     isFetching: isFetchingInitial,
   } = useGetCategoryListQuery({});
+
+  useRefreshOnFocus(refetch);
+
   const categoryActionCreaterRef = React.useRef<ReturnType<
     typeof getCategories
   > | null>(null);

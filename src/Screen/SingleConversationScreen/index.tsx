@@ -19,6 +19,7 @@ import {
   useSendMessageMutation,
 } from "@data/laravel/services/message";
 import {View, Image, TextInput, TouchableOpacity} from "react-native";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 
 function AppBar({
   navigation,
@@ -91,6 +92,7 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
     Array<GetConversationDetailsResponse["messages"]>
   >([]);
   const {
+    refetch,
     isLoading,
     isFetching: isFetchingInitial,
     data: conversationDetailsResponse,
@@ -99,6 +101,8 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
   });
   const [getConversationDetails, {isFetching: isFetchingNextPage}] =
     useLazyGetConversationDetailsQuery();
+
+  useRefreshOnFocus(refetch);
 
   const actionCreaterRef = React.useRef<ReturnType<
     typeof getConversationDetails

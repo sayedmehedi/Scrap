@@ -3,30 +3,34 @@ import styles from "./styles";
 import {Rating} from "react-native-elements";
 import {useAppSelector} from "@hooks/store";
 import {FlatList, View, Text} from "react-native";
+import {ActivityIndicator} from "react-native-paper";
 import Feather from "react-native-vector-icons/Feather";
 import Fontisto from "react-native-vector-icons/Fontisto";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import ProfileImageUploader from "./ProfileImageUploader";
 import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
 import EachProductItem from "../../Component/EachProductItem";
 import {
-  GetSaleOrArchivedProductsReponse,
   PaginationQueryParams,
+  GetSaleOrArchivedProductsReponse,
 } from "@src/types";
 import {
   useGetSaleProductsQuery,
   useLazyGetSaleProductsQuery,
 } from "@data/laravel/services/product";
-import {ActivityIndicator} from "react-native-paper";
 
 const PublicProfileScreen = () => {
   const profile = useAppSelector(state => state.auth.profile);
   const [fetchProducts, {isFetching: isFetchingNextPage}] =
     useLazyGetSaleProductsQuery();
   const {
-    data: saleProductsResponse,
+    refetch,
     isLoading,
+    data: saleProductsResponse,
     isFetching: isFetchingInitial,
   } = useGetSaleProductsQuery({});
+
+  useRefreshOnFocus(refetch);
 
   const [productPages, setProductPages] = React.useState<
     Array<GetSaleOrArchivedProductsReponse["products"]>

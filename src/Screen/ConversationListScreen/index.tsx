@@ -7,14 +7,16 @@ import {
   useGetConversationsQuery,
   useLazyGetConversationsQuery,
 } from "@data/laravel/services/message";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
 const ConversationListScreen = () => {
   const [getConversations, {isFetching: isFetchingNextPage}] =
     useLazyGetConversationsQuery();
   const {
-    data: getConversationsResponse,
+    refetch,
     isLoading,
+    data: getConversationsResponse,
     isFetching: isFetchingInitial,
   } = useGetConversationsQuery({});
   const [converstaionPages, setConversationPages] = React.useState<
@@ -23,6 +25,8 @@ const ConversationListScreen = () => {
   const actionCreaterRef = React.useRef<ReturnType<
     typeof getConversations
   > | null>(null);
+
+  useRefreshOnFocus(refetch);
 
   React.useEffect(() => {
     if (!isLoading && !!getConversationsResponse) {

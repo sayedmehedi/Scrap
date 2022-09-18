@@ -8,6 +8,7 @@ import {
   useGetUserOfferNBidsQuery,
   useLazyGetUserOfferNBidsQuery,
 } from "@data/laravel/services/offerNBids";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 
 export default function UserOfferNBids() {
   const [getUserOfferNBids, {isFetching: isFetchingNextPage}] =
@@ -19,10 +20,13 @@ export default function UserOfferNBids() {
     typeof getUserOfferNBids
   > | null>(null);
   const {
-    data: userOfferNBidsResponse,
+    refetch,
     isLoading,
+    data: userOfferNBidsResponse,
     isFetching: isFetchingInitial,
   } = useGetUserOfferNBidsQuery({});
+
+  useRefreshOnFocus(refetch);
 
   React.useEffect(() => {
     if (!isLoading && !!userOfferNBidsResponse) {

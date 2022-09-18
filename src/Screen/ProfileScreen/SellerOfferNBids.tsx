@@ -5,17 +5,18 @@ import {useNavigation} from "@react-navigation/native";
 import {FilterProduct, GetOfferNBidsResponse} from "@src/types";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {
-  Button,
   Card,
-  Paragraph,
   Text,
   Title,
+  Button,
   useTheme,
+  Paragraph,
 } from "react-native-paper";
 import {
   useGetSellerOfferNBidsQuery,
   useLazyGetSellerOfferNBidsQuery,
 } from "@data/laravel/services/offerNBids";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 
 export default function SellerOfferNBids({
   product,
@@ -29,6 +30,7 @@ export default function SellerOfferNBids({
   const [getUserOfferNBids, {isFetching: isFetchingNextPage}] =
     useLazyGetSellerOfferNBidsQuery();
   const {
+    refetch,
     data: sellerOfferNBidsResponse,
     isLoading: isInitialLoading,
     isFetching: isFetchingInitial,
@@ -39,6 +41,8 @@ export default function SellerOfferNBids({
   const actionCreaterRef = React.useRef<ReturnType<
     typeof getUserOfferNBids
   > | null>(null);
+
+  useRefreshOnFocus(refetch);
 
   React.useEffect(
     () =>

@@ -1,13 +1,14 @@
 import React from "react";
 import truncate from "lodash.truncate";
-import {ActivityIndicator, useTheme} from "react-native-paper";
 import {CheckBox} from "react-native-elements";
+import {useAppSelector} from "@hooks/store";
 import Entypo from "react-native-vector-icons/Entypo";
-import Feather from "react-native-vector-icons/Feather";
 import {useNavigation} from "@react-navigation/native";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
 import EachProductItem from "../../Component/EachProductItem";
+import {ActivityIndicator, useTheme} from "react-native-paper";
 import {HomeStackRoutes, RootStackRoutes} from "@constants/routes";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {
@@ -42,6 +43,7 @@ type Props = NativeStackScreenProps<
 const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
   const theme = useTheme();
   const rootNavigation = useNavigation();
+  const profile = useAppSelector(state => state.auth.profile);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [location, setLocation] = React.useState<string | null>(null);
   const [distance, setDistance] = React.useState<number | null>(null);
@@ -136,6 +138,8 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
   React.useEffect(() => {
     if (route.params.location) {
       setLocation(route.params.location);
+    } else if (profile?.location) {
+      setLocation(profile.location);
     }
 
     if (route.params.distance) {
@@ -169,7 +173,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
     if (route.params.hideFilterActions) {
       setHideFilterActions(route.params.hideFilterActions);
     }
-  }, [route]);
+  }, [route, profile]);
 
   const queryParams = React.useMemo(() => {
     const data: FilterProductQueryParams = {};
@@ -450,6 +454,7 @@ const ProductList = ({params = {}}: {params?: FilterProductQueryParams}) => {
     null,
   );
   const {
+    refetch,
     isLoading,
     data: filterProductsResponse,
     isFetching: isFetchingInitial,
@@ -457,6 +462,8 @@ const ProductList = ({params = {}}: {params?: FilterProductQueryParams}) => {
   const [productPages, setProductPages] = React.useState<
     Array<FilterProductsResponse["products"]>
   >([]);
+
+  useRefreshOnFocus(refetch);
 
   React.useEffect(() => {
     if (!isLoading && !!filterProductsResponse) {

@@ -184,7 +184,10 @@ const baseQueryWithReauth: BaseQueryFn<
 // Define a service using a base URL and expected endpoints
 export const api = createApi({
   reducerPath: "api",
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   baseQuery: baseQueryWithReauth,
+  refetchOnMountOrArgChange: 3 * 60,
   tagTypes: [
     QUERY_KEYS.AUTH,
     QUERY_KEYS.CITY,

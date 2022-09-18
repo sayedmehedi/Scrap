@@ -1,7 +1,7 @@
 import React from "react";
 import Toast from "react-native-toast-message";
-import { notistackSlice } from "@store/slices/notistackSlice";
-import { useAppDispatch, useAppSelector } from "hooks/store";
+import {notistackSlice} from "@store/slices/notistackSlice";
+import {useAppDispatch, useAppSelector} from "hooks/store";
 
 let displayed: string[] = [];
 
@@ -20,7 +20,7 @@ const Notifier = () => {
   };
 
   React.useEffect(() => {
-    notifications.forEach(({ key, options = {}, dismissed }) => {
+    notifications.forEach(({key, options = {}, dismissed}) => {
       if (dismissed) {
         // dismiss snackbar using notistack
         Toast.hide();

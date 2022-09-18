@@ -13,6 +13,7 @@ import useAppSnackbar from "@hooks/useAppSnackbar";
 import Feather from "react-native-vector-icons/Feather";
 import {RootStackRoutes} from "../../constants/routes";
 import Octicons from "react-native-vector-icons/Octicons";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EachProductItem from "../../Component/EachProductItem";
 import AppPrimaryButton from "@src/Component/AppPrimaryButton";
@@ -61,9 +62,15 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
     expiryTimestamp,
   });
 
-  const {data: productDetails, isLoading} = useGetProductDetailsQuery({
+  const {
+    data: productDetails,
+    isLoading,
+    refetch,
+  } = useGetProductDetailsQuery({
     id: route.params.productId,
   });
+
+  useRefreshOnFocus(refetch);
 
   const [toggleFavorite] = useToggleProductFavoriteMutation();
   const [createCart, {isLoading: isCreatingCart}] = useCreateCartMutation();

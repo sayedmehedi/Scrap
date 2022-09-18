@@ -36,6 +36,7 @@ import {
   useGetDurationsQuery,
   useLazyGetDurationsQuery,
 } from "@data/laravel/services/duration";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -600,6 +601,7 @@ function MetalList({
   const theme = useTheme();
   const [getMetals, {isFetching: isFetchingNextPage}] = useLazyGetMetalsQuery();
   const {
+    refetch,
     data: getMetalsResponse,
     isLoading: isLoadingCategories,
     isFetching: isFetchingInitial,
@@ -607,6 +609,8 @@ function MetalList({
   const actionCreaterRef = React.useRef<ReturnType<typeof getMetals> | null>(
     null,
   );
+
+  useRefreshOnFocus(refetch);
 
   const [metalsPages, setMetalPages] = React.useState<
     Array<GetMetalsResponse["items"]>
@@ -759,12 +763,16 @@ function DurationSelectionModal({
   const [getDurations, {isFetching: isFetchingNextPage}] =
     useLazyGetDurationsQuery();
   const {
+    refetch,
     data: categoryListResponse,
     isLoading: isLoadingDuration,
     isFetching: isFetchingInitial,
   } = useGetDurationsQuery({
     limit: 15,
   });
+
+  useRefreshOnFocus(refetch);
+
   const categoryActionCreaterRef = React.useRef<ReturnType<
     typeof getDurations
   > | null>(null);

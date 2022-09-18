@@ -86,6 +86,7 @@ setupListeners(
       const handleOnline = () => dispatch(onOnline());
       const handleOffline = () => dispatch(onOffline());
       const handleVisibilityChange = (state: AppStateStatus) => {
+        console.log("state", state);
         if (state === "active") {
           handleFocus();
         } else {
@@ -107,7 +108,7 @@ setupListeners(
         });
 
         focusSubscription = AppState.addEventListener(
-          "focus",
+          "change",
           handleVisibilityChange,
         );
         initialized = true;

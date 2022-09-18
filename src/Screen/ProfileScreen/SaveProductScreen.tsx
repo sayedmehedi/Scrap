@@ -1,6 +1,7 @@
 import React from "react";
-import {ActivityIndicator, Text} from "react-native-paper";
 import {FlatList, View} from "react-native";
+import {ActivityIndicator, Text} from "react-native-paper";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import EachProductItem from "../../Component/EachProductItem";
 import {GetSavedProductsReponse, PaginationQueryParams} from "@src/types";
 import {
@@ -10,10 +11,13 @@ import {
 
 const SaveProductScreen = () => {
   const {
-    data: savedProductsResponse,
+    refetch,
     isLoading,
+    data: savedProductsResponse,
     isFetching: isFetchingInitial,
   } = useGetSavedProductsQuery({});
+
+  useRefreshOnFocus(refetch);
 
   const [fetchProducts, {isFetching: isFetchingNextPage}] =
     useLazyGetSavedProductsQuery();

@@ -1,6 +1,7 @@
 import React from "react";
 import EachPurchases from "./EachPurchases";
 import {View, FlatList} from "react-native";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {GetPurchaseHistoryResponse, PaginationQueryParams} from "@src/types";
 import {
@@ -12,8 +13,9 @@ const PurchasesScreen = () => {
   const [getPurchaseHistory, {isFetching: isFetchingNextPage}] =
     useLazyGetPurchaseHistoryQuery();
   const {
-    data: purchaseHistoryResponse,
+    refetch,
     isLoading,
+    data: purchaseHistoryResponse,
     isFetching: isFetchingInitial,
   } = useGetPurchaseHistoryQuery({});
   const [purchaseHistoryPages, setPurchaseHistoryPages] = React.useState<
@@ -22,6 +24,8 @@ const PurchasesScreen = () => {
   const actionCreaterRef = React.useRef<ReturnType<
     typeof getPurchaseHistory
   > | null>(null);
+
+  useRefreshOnFocus(refetch);
 
   React.useEffect(() => {
     if (!isLoading && !!purchaseHistoryResponse) {
