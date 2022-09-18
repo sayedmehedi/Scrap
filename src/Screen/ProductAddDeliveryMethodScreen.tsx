@@ -7,11 +7,12 @@ import {View, TouchableOpacity} from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import {useNavigation} from "@react-navigation/native";
 import {ListItem, Switch} from "react-native-elements";
-import {Divider, HelperText, Text, Title, useTheme} from "react-native-paper";
+import {isJoteyQueryError} from "@utils/error-handling";
 import AppPrimaryButton from "../Component/AppPrimaryButton";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {useCreateProductMutation} from "@data/laravel/services/product";
 import CircularProgress from "react-native-circular-progress-indicator";
+import {Divider, HelperText, Text, Title, useTheme} from "react-native-paper";
 import {
   GetPackagesResponse,
   Package,
@@ -33,7 +34,6 @@ import {
   useGetPackagesQuery,
   useLazyGetPackagesQuery,
 } from "@data/laravel/services/package";
-import {isJoteyQueryError} from "@utils/error-handling";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -198,7 +198,7 @@ export default function ProductAddDeliveryMethodScreen({
 
   React.useEffect(() => {
     if (profile) {
-      setValue("location", `${profile.city.name}, ${profile.country.name}`);
+      setValue("location", profile.location);
     }
   }, [profile, setValue]);
 
@@ -305,6 +305,7 @@ export default function ProductAddDeliveryMethodScreen({
             <React.Fragment>
               <FlatList<typeof metals[0]>
                 data={metals}
+                showsVerticalScrollIndicator={false}
                 onEndReached={getNextPackages}
                 ListHeaderComponent={() => (
                   <React.Fragment>

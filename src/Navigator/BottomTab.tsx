@@ -45,12 +45,11 @@ const BottomTab = () => {
   const theme = useTheme();
   const {enqueueInfoSnackbar} = useAppSnackbar();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const profileHasCityData = useAppSelector(
-    state => !!state.auth.profile?.city,
-  );
-
-  const profileHasCoutryData = useAppSelector(
-    state => !!state.auth.profile?.country,
+  const profileHasLocationData = useAppSelector(
+    state =>
+      !!state.auth.profile?.location &&
+      !!state.auth.profile?.latitude &&
+      !!state.auth.profile?.longitude,
   );
 
   return (
@@ -73,28 +72,14 @@ const BottomTab = () => {
                 },
               });
             } else if (route.name === HomeTabRoutes.POST_ITEM) {
-              if (isAuthenticated && !profileHasCityData) {
+              if (isAuthenticated && !profileHasLocationData) {
                 enqueueInfoSnackbar({
                   text1: "Please add your location info",
                 });
-                e.preventDefault();
-                navigation.replace(RootStackRoutes.CHOOSE_CITY, {
-                  params: {
-                    nextScreen: {
-                      name: route.name,
-                      params: route.params,
-                    },
-                  },
-                });
-              }
 
-              if (isAuthenticated && !profileHasCoutryData) {
-                enqueueInfoSnackbar({
-                  text1: "Please add your location info",
-                });
                 e.preventDefault();
 
-                navigation.replace(RootStackRoutes.CHOOSE_COUNTRY, {
+                navigation.replace(RootStackRoutes.CHOOSE_LOCATION, {
                   params: {
                     nextScreen: {
                       name: route.name,

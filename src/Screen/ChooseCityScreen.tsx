@@ -19,7 +19,7 @@ import {PostItemStackRoutes} from "../constants/routes";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
-  typeof RootStackRoutes.CHOOSE_CITY
+  typeof RootStackRoutes.CHOOSE_LOCATION
 >;
 
 const ChooseCityScreen = ({navigation, route}: Props) => {

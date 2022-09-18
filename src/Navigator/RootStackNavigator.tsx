@@ -20,8 +20,8 @@ import LocationPropmtScreen from "@src/Screen/LocationPromptScreen";
 import ConfirmPurchaseScreen from "@src/Screen/ConfirmPurchaseScreen";
 import SingleConversationScreen from "../Screen/SingleConversationScreen";
 import SellerReviewScreen from "@src/Screen/ReviewScreen/SellerReviewScreen";
-import ProductFilterScreen from "../Screen/ProductFilterScreen/ProductFilterScreen";
 import AddShippingAddressScreen from "@src/Screen/AddShippingAddressScreen";
+import ProductFilterScreen from "../Screen/ProductFilterScreen/ProductFilterScreen";
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -37,11 +37,9 @@ const RootStackNavigator = () => {
         headerTitleStyle: {
           fontSize: 18,
           fontFamily: "Inter-Bold",
-          // @ts-ignore
           color: theme.colors.white,
         },
         cardStyleInterpolator: forFade,
-        // @ts-ignore
         headerTintColor: theme.colors.white,
       }}>
       <RootStack.Screen
@@ -151,7 +149,7 @@ const RootStackNavigator = () => {
 
       <RootStack.Screen
         options={{
-          title: "Choose Country",
+          title: "Choose Location",
         }}
         component={ChooseCountryScreen}
         name={RootStackRoutes.CHOOSE_COUNTRY}
@@ -162,7 +160,7 @@ const RootStackNavigator = () => {
           title: "Choose City",
         }}
         component={ChooseCityScreen}
-        name={RootStackRoutes.CHOOSE_CITY}
+        name={RootStackRoutes.CHOOSE_LOCATION}
       />
 
       <RootStack.Screen

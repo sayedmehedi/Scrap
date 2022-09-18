@@ -15,11 +15,11 @@ import {
 
 type ChooseCityRouteProp = RouteProp<
   RootStackParamList,
-  typeof RootStackRoutes.CHOOSE_CITY
+  typeof RootStackRoutes.CHOOSE_LOCATION
 >;
 type ChooseCityNavigationProps = NativeStackNavigationProp<
   RootStackParamList,
-  typeof RootStackRoutes.CHOOSE_CITY
+  typeof RootStackRoutes.CHOOSE_LOCATION
 >;
 
 export default function CurrentLocationBtn() {
@@ -46,7 +46,7 @@ export default function CurrentLocationBtn() {
         },
       });
     }
-  }, [route.params.nextScreen]);
+  }, [route.params]);
 
   React.useEffect(() => {
     if (isSuccess && !!data) {

@@ -192,7 +192,7 @@ export type RootStackParamList = {
       params: Record<string, any>;
     };
   };
-  [RootStackRoutes.CHOOSE_CITY]: {
+  [RootStackRoutes.CHOOSE_LOCATION]: {
     nextScreen?: {
       name: string;
       params: Record<string, any>;
