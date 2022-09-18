@@ -1,5 +1,6 @@
 import React from "react";
 import {useAppSelector} from "@hooks/store";
+import {LinearProgress, Overlay} from "react-native-elements";
 import {Controller, useForm} from "react-hook-form";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {View, TouchableOpacity} from "react-native";
@@ -31,6 +32,7 @@ import {
   useGetPackagesQuery,
   useLazyGetPackagesQuery,
 } from "@data/laravel/services/package";
+import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -198,7 +200,7 @@ export default function ProductAddDeliveryMethodScreen({
         ...route.params.productGalleryImages,
       ],
       onUploadProgress(event) {
-        const progress = Math.round(event.loaded / event.total) * 100;
+        const progress = Math.round(event.loaded / event.total);
         setUploadProgress(progress);
       },
     });
@@ -206,6 +208,26 @@ export default function ProductAddDeliveryMethodScreen({
 
   return (
     <View style={{padding: 15}}>
+      <Overlay
+        isVisible={isCreatingProduct}
+        overlayStyle={{
+          width: "80%",
+          height: "50%",
+        }}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            padding: SCREEN_PADDING_HORIZONTAL,
+          }}>
+          <LinearProgress variant="determinate" value={uploadProgress} />
+          <Text style={{marginTop: 10, fontSize: 16, fontWeight: "600"}}>
+            Creating Product...
+          </Text>
+        </View>
+      </Overlay>
+
       <Controller
         control={control}
         name={"package"}
