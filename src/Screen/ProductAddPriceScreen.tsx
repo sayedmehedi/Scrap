@@ -7,6 +7,7 @@ import {
   GetMetalsResponse,
   PaginationQueryParams,
   PostItemStackParamList,
+  GetDurationsResponse,
 } from "@src/types";
 import DatePicker from "react-native-date-picker";
 import {Text, useTheme} from "react-native-paper";
@@ -24,6 +25,10 @@ import {
   useGetMetalsQuery,
   useLazyGetMetalsQuery,
 } from "@data/laravel/services/metal";
+import {
+  useGetDurationsQuery,
+  useLazyGetDurationsQuery,
+} from "@data/laravel/services/duration";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -246,33 +251,10 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
                       </View>
                     </Pressable>
 
-                    <SelectionModal
+                    <DurationSelectionModal
                       onSave={field.onChange}
-                      title={"Select Duration"}
                       initialValue={field.value}
                       open={modalType === "duration"}
-                      items={[
-                        {
-                          id: 1,
-                          text: "2",
-                          type: "data",
-                        },
-                        {
-                          id: 2,
-                          text: "3",
-                          type: "data",
-                        },
-                        {
-                          id: 3,
-                          text: "4",
-                          type: "data",
-                        },
-                        {
-                          id: 4,
-                          text: "5",
-                          type: "data",
-                        },
-                      ]}
                       onClose={() => setModalType("")}
                     />
                   </React.Fragment>
@@ -710,6 +692,126 @@ function MetalList({
           </TouchableOpacity>
         );
       }}
+    />
+  );
+}
+
+function DurationSelectionModal({
+  open,
+  onSave,
+  onClose,
+  initialValue,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSave: (item: {id: number; text: string} | null) => void;
+  initialValue?: {id: number; text: string} | null;
+}) {
+  const [getDurations, {isFetching: isFetchingNextPage}] =
+    useLazyGetDurationsQuery();
+  const {
+    data: categoryListResponse,
+    isLoading: isLoadingDuration,
+    isFetching: isFetchingInitial,
+  } = useGetDurationsQuery({
+    limit: 15,
+  });
+  const categoryActionCreaterRef = React.useRef<ReturnType<
+    typeof getDurations
+  > | null>(null);
+
+  const [derationPages, setDurationPages] = React.useState<
+    Array<GetDurationsResponse["items"]>
+  >([]);
+
+  React.useEffect(() => {
+    if (!isLoadingDuration && !!categoryListResponse) {
+      setDurationPages(() => {
+        return [categoryListResponse.items];
+      });
+    }
+  }, [categoryListResponse, isLoadingDuration]);
+
+  const getNextDurations = async () => {
+    console.log("getting next durations");
+
+    if (isFetchingNextPage || isFetchingInitial) {
+      return;
+    }
+
+    const lastProductPage = derationPages[derationPages.length - 1];
+
+    if (
+      !lastProductPage ||
+      (lastProductPage && !lastProductPage.has_more_data)
+    ) {
+      return;
+    }
+
+    const params: PaginationQueryParams = {
+      limit: 15,
+    };
+
+    params.page = lastProductPage.current_page + 1;
+
+    categoryActionCreaterRef.current = getDurations(params, true);
+
+    try {
+      const productResponse = await categoryActionCreaterRef.current.unwrap();
+
+      setDurationPages(prevPages => {
+        return prevPages.concat(productResponse.items);
+      });
+    } finally {
+    }
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (categoryActionCreaterRef.current) {
+        categoryActionCreaterRef.current.abort();
+      }
+    };
+  }, []);
+
+  const categories = React.useMemo(() => {
+    if (isLoadingDuration) {
+      return [
+        {
+          id: 1,
+          type: "skeleton" as const,
+        },
+        {
+          id: 2,
+          type: "skeleton" as const,
+        },
+        {
+          id: 3,
+          type: "skeleton" as const,
+        },
+      ];
+    }
+
+    return derationPages.flatMap(categoryPage =>
+      categoryPage.data.map(category => ({
+        type: "data" as const,
+        id: category.id,
+        text: category.days,
+      })),
+    );
+  }, [isLoadingDuration, derationPages]);
+
+  return (
+    <SelectionModal
+      open={open}
+      onSave={onSave}
+      onClose={onClose}
+      items={categories}
+      title={"Select Duration"}
+      initialValue={initialValue}
+      loading={isLoadingDuration}
+      onEndReached={getNextDurations}
+      isFetchingNext={isFetchingNextPage}
     />
   );
 }

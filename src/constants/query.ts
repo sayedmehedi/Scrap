@@ -8,6 +8,7 @@ export enum QUERY_KEYS {
   PACKAGE = "package",
   COUNTRY = "country",
   PRODUCT = "product",
+  DURATION = "duration",
   QUESTION = "question",
   CATEGORY = "category",
   CONDITION = "condition",

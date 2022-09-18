@@ -17,7 +17,7 @@ interface Props {
   ListHeaderComponent:
     | React.ComponentType<any>
     | React.ReactElement<any, string | React.JSXElementConstructor<any>>;
-  ListFooterComponent:
+  ListFooterComponent?:
     | React.ComponentType<any>
     | React.ReactElement<any, string | React.JSXElementConstructor<any>>;
 }

@@ -14,6 +14,7 @@ import {
   GetUserProfileReponse,
   GetTransactionsResponse,
   GetNotificationsResponse,
+  ChangePasswordRequest,
 } from "@src/types";
 
 const apiClient = container.get<Axios>(ServiceProviderTypes.HttpClient);
@@ -34,6 +35,16 @@ export const authApi = api.injectEndpoints({
         method: "POST",
         url: "register",
         body: credentials,
+      }),
+    }),
+    changePassword: builder.mutation<
+      {success: string} | {error: string},
+      ChangePasswordRequest
+    >({
+      query: body => ({
+        body,
+        method: "POST",
+        url: "change-password",
       }),
     }),
     logout: builder.mutation<
@@ -185,6 +196,7 @@ export const {
   useGetTransactionsQuery,
   useGetNotificationsQuery,
   useUpdateProfileMutation,
+  useChangePasswordMutation,
   useLazyGetTransactionsQuery,
   useLazyGetNotificationsQuery,
 } = authApi;

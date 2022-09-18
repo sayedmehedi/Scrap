@@ -246,6 +246,7 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                 initialValue={field.value}
                 title={"Select Subcategory"}
                 onClose={() => setModalType("")}
+                loading={isSubcategoriesLoading}
                 open={modalType === "subcategory"}
               />
             </React.Fragment>
@@ -454,9 +455,11 @@ function ConditionSelectionModal({
     useLazyGetConditionsQuery();
   const {
     data: categoryListResponse,
-    isLoading: isLoadingCategories,
+    isLoading: isLoadingCondition,
     isFetching: isFetchingInitial,
-  } = useGetConditionsQuery({});
+  } = useGetConditionsQuery({
+    limit: 15,
+  });
   const conditionActionCreaterRef = React.useRef<ReturnType<
     typeof getConditions
   > | null>(null);
@@ -466,12 +469,12 @@ function ConditionSelectionModal({
   >([]);
 
   React.useEffect(() => {
-    if (!isLoadingCategories && !!categoryListResponse) {
+    if (!isLoadingCondition && !!categoryListResponse) {
       setConditionPages(() => {
         return [categoryListResponse.items];
       });
     }
-  }, [categoryListResponse, isLoadingCategories]);
+  }, [categoryListResponse, isLoadingCondition]);
 
   const getNextConditions = async () => {
     if (isFetchingNextPage || isFetchingInitial) {
@@ -487,7 +490,9 @@ function ConditionSelectionModal({
       return;
     }
 
-    const params: PaginationQueryParams = {};
+    const params: PaginationQueryParams = {
+      limit: 15,
+    };
 
     params.page = lastConditionPage.current_page + 1;
 
@@ -512,7 +517,7 @@ function ConditionSelectionModal({
   }, []);
 
   const conditions = React.useMemo(() => {
-    if (isLoadingCategories) {
+    if (isLoadingCondition) {
       return [
         {
           id: 1,
@@ -536,7 +541,7 @@ function ConditionSelectionModal({
         text: condition.title,
       })),
     );
-  }, [isLoadingCategories, conditionPages]);
+  }, [isLoadingCondition, conditionPages]);
 
   return (
     <SelectionModal
@@ -546,7 +551,9 @@ function ConditionSelectionModal({
       onClose={onClose}
       title={"Select Condition"}
       initialValue={initialValue}
+      loading={isLoadingCondition}
       onEndReached={getNextConditions}
+      isFetchingNext={isFetchingNextPage}
     />
   );
 }
@@ -658,7 +665,9 @@ function CategorySelectionModal({
       onClose={onClose}
       title={"Select Category"}
       initialValue={initialValue}
+      loading={isLoadingCategories}
       onEndReached={getNextCategories}
+      isFetchingNext={isFetchingNextPage}
     />
   );
 }

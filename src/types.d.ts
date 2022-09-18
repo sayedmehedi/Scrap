@@ -883,3 +883,19 @@ export type CreateProductRequest = {
   quantity: number;
   images: Asset[];
 };
+
+export interface Duration {
+  id: number;
+  days: string;
+}
+
+export type GetDurationsResponse = {
+  success: string;
+  items: SimplePaginatedResponse<Duration>;
+};
+
+export type ChangePasswordRequest = {
+  password: string;
+  old_password: string;
+  password_confirmation: string;
+};

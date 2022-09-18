@@ -1,7 +1,7 @@
 import React from "react";
 import {ListItem} from "react-native-elements";
 import AppPrimaryButton from "./AppPrimaryButton";
-import {Divider, Title, useTheme} from "react-native-paper";
+import {ActivityIndicator, Divider, Title, useTheme} from "react-native-paper";
 import {Modal, View, FlatList, TouchableOpacity} from "react-native";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
@@ -13,10 +13,14 @@ export default function SelectionModal({
   items = [],
   initialValue,
   onEndReached,
+  loading = false,
+  isFetchingNext = false,
 }: {
   open: boolean;
   title: string;
+  loading?: boolean;
   onClose: () => void;
+  isFetchingNext?: boolean;
   onEndReached?: () => void;
   items: (
     | {id: number; text: string; type: "data"}
@@ -48,8 +52,30 @@ export default function SelectionModal({
         <Title>{title}</Title>
       </View>
 
-      <FlatList
-        data={items}
+      <FlatList<
+        | {id: number; text: string; type: "data"}
+        | {id: number; type: "skeleton"}
+      >
+        style={{
+          flex: 1,
+        }}
+        data={
+          loading
+            ? new Array(15).fill(1).map((_, id) => ({id, type: "skeleton"}))
+            : items
+        }
+        ListFooterComponent={() =>
+          isFetchingNext ? (
+            <View
+              style={{
+                padding: 10,
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
+              <ActivityIndicator size={"small"} />
+            </View>
+          ) : null
+        }
         onEndReached={onEndReached}
         renderItem={({item}) => {
           if (item.type === "skeleton") {
