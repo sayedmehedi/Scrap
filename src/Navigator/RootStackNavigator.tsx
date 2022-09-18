@@ -152,24 +152,12 @@ const RootStackNavigator = () => {
           title: "Choose Location",
         }}
         component={ChooseCountryScreen}
-        name={RootStackRoutes.CHOOSE_COUNTRY}
-      />
-
-      <RootStack.Screen
-        options={{
-          title: "Choose City",
-        }}
-        component={ChooseCityScreen}
         name={RootStackRoutes.CHOOSE_LOCATION}
       />
 
-      <RootStack.Screen
-        options={{
-          title: "Choose State",
-        }}
-        component={ChooseStateScreen}
-        name={RootStackRoutes.CHOOSE_STATE}
-      />
+     
+
+      
 
       <RootStack.Screen
         options={{
