@@ -45,9 +45,7 @@ export function createStore(
     preloadedState: preloadedState as any,
     middleware: getDefaultMiddleware =>
       getDefaultMiddleware({
-        immutableCheck: {
-          ignoredPaths: ["firebase", "firestore"],
-        },
+        immutableCheck: false,
         serializableCheck: false,
         thunk: {
           extraArgument: {},

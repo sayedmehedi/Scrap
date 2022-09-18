@@ -6,6 +6,7 @@ import {useForm, Controller} from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
 import {ErrorMessage} from "@hookform/error-message";
 import {AuthStackRoutes} from "../../constants/routes";
+import GoogleSignInBtn from "@src/Component/GoogleSignInBtn";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import {useRegisterMutation} from "@data/laravel/services/auth";
 import {SafeAreaProvider} from "react-native-safe-area-context";
@@ -364,18 +365,12 @@ const RegistrationScreen = ({navigation}: Props) => {
                 flexDirection: "row",
                 justifyContent: "center",
               }}>
-              <TouchableOpacity
+              <View
                 style={{
-                  width: 60,
-                  height: 60,
                   marginRight: 20,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  // @ts-ignore
-                  backgroundColor: theme.colors.white,
                 }}>
-                <Image source={require("../../assets/Images/google.png")} />
-              </TouchableOpacity>
+                <GoogleSignInBtn />
+              </View>
 
               <TouchableOpacity
                 style={{

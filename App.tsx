@@ -11,15 +11,21 @@ import {persistor, store} from "@store/configureStore";
 import {enableLatestRenderer} from "react-native-maps";
 import AuthProvider from "@src/Providers/AuthProvider";
 import {PersistGate} from "redux-persist/integration/react";
+import {useNavigationContainerRef} from "@react-navigation/native";
 import PreferencesProvider from "./src/Providers/PreferencesProvider";
 import HttpClientConfigure from "@src/Providers/HttpClientConfigure";
-import {useNavigationContainerRef} from "@react-navigation/native";
+import {GoogleSignin} from "@react-native-google-signin/google-signin";
 import {
   useFlipper,
   useReduxDevToolsExtension,
 } from "@react-navigation/devtools";
 
 enableLatestRenderer();
+
+GoogleSignin.configure({
+  webClientId:
+    "1098035251669-j4gopt4e5ce00kc8jd16hh3ua6mlg75h.apps.googleusercontent.com",
+});
 
 const App = () => {
   const navigationRef = useNavigationContainerRef();

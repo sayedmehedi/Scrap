@@ -51,8 +51,20 @@ const slice = createSlice({
     builder.addMatcher(
       authApi.endpoints.login.matchFulfilled,
       (state, {payload}) => {
-        state.token = payload.user?.token;
-        state.user = payload.user;
+        if ("user" in payload) {
+          state.token = payload.user?.token;
+          state.user = payload.user;
+        }
+      },
+    );
+
+    builder.addMatcher(
+      authApi.endpoints.loginWithGoogle.matchFulfilled,
+      (state, {payload}) => {
+        if ("user" in payload) {
+          state.token = payload.user?.token;
+          state.user = payload.user;
+        }
       },
     );
   },

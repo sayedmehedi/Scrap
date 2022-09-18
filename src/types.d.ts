@@ -110,7 +110,9 @@ export type AuthStackParamList = {
     };
   };
   [AuthStackRoutes.REGISTRATION]: undefined;
-  [AuthStackRoutes.RESET_PASSWORD]: undefined;
+  [AuthStackRoutes.RESET_PASSWORD]: {
+    email: string;
+  };
   [AuthStackRoutes.FORGOT_PASSWORD]: undefined;
 };
 
@@ -297,14 +299,14 @@ export interface User {
   id: number;
   name: string;
   user_type: number;
-  phone?: any;
+  phone?: string;
   email: string;
-  location?: any;
-  latitude?: any;
-  longitude?: any;
   status: number;
-  profile_image: string;
   token: string;
+  profile_image: string;
+  location?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export type LoginResponse =
@@ -898,4 +900,11 @@ export type ChangePasswordRequest = {
   password: string;
   old_password: string;
   password_confirmation: string;
+};
+
+export type ResetPasswordRequest = {
+  password: string;
+  password_confirmation: string;
+  email: string;
+  otp: string;
 };

@@ -1,6 +1,7 @@
 import {FetchBaseQueryError} from "@reduxjs/toolkit/query";
 import {FieldValues, UseFormSetError} from "react-hook-form";
 import {JoteyQueryError, ServerValidationError} from "@src/types";
+import {NativeModuleError} from "@react-native-google-signin/google-signin";
 
 export function addServerErrors<T extends FieldValues>(
   errors: {[P in keyof T]: string} | Record<keyof T, string>,
@@ -115,4 +116,10 @@ export function isJoteyQueryError(error: unknown): error is JoteyQueryError {
     "data" in error &&
     typeof (error as any).data.field_errors === "object"
   );
+}
+
+export function isNativeModuleError(
+  error: unknown,
+): error is NativeModuleError {
+  return !!error && typeof error === "object" && "code" in error;
 }
