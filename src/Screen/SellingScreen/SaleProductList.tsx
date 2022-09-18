@@ -10,13 +10,20 @@ import {
   useLazyGetSaleProductsQuery,
 } from "@data/laravel/services/product";
 import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
+import {ActivityIndicator} from "react-native-paper";
 
-export default function SaleProductList() {
+export default function SaleProductList({
+  ListEmptyComponent,
+}: {
+  ListEmptyComponent: React.ComponentType;
+}) {
   const [fetchProducts, {isFetching: isFetchingNextPage}] =
     useLazyGetSaleProductsQuery();
   const {
-    data: saleProductsResponse,
+    // isError,
+    // isSuccess,
     isLoading,
+    data: saleProductsResponse,
     isFetching: isFetchingInitial,
   } = useGetSaleProductsQuery({});
 
@@ -98,23 +105,32 @@ export default function SaleProductList() {
   }, [isLoading, productPages]);
 
   return (
-    <FlatList<typeof products[0]>
-      numColumns={3}
-      data={products}
-      onEndReached={getNextProducts}
-      contentContainerStyle={{
-        paddingLeft: SCREEN_PADDING_HORIZONTAL,
-      }}
-      columnWrapperStyle={{
-        marginBottom: 20,
-      }}
-      showsVerticalScrollIndicator={false}
-      ListEmptyComponent={() => (
-        <View>
-          <Text style={{textAlign: "center"}}>No data</Text>
+    <React.Fragment>
+      {isFetchingNextPage ? (
+        <View
+          style={{
+            padding: 10,
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+          <ActivityIndicator size={"small"} />
         </View>
-      )}
-      renderItem={({item}) => <SaleOrArchiveItem item={item} />}
-    />
+      ) : null}
+
+      <FlatList<typeof products[0]>
+        numColumns={3}
+        data={products}
+        onEndReached={getNextProducts}
+        contentContainerStyle={{
+          paddingLeft: SCREEN_PADDING_HORIZONTAL,
+        }}
+        columnWrapperStyle={{
+          marginBottom: 20,
+        }}
+        showsVerticalScrollIndicator={false}
+        renderItem={({item}) => <SaleOrArchiveItem item={item} />}
+        ListEmptyComponent={ListEmptyComponent}
+      />
+    </React.Fragment>
   );
 }

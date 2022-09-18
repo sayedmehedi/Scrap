@@ -2,13 +2,15 @@ import React from "react";
 import {View, Text, FlatList} from "react-native";
 import SaleOrArchiveItem from "./SaleOrArchiveItem";
 import {
-  GetSaleOrArchivedProductsReponse,
   PaginationQueryParams,
+  GetSaleOrArchivedProductsReponse,
 } from "@src/types";
 import {
   useGetArchiveProductsQuery,
   useLazyGetArchiveProductsQuery,
 } from "@data/laravel/services/product";
+import {ActivityIndicator} from "react-native-paper";
+import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
 
 export default function ArchiveProductList() {
   const [fetchProducts, {isFetching: isFetchingNextPage}] =
@@ -97,17 +99,33 @@ export default function ArchiveProductList() {
   }, [isLoading, productPages]);
 
   return (
-    <FlatList<typeof products[0]>
-      numColumns={3}
-      data={products}
-      onEndReached={getNextProducts}
-      showsVerticalScrollIndicator={false}
-      ListEmptyComponent={() => (
-        <View>
-          <Text style={{textAlign: "center"}}>No data</Text>
+    <React.Fragment>
+      {isFetchingNextPage ? (
+        <View
+          style={{
+            padding: 10,
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+          <ActivityIndicator size={"small"} />
         </View>
-      )}
-      renderItem={({item}) => <SaleOrArchiveItem item={item} />}
-    />
+      ) : null}
+
+      <FlatList<typeof products[0]>
+        numColumns={3}
+        data={products}
+        onEndReached={getNextProducts}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingLeft: SCREEN_PADDING_HORIZONTAL,
+        }}
+        ListEmptyComponent={() => (
+          <View>
+            <Text style={{textAlign: "center"}}>No data</Text>
+          </View>
+        )}
+        renderItem={({item}) => <SaleOrArchiveItem item={item} />}
+      />
+    </React.Fragment>
   );
 }

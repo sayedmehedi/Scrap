@@ -64,7 +64,7 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
   return (
     <ScrollView
       contentContainerStyle={{
-        // flex: 1,
+        paddingTop: 15,
         backgroundColor: "white",
       }}>
       <View style={{alignSelf: "center", alignItems: "center"}}>
@@ -80,7 +80,7 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
           }}>
           <Rating
             readonly
-            imageSize={15}
+            imageSize={12}
             showRating={false}
             startingValue={profile?.rating ?? 0}
           />
@@ -114,8 +114,8 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <Image
-              source={require("../../assets/Images/users.png")}
-              style={{height: 20, width: 25}}
+              source={require("@assets/Images/users.png")}
+              style={{height: 15, width: 15}}
             />
 
             <Text style={{marginLeft: 10, color: "#707070"}}>
@@ -123,7 +123,7 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
             </Text>
           </View>
 
-          <AntDesign name="right" size={20} />
+          <AntDesign name="right" size={12} />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -132,7 +132,7 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <MaterialIcons
               name="settings-input-component"
-              size={20}
+              size={12}
               color={"#707070"}
             />
             <Text style={{marginLeft: 10, color: "#707070"}}>
@@ -140,18 +140,18 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
             </Text>
           </View>
 
-          <AntDesign name="right" size={20} color={"#707070"} />
+          <AntDesign name="right" size={12} color={"#707070"} />
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => profileNavigation.navigate("purchases")}
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <Entypo name="shopping-bag" size={20} color={"#707070"} />
+            <Entypo name="shopping-bag" size={12} color={"#707070"} />
             <Text style={{marginLeft: 10, color: "#707070"}}>Purchases</Text>
           </View>
 
-          <AntDesign name="right" size={20} color={"#707070"} />
+          <AntDesign name="right" size={12} color={"#707070"} />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -160,59 +160,57 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
             profileNavigation.navigate(ProfileStackRoutes.TRANSACTION)
           }>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <MaterialIcons name="money" size={20} color={"#707070"} />
+            <MaterialIcons name="money" size={12} color={"#707070"} />
             <Text style={{marginLeft: 10, color: "#707070"}}>Transactions</Text>
           </View>
 
-          <AntDesign name="right" size={20} color={"#707070"} />
+          <AntDesign name="right" size={12} color={"#707070"} />
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => profileNavigation.navigate("saveProduct")}
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <AntDesign name="hearto" size={20} color={"#707070"} />
+            <AntDesign name="hearto" size={12} color={"#707070"} />
             <Text style={{marginLeft: 10, color: "#707070"}}>
               Save Products
             </Text>
           </View>
 
-          <AntDesign name="right" size={20} color={"#707070"} />
+          <AntDesign name="right" size={12} color={"#707070"} />
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => profileNavigation.navigate("offerAndBid")}
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <MaterialIcons name="local-offer" size={20} color={"#707070"} />
+            <MaterialIcons name="local-offer" size={12} color={"#707070"} />
             <Text style={{marginLeft: 10, color: "#707070"}}>
               Offers & Bids
             </Text>
           </View>
 
-          <AntDesign name="right" size={20} color={"#707070"} />
+          <AntDesign name="right" size={12} color={"#707070"} />
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => profileNavigation.navigate("error")}
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <AntDesign name="questioncircleo" size={20} color={"#707070"} />
-            <Text style={{marginLeft: 10, color: "#707070"}}>
-              Help & Support
-            </Text>
+            <AntDesign name="questioncircleo" size={12} color={"#707070"} />
+            <Text style={{marginLeft: 10, color: "#707070"}}>Contact Us</Text>
           </View>
 
-          <AntDesign name="right" size={20} />
+          <AntDesign name="right" size={12} />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={signoutPress} style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <Entypo name="login" size={20} color={"#707070"} />
+            <Entypo name="login" size={12} color={"#707070"} />
             <Text style={{marginLeft: 10, color: "#707070"}}>Sign Out</Text>
           </View>
 
-          <AntDesign name="right" size={20} color={"#707070"} />
+          <AntDesign name="right" size={12} color={"#707070"} />
         </TouchableOpacity>
       </View>
     </ScrollView>

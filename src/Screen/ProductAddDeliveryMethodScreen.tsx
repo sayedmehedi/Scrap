@@ -1,6 +1,6 @@
 import React from "react";
 import {useAppSelector} from "@hooks/store";
-import {LinearProgress, Overlay} from "react-native-elements";
+import {Overlay} from "react-native-elements";
 import {Controller, useForm} from "react-hook-form";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {View, TouchableOpacity} from "react-native";
@@ -11,6 +11,7 @@ import {Divider, Text, useTheme} from "react-native-paper";
 import AppPrimaryButton from "../Component/AppPrimaryButton";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {useCreateProductMutation} from "@data/laravel/services/product";
+import CircularProgress from "react-native-circular-progress-indicator";
 import {
   GetPackagesResponse,
   Package,
@@ -32,7 +33,6 @@ import {
   useGetPackagesQuery,
   useLazyGetPackagesQuery,
 } from "@data/laravel/services/package";
-import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -162,7 +162,7 @@ export default function ProductAddDeliveryMethodScreen({
     defaultValues: {
       location: "",
       package: null,
-      isLocale: false,
+      isLocale: true,
       isShipping: false,
     },
   });
@@ -200,7 +200,7 @@ export default function ProductAddDeliveryMethodScreen({
         ...route.params.productGalleryImages,
       ],
       onUploadProgress(event) {
-        const progress = Math.round(event.loaded / event.total);
+        const progress = Math.round(event.loaded / event.total) * 100;
         setUploadProgress(progress);
       },
     });
@@ -212,20 +212,21 @@ export default function ProductAddDeliveryMethodScreen({
         isVisible={isCreatingProduct}
         overlayStyle={{
           width: "80%",
+          elevation: 0,
           height: "50%",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "transparent",
         }}>
-        <View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-            padding: SCREEN_PADDING_HORIZONTAL,
-          }}>
-          <LinearProgress variant="determinate" value={uploadProgress} />
-          <Text style={{marginTop: 10, fontSize: 16, fontWeight: "600"}}>
-            Creating Product...
-          </Text>
-        </View>
+        <CircularProgress
+          radius={50}
+          maxValue={100}
+          duration={2000}
+          titleColor={"black"}
+          value={uploadProgress}
+          activeStrokeColor={"white"}
+          progressValueColor={"white"}
+        />
       </Overlay>
 
       <Controller
@@ -269,7 +270,11 @@ export default function ProductAddDeliveryMethodScreen({
                               }}>
                               <ListItem.Content>
                                 <ListItem.Title>
-                                  Location: {field.value}
+                                  <Text style={{fontWeight: "700"}}>
+                                    {" "}
+                                    Location:
+                                  </Text>{" "}
+                                  {field.value}
                                 </ListItem.Title>
                               </ListItem.Content>
 
@@ -282,48 +287,8 @@ export default function ProductAddDeliveryMethodScreen({
                       }}
                     />
 
-                    <View style={{height: 15}} />
+                    <View style={{height: 10}} />
 
-                    <Controller
-                      name={"isShipping"}
-                      control={control}
-                      render={({field}) => {
-                        return (
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                            }}>
-                            <View>
-                              <Text
-                                style={{
-                                  fontSize: 17,
-                                  color: "#222222",
-                                  marginBottom: 10,
-                                }}>
-                                Sell & Ship International
-                              </Text>
-
-                              <Text>15% Services fee applies</Text>
-                            </View>
-
-                            <View>
-                              <Switch
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              />
-                            </View>
-                          </View>
-                        );
-                      }}
-                    />
-
-                    <View style={{height: 15}} />
-
-                    <Divider style={{height: 2}} />
-
-                    <View style={{height: 15}} />
                     <Controller
                       name={"isLocale"}
                       control={control}
@@ -341,6 +306,7 @@ export default function ProductAddDeliveryMethodScreen({
                                   fontSize: 17,
                                   marginBottom: 10,
                                   color: "#222222",
+                                  fontWeight: "700",
                                 }}>
                                 Local Pickup
                               </Text>
@@ -357,7 +323,80 @@ export default function ProductAddDeliveryMethodScreen({
                       }}
                     />
 
-                    <View style={{height: 15}} />
+                    <View style={{height: 5}} />
+
+                    <Divider style={{height: 2}} />
+
+                    <View style={{height: 5}} />
+
+                    <Controller
+                      name={"isShipping"}
+                      control={control}
+                      render={({field}) => {
+                        return (
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}>
+                            <View>
+                              <Text
+                                style={{
+                                  fontSize: 17,
+                                  color: "#222222",
+                                  marginBottom: 2,
+                                  fontWeight: "700",
+                                }}>
+                                International Shipping
+                              </Text>
+
+                              <Text style={{fontSize: 12}}>
+                                15% Services fee applies
+                              </Text>
+                            </View>
+
+                            <View>
+                              <Switch
+                                onValueChange={field.onChange}
+                                value={field.value}
+                              />
+                            </View>
+                          </View>
+                        );
+                      }}
+                    />
+
+                    <View style={{height: 10}} />
+
+                    <Divider style={{height: 2}} />
+
+                    <View style={{height: 10}} />
+
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}>
+                      <View>
+                        <Text
+                          style={{
+                            fontSize: 17,
+                            color: "#222222",
+                            marginBottom: 2,
+                            fontWeight: "700",
+                          }}>
+                          What length package will you use?
+                        </Text>
+
+                        <Text style={{fontSize: 12}}>
+                          Buyer can pay for delivery label
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={{height: 10}} />
                   </React.Fragment>
                 )}
                 ListFooterComponent={() => (
@@ -390,14 +429,15 @@ export default function ProductAddDeliveryMethodScreen({
                       onPress={() => field.onChange(item)}
                       containerStyle={{
                         paddingLeft: 0,
+                        paddingBottom: 0,
                         alignItems: "flex-start",
                         backgroundColor: "#F7F7F7F",
                       }}>
                       <ListItem.CheckBox
                         iconType={"material"}
                         checkedIcon={"radio-button-checked"}
-                        checked={field.value?.id === item.id}
                         onPress={() => field.onChange(item)}
+                        checked={field.value?.id === item.id}
                         uncheckedIcon={"radio-button-unchecked"}
                       />
 
@@ -408,14 +448,12 @@ export default function ProductAddDeliveryMethodScreen({
                               field.value?.id === item.id
                                 ? theme.colors.primary
                                 : theme.colors.text,
+                            fontWeight: "700",
                           }}>
                           {item.name}
                         </ListItem.Title>
 
-                        <View
-                          style={{
-                            marginTop: 10,
-                          }}>
+                        <View>
                           <Text>Approx: {item.size}</Text>
                           <Text>Weight: {item.weight}</Text>
                           <Text>pounds. Buyer Pays ${item.price}</Text>

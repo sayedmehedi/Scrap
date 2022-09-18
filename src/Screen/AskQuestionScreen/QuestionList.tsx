@@ -14,7 +14,7 @@ import {
 interface Props {
   sellerId: number;
   productId: number;
-  ListHeaderComponent:
+  ListHeaderComponent?:
     | React.ComponentType<any>
     | React.ReactElement<any, string | React.JSXElementConstructor<any>>;
   ListFooterComponent?:

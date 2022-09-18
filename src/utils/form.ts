@@ -24,3 +24,13 @@ export const numberTransform = {
     return isNaN(output) ? 0 : output;
   },
 };
+
+export const dayTransform = {
+  input: (value: number) =>
+    isNaN(value) || value === 0 ? "" : `${value} days`,
+  output: (value: string) => {
+    value = value.replace(/(\d+)\s\w+/, "$1");
+    const output = parseInt(value, 10);
+    return isNaN(output) ? 0 : output;
+  },
+};

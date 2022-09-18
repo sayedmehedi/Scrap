@@ -4,7 +4,14 @@ import EachSellerOfferNBids from "./EachSellerOfferNBids";
 import {useNavigation} from "@react-navigation/native";
 import {FilterProduct, GetOfferNBidsResponse} from "@src/types";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
-import {Button, Card, Text, Title, useTheme} from "react-native-paper";
+import {
+  Button,
+  Card,
+  Paragraph,
+  Text,
+  Title,
+  useTheme,
+} from "react-native-paper";
 import {
   useGetSellerOfferNBidsQuery,
   useLazyGetSellerOfferNBidsQuery,
@@ -119,31 +126,31 @@ export default function SellerOfferNBids({
           padding: 15,
         }}
         ListHeaderComponent={() => (
-          <React.Fragment>
-            <Card.Title
-              title={product.title}
-              subtitle={`$${product.price}`}
-              titleStyle={{
-                fontSize: 15,
-              }}
-              subtitleStyle={{
-                // @ts-ignore
-                color: theme.colors.black,
-              }}
-              left={props => (
+          <View>
+            <View style={{flexDirection: "row", alignItems: "flex-start"}}>
+              <View>
                 <Image
                   source={{uri: product.image}}
                   style={{
-                    height: 67,
                     width: 67,
+                    height: 67,
                     borderRadius: 5,
                   }}
                 />
-              )}
-            />
+              </View>
+
+              <View
+                style={{
+                  flex: 1,
+                  marginLeft: 10,
+                }}>
+                <Title>{product.title}</Title>
+                <Paragraph>$${product.price}</Paragraph>
+              </View>
+            </View>
 
             <Title style={{marginBottom: 15}}>List</Title>
-          </React.Fragment>
+          </View>
         )}
         ItemSeparatorComponent={() => <View style={{height: 15}} />}
         renderItem={({item}) => {

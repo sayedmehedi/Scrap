@@ -73,11 +73,11 @@ export const productApi = api.injectEndpoints({
         formData.append("details", body.details);
         formData.append("is_list_now", body.is_list_now);
         formData.append("expected_date_for_list", body.expected_date_for_list);
-        formData.append("location", body.location);
         formData.append("package_id", body.package_id);
         formData.append("is_locale", body.is_locale);
         formData.append("is_shipping", body.is_shipping);
 
+        formData.append("location", body.location);
         //? location dile egulao lagbe
         formData.append("latitude", body.latitude);
         formData.append("longitude", body.longitude);

@@ -8,6 +8,7 @@ import {
   PaginationQueryParams,
 } from "@src/types";
 import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
+import {ActivityIndicator} from "react-native-paper";
 
 export default function SellerProducts({
   onSelect: handleProductSelect,
@@ -32,8 +33,6 @@ export default function SellerProducts({
       !lastProductPage ||
       (lastProductPage && !lastProductPage.has_more_data)
     ) {
-      console.log("atkai disi", lastProductPage.has_more_data);
-
       return;
     }
 
@@ -107,25 +106,38 @@ export default function SellerProducts({
   }, [isLoading, productPages]);
 
   return (
-    <FlatList<typeof products[0]>
-      numColumns={3}
-      data={products}
-      onEndReached={getNextProducts}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        paddingLeft: SCREEN_PADDING_HORIZONTAL,
-      }}
-      columnWrapperStyle={{
-        marginBottom: 20,
-      }}
-      ListEmptyComponent={() => (
-        <View>
-          <Text style={{textAlign: "center"}}>No data</Text>
+    <React.Fragment>
+      {isFetching ? (
+        <View
+          style={{
+            padding: 10,
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+          <ActivityIndicator size={"small"} />
         </View>
-      )}
-      renderItem={({item}) => (
-        <EachSellerProduct item={item} onSelect={handleProductSelect} />
-      )}
-    />
+      ) : null}
+
+      <FlatList<typeof products[0]>
+        numColumns={3}
+        data={products}
+        onEndReached={getNextProducts}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingLeft: SCREEN_PADDING_HORIZONTAL,
+        }}
+        columnWrapperStyle={{
+          marginBottom: 20,
+        }}
+        ListEmptyComponent={() => (
+          <View>
+            <Text style={{textAlign: "center"}}>No data</Text>
+          </View>
+        )}
+        renderItem={({item}) => (
+          <EachSellerProduct item={item} onSelect={handleProductSelect} />
+        )}
+      />
+    </React.Fragment>
   );
 }

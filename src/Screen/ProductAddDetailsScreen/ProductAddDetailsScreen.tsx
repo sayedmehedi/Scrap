@@ -35,21 +35,30 @@ type Props = NativeStackScreenProps<
 type FormValues = {
   category: {
     id: number;
-    text: string;
+    label: string;
+    value: number;
   } | null;
   condition: {
     id: number;
-    text: string;
+    label: string;
+    value: number;
   } | null;
   subCategory: {
     id: number;
-    text: string;
+    label: string;
+    value: number;
   } | null;
   description: string;
   attributes: {
-    [attrId: number]: {id: number; text: string} | {text: string};
+    [attrId: number]: {id: number; value: number; label: string} | string;
   };
 };
+
+function isAttrString(
+  value: {id: number; value: number; label: string} | string,
+): value is string {
+  return typeof value === "string";
+}
 
 export default function ProductAddDetailsScreen({navigation, route}: Props) {
   const theme = useTheme();
@@ -130,17 +139,26 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
       subcategoriesResponse?.sub_categories.map(category => ({
         type: "data" as const,
         id: category.id,
-        text: category.title,
+        value: category.id,
+        label: category.title,
       })) ?? []
     );
   }, [isSubcategoriesLoading, subcategoriesResponse]);
 
   const handleNextScreen = handleSubmit(values => {
+    console.log(
+      Object.entries(values.attributes).reduce((acc, [attrId, value]) => {
+        acc[parseInt(attrId)] = typeof value === "string" ? value : value.value;
+        return acc;
+      }, {} as Record<number, string | number>),
+    );
+
     navigation.navigate(PostItemStackRoutes.ADD_PRICE, {
       ...route.params,
       attributes: Object.entries(values.attributes).reduce(
         (acc, [attrId, value]) => {
-          acc[parseInt(attrId)] = "id" in value ? value.id : value.text;
+          acc[parseInt(attrId)] =
+            typeof value === "string" ? value : value.value;
           return acc;
         },
         {} as Record<number, string | number>,
@@ -176,7 +194,7 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                     <Text style={{color: "grey", marginBottom: 7}}>
                       Category*
                     </Text>
-                    <Text>{field.value?.text}</Text>
+                    <Text>{field.value?.label}</Text>
                   </View>
 
                   <EvilIcons name="chevron-down" size={25} />
@@ -225,7 +243,7 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                     <Text style={{color: "grey", marginBottom: 7}}>
                       Subcategory*
                     </Text>
-                    <Text>{field.value?.text}</Text>
+                    <Text>{field.value?.label}</Text>
                   </View>
 
                   <EvilIcons name="chevron-down" size={25} />
@@ -278,7 +296,7 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                     <Text style={{color: "grey", marginBottom: 7}}>
                       Condition*
                     </Text>
-                    <Text>{field.value?.text}</Text>
+                    <Text>{field.value?.label}</Text>
                   </View>
 
                   <EvilIcons name="chevron-down" size={25} />
@@ -329,9 +347,12 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                   required: "This field is required",
                 }}
                 // @ts-ignore
-                name={`attributes.${item.id}.text` as const}
+                name={`attributes.${item.id}` as const}
                 render={({field}) => {
-                  if (item.terms.length === 0) {
+                  if (
+                    item.terms.length === 0 ||
+                    isAttrString(field.value as any)
+                  ) {
                     return (
                       <FloatingLabelInput
                         label={item.title}
@@ -360,10 +381,12 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                             <Text>
                               {
                                 (
-                                  field.value as
-                                    | {id: number; text: string}
-                                    | undefined
-                                )?.text
+                                  field.value as {
+                                    id: number;
+                                    label: string;
+                                    value: number;
+                                  }
+                                )?.label
                               }
                             </Text>
                           </View>
@@ -380,10 +403,15 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                         items={item.terms.map(term => ({
                           id: term.id,
                           type: "data",
-                          text: term.title,
+                          value: term.id,
+                          label: term.title,
                         }))}
                         initialValue={
-                          field.value as {id: number; text: string} | undefined
+                          field.value as {
+                            id: number;
+                            label: string;
+                            value: number;
+                          }
                         }
                       />
                     </React.Fragment>
@@ -393,7 +421,7 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
 
               <ErrorMessage
                 errors={errors}
-                name={`attributes.${item.id}.text` as const}
+                name={`attributes.${item.id}` as const}
                 render={({message}) => (
                   <HelperText type={"error"}> {message}</HelperText>
                 )}
@@ -448,8 +476,8 @@ function ConditionSelectionModal({
 }: {
   open: boolean;
   onClose: () => void;
-  initialValue?: {id: number; text: string} | null;
-  onSave: (item: {id: number; text: string} | null) => void;
+  initialValue?: {id: number; value: number; label: string} | null;
+  onSave: (item: {id: number; value: number; label: string} | null) => void;
 }) {
   const [getConditions, {isFetching: isFetchingNextPage}] =
     useLazyGetConditionsQuery();
@@ -538,7 +566,8 @@ function ConditionSelectionModal({
       conditionPage.data.map(condition => ({
         type: "data" as const,
         id: condition.id,
-        text: condition.title,
+        value: condition.id,
+        label: condition.title,
       })),
     );
   }, [isLoadingCondition, conditionPages]);
@@ -566,8 +595,8 @@ function CategorySelectionModal({
 }: {
   open: boolean;
   onClose: () => void;
-  onSave: (item: {id: number; text: string} | null) => void;
-  initialValue?: {id: number; text: string} | null;
+  onSave: (item: {id: number; value: number; label: string} | null) => void;
+  initialValue?: {id: number; value: number; label: string} | null;
 }) {
   const [getCategories, {isFetching: isFetchingNextPage}] =
     useLazyGetCategoryListQuery();
@@ -652,7 +681,8 @@ function CategorySelectionModal({
       categoryPage.data.map(category => ({
         type: "data" as const,
         id: category.id,
-        text: category.title,
+        value: category.id,
+        label: category.title,
       })),
     );
   }, [isLoadingCategories, categoryPages]);

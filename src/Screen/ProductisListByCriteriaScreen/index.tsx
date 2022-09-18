@@ -1,6 +1,6 @@
 import React from "react";
 import truncate from "lodash.truncate";
-import {useTheme} from "react-native-paper";
+import {ActivityIndicator, useTheme} from "react-native-paper";
 import {CheckBox} from "react-native-elements";
 import Entypo from "react-native-vector-icons/Entypo";
 import Feather from "react-native-vector-icons/Feather";
@@ -534,24 +534,37 @@ const ProductList = ({params = {}}: {params?: FilterProductQueryParams}) => {
   }, [isLoading, productPages]);
 
   return (
-    <FlatList<typeof products[0]>
-      numColumns={3}
-      data={products}
-      contentContainerStyle={{
-        paddingLeft: SCREEN_PADDING_HORIZONTAL,
-      }}
-      columnWrapperStyle={{
-        marginBottom: 20,
-      }}
-      onEndReached={getNextProducts}
-      showsVerticalScrollIndicator={false}
-      ListEmptyComponent={() => (
-        <View>
-          <Text style={{textAlign: "center"}}>No data</Text>
+    <React.Fragment>
+      {isFetchingNextPage ? (
+        <View
+          style={{
+            padding: 10,
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+          <ActivityIndicator size={"small"} />
         </View>
-      )}
-      renderItem={({item}) => <EachProductItem item={item} />}
-    />
+      ) : null}
+
+      <FlatList<typeof products[0]>
+        numColumns={3}
+        data={products}
+        contentContainerStyle={{
+          paddingLeft: SCREEN_PADDING_HORIZONTAL,
+        }}
+        columnWrapperStyle={{
+          marginBottom: 20,
+        }}
+        onEndReached={getNextProducts}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={() => (
+          <View>
+            <Text style={{textAlign: "center"}}>No data</Text>
+          </View>
+        )}
+        renderItem={({item}) => <EachProductItem item={item} />}
+      />
+    </React.Fragment>
   );
 };
 
