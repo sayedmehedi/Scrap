@@ -28,7 +28,6 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
 
   const redirectIntended = React.useCallback(() => {
     if (route.params.nextScreen) {
-      // @ts-ignore
       navigation.navigate(
         // @ts-ignore
         route.params.nextScreen.name,
@@ -142,7 +141,7 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
                 color: theme.colors.text,
               }}
               onPress={() => {
-                navigation.navigate(RootStackRoutes.CHOOSE_COUNTRY, {
+                navigation.navigate(RootStackRoutes.CHOOSE_LOCATION, {
                   nextScreen: route.params.nextScreen,
                 });
               }}

@@ -9,8 +9,6 @@ import PlaceBidScreen from "../Screen/PlaceBidScreen";
 import MakeOfferScreen from "../Screen/MakeOfferScreen";
 import AskQuestionScreen from "../Screen/AskQuestionScreen";
 import ReviewOfferScreen from "../Screen/ReviewOfferScreen";
-import ChooseCityScreen from "@src/Screen/ChooseCityScreen";
-import ChooseStateScreen from "@src/Screen/ChooseStateScreen";
 import {createStackNavigator} from "@react-navigation/stack";
 import NotificationsScreen from "../Screen/NotificationsScreen";
 import ProductDetailsScreen from "../Screen/ProductDetailsScreen";
@@ -154,10 +152,6 @@ const RootStackNavigator = () => {
         component={ChooseCountryScreen}
         name={RootStackRoutes.CHOOSE_LOCATION}
       />
-
-     
-
-      
 
       <RootStack.Screen
         options={{

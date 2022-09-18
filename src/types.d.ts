@@ -198,18 +198,6 @@ export type RootStackParamList = {
       params: Record<string, any>;
     };
   };
-  [RootStackRoutes.CHOOSE_STATE]: {
-    nextScreen?: {
-      name: string;
-      params: Record<string, any>;
-    };
-  };
-  [RootStackRoutes.CHOOSE_COUNTRY]: {
-    nextScreen?: {
-      name: string;
-      params: Record<string, any>;
-    };
-  };
   [RootStackRoutes.ADD_SHIPPING_ADDRESS]: undefined;
 };
 
