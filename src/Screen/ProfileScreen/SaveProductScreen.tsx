@@ -1,5 +1,5 @@
 import React from "react";
-import {Text} from "react-native-paper";
+import {ActivityIndicator, Text} from "react-native-paper";
 import {FlatList, View} from "react-native";
 import EachProductItem from "../../Component/EachProductItem";
 import {GetSavedProductsReponse, PaginationQueryParams} from "@src/types";
@@ -96,19 +96,32 @@ const SaveProductScreen = () => {
   }, [isLoading, productPages]);
 
   return (
-    <FlatList<typeof products[0]>
-      numColumns={3}
-      data={products}
-      onEndReached={getNextProducts}
-      contentContainerStyle={{padding: 15}}
-      showsVerticalScrollIndicator={false}
-      ListEmptyComponent={() => (
-        <View>
-          <Text style={{textAlign: "center"}}>No data</Text>
+    <React.Fragment>
+      {isFetchingNextPage ? (
+        <View
+          style={{
+            padding: 10,
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+          <ActivityIndicator size={"small"} />
         </View>
-      )}
-      renderItem={({item}) => <EachProductItem item={item} />}
-    />
+      ) : null}
+
+      <FlatList<typeof products[0]>
+        numColumns={3}
+        data={products}
+        onEndReached={getNextProducts}
+        contentContainerStyle={{padding: 15}}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={() => (
+          <View>
+            <Text style={{textAlign: "center"}}>No data</Text>
+          </View>
+        )}
+        renderItem={({item}) => <EachProductItem item={item} />}
+      />
+    </React.Fragment>
   );
 };
 

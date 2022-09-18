@@ -110,7 +110,9 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
 
       <View style={{paddingHorizontal: 12}}>
         <TouchableOpacity
-          onPress={() => profileNavigation.navigate("publicProfile")}
+          onPress={() =>
+            profileNavigation.navigate(ProfileStackRoutes.PUBLIC_PROFILE)
+          }
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <Image
@@ -127,7 +129,9 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => profileNavigation.navigate("accountSetting")}
+          onPress={() =>
+            profileNavigation.navigate(ProfileStackRoutes.ACCOUNT_SETTING)
+          }
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <MaterialIcons
@@ -144,7 +148,9 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => profileNavigation.navigate("purchases")}
+          onPress={() =>
+            profileNavigation.navigate(ProfileStackRoutes.PURCHASES)
+          }
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <Entypo name="shopping-bag" size={12} color={"#707070"} />
@@ -168,7 +174,9 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => profileNavigation.navigate("saveProduct")}
+          onPress={() =>
+            profileNavigation.navigate(ProfileStackRoutes.SAVE_PRODUCT)
+          }
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <AntDesign name="hearto" size={12} color={"#707070"} />
@@ -181,7 +189,9 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => profileNavigation.navigate("offerAndBid")}
+          onPress={() =>
+            profileNavigation.navigate(ProfileStackRoutes.OFFER_N_BID)
+          }
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <MaterialIcons name="local-offer" size={12} color={"#707070"} />
@@ -194,7 +204,7 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => profileNavigation.navigate("error")}
+          onPress={() => profileNavigation.navigate(ProfileStackRoutes.CONTACT)}
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <AntDesign name="questioncircleo" size={12} color={"#707070"} />

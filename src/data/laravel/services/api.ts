@@ -15,6 +15,7 @@ import {
   JoteyQueryError,
   SimplePaginatedResponse,
   FullTextSearchResponse,
+  ContactUsRequest,
 } from "@src/types";
 import {
   createApi,
@@ -222,9 +223,21 @@ export const api = createApi({
       providesTags: result =>
         result ? [QUERY_KEYS.FULL_TEXT_SEARCH] : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
+    contactUs: builder.mutation<
+      {success: string} | {error: string},
+      ContactUsRequest
+    >({
+      query(body) {
+        return {
+          body,
+          url: "contact",
+          method: "POST",
+        };
+      },
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useGetFullTextSearchQuery} = api;
+export const {useGetFullTextSearchQuery, useContactUsMutation} = api;

@@ -2,26 +2,21 @@ import React from "react";
 import styles from "./styles";
 import {Rating} from "react-native-elements";
 import {useAppSelector} from "@hooks/store";
+import {FlatList, View, Text} from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import Fontisto from "react-native-vector-icons/Fontisto";
-import AntDesign from "react-native-vector-icons/AntDesign";
 import ProfileImageUploader from "./ProfileImageUploader";
+import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
 import EachProductItem from "../../Component/EachProductItem";
 import {
   GetSaleOrArchivedProductsReponse,
   PaginationQueryParams,
 } from "@src/types";
 import {
-  FlatList,
-  View,
-  Text,
-  ImageBackground,
-  TouchableOpacity,
-} from "react-native";
-import {
   useGetSaleProductsQuery,
   useLazyGetSaleProductsQuery,
 } from "@data/laravel/services/product";
+import {ActivityIndicator} from "react-native-paper";
 
 const PublicProfileScreen = () => {
   const profile = useAppSelector(state => state.auth.profile);
@@ -113,8 +108,22 @@ const PublicProfileScreen = () => {
   return (
     <>
       <View>
+        {isFetchingNextPage ? (
+          <View
+            style={{
+              padding: 10,
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+            <ActivityIndicator size={"small"} />
+          </View>
+        ) : null}
+
         <FlatList<typeof products[0]>
           onEndReached={getNextProducts}
+          contentContainerStyle={{
+            padding: SCREEN_PADDING_HORIZONTAL,
+          }}
           ListHeaderComponent={() => (
             <React.Fragment>
               <View

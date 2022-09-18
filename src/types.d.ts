@@ -43,7 +43,7 @@ export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
   >;
 
 export type ProfileStackParamList = {
-  [ProfileStackRoutes.ERROR]: undefined;
+  [ProfileStackRoutes.CONTACT]: undefined;
   [ProfileStackRoutes.PURCHASES]: undefined;
   [ProfileStackRoutes.TRANSACTION]: undefined;
   [ProfileStackRoutes.OFFER_N_BID]: undefined;
@@ -907,4 +907,11 @@ export type ResetPasswordRequest = {
   password_confirmation: string;
   email: string;
   otp: string;
+};
+
+export type ContactUsRequest = {
+  name: string;
+  email: string;
+  subject: string;
+  description: string;
 };
