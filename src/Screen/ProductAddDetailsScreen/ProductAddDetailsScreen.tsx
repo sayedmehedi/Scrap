@@ -146,28 +146,24 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
   }, [isSubcategoriesLoading, subcategoriesResponse]);
 
   const handleNextScreen = handleSubmit(values => {
-    console.log(
-      Object.entries(values.attributes).reduce((acc, [attrId, value]) => {
-        acc[parseInt(attrId)] = typeof value === "string" ? value : value.value;
-        return acc;
-      }, {} as Record<number, string | number>),
-    );
-
-    navigation.navigate(PostItemStackRoutes.ADD_PRICE, {
-      ...route.params,
-      attributes: Object.entries(values.attributes).reduce(
-        (acc, [attrId, value]) => {
-          acc[parseInt(attrId)] =
-            typeof value === "string" ? value : value.value;
-          return acc;
-        },
-        {} as Record<number, string | number>,
-      ),
-      description: values.description,
-      categoryId: values.category!.id,
-      conditionId: values.condition!.id,
-      subCategoryId: values.subCategory!.id,
-    });
+    try {
+      navigation.navigate(PostItemStackRoutes.ADD_PRICE, {
+        ...route.params,
+        attributes: Object.entries(values.attributes)
+          .filter(([, value]) => value !== undefined)
+          .reduce((acc, [attrId, value]) => {
+            acc[parseInt(attrId)] =
+              typeof value === "string" ? value : value.value;
+            return acc;
+          }, {} as Record<number, string | number>),
+        description: values.description,
+        categoryId: values.category!.id,
+        conditionId: values.condition!.id,
+        subCategoryId: values.subCategory!.id,
+      });
+    } catch (error) {
+      console.log("error in handle next screen", error);
+    }
   });
 
   return (

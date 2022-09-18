@@ -72,7 +72,7 @@ export type PostItemStackParamList = {
   };
   [PostItemStackRoutes.UPLOAD_PHOTO]: undefined;
   [PostItemStackRoutes.ADD_DELIVERY_METHOD]: {
-    duration: number;
+    duration?: number;
     metals: number[];
     quantity: number;
     isListNow: boolean;
@@ -80,7 +80,7 @@ export type PostItemStackParamList = {
     conditionId: number;
     description: string;
     productTitle: string;
-    startingPrice: number;
+    startingPrice?: number;
     buynowprice: number;
     subCategoryId: number;
     showMetalPrice: boolean;
@@ -192,7 +192,7 @@ export type RootStackParamList = {
       params: Record<string, any>;
     };
   };
-  [RootStackRoutes.CHOOSE_CITY]: {
+  [RootStackRoutes.CHOOSE_LOCATION]: {
     nextScreen?: {
       name: string;
       params: Record<string, any>;
@@ -879,9 +879,9 @@ export type CreateProductRequest = {
   longitude: number;
   selected_metals: number[];
   attributes: Record<number, number | string>;
-  starting_price: number;
+  starting_price?: number;
   buy_price: number;
-  duration: number;
+  duration?: number;
   quantity: number;
   images: Asset[];
 };

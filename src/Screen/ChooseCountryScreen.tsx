@@ -1,16 +1,17 @@
 import React from "react";
-import {RootStackRoutes} from "@constants/routes";
-import CurrentLocationBtn from "./CurrentLocationBtn";
-import useDebouncedState from "@hooks/useDebouncedState";
-import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
-import SkeletonPlaceholder from "react-native-skeleton-placeholder";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import {useGetCountriesQuery} from "@data/laravel/services/country";
+import {View} from "react-native";
+import {RootStackParamList} from "@src/types";
+import {Overlay} from "react-native-elements";
+import {REAC_APP_GOOGLE_MAPS_API_KEY} from "react-native-dotenv";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {useUpdateProfileMutation} from "@data/laravel/services/auth";
-import {FlatList, TextInput, TouchableOpacity, View} from "react-native";
-import {Country, GetCountriesResponse, RootStackParamList} from "@src/types";
-import {Text, Title, useTheme, ActivityIndicator} from "react-native-paper";
+import CircularProgress from "react-native-circular-progress-indicator";
+import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
+import {
+  HomeStackRoutes,
+  HomeTabRoutes,
+  RootStackRoutes,
+} from "@constants/routes";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -18,177 +19,95 @@ type Props = NativeStackScreenProps<
 >;
 
 const ChooseCountryScreen = ({navigation, route}: Props) => {
-  const theme = useTheme();
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [debouncedSearchTerm] = useDebouncedState(searchTerm);
-  const [selectedCountry, setSelectedCountry] = React.useState<Country | null>(
-    null,
-  );
-  const [countryPages, setCountryPages] = React.useState<
-    Array<GetCountriesResponse["countries"]>
-  >([]);
+  const [uploadProgress, setUploadProgress] = React.useState(0);
+
   const [
     updateProfile,
     {
-      isLoading: isUpdatingProfile,
-      isSuccess: isUpdateProfileSuccess,
       data: updateProfileReponse,
+      isLoading: isUpdatingProfile,
+      isError: isUpdateProfileError,
+      isSuccess: isUpdateProfileSuccess,
     },
   ] = useUpdateProfileMutation();
 
-  const {
-    data: countriesResponse,
-    isLoading,
-    isFetching,
-  } = useGetCountriesQuery({
-    search_text: debouncedSearchTerm,
-  });
-
-  React.useEffect(() => {
-    if (!isLoading && !!countriesResponse) {
-      setCountryPages([countriesResponse.countries]);
+  const redirectIntended = React.useCallback(() => {
+    if (route.params?.nextScreen) {
+      navigation.navigate(
+        // @ts-ignore
+        route.params.nextScreen.name,
+        route.params.nextScreen.params,
+      );
+    } else {
+      navigation.navigate(RootStackRoutes.HOME, {
+        screen: HomeTabRoutes.HOME,
+        params: {
+          screen: HomeStackRoutes.HOME,
+        },
+      });
     }
-  }, [countriesResponse, isLoading]);
-
-  const countries = React.useMemo(() => {
-    if (isLoading) {
-      return new Array(20).fill(1).map((_, id) => ({
-        id,
-        type: "skeleton" as const,
-      }));
-    }
-
-    return countryPages.flatMap(countryPage =>
-      countryPage.data.map(country => ({
-        type: "data" as const,
-        ...country,
-      })),
-    );
-  }, [isLoading, countryPages]);
+  }, [route, navigation]);
 
   React.useEffect(() => {
     if (isUpdateProfileSuccess && !!updateProfileReponse) {
-      navigation.navigate(RootStackRoutes.CHOOSE_STATE, {
-        nextScreen: route.params.nextScreen,
-      });
+      redirectIntended();
     }
-  }, [isUpdateProfileSuccess, updateProfileReponse, navigation, route]);
-
-  React.useEffect(() => {
-    if (!!selectedCountry) {
-      updateProfile({
-        country_id: selectedCountry.id.toString(),
-      });
-    }
-  }, [updateProfile, selectedCountry]);
+  }, [isUpdateProfileSuccess, updateProfileReponse, redirectIntended]);
 
   return (
-    <>
-      <View style={{flex: 1}}>
-        <View
-          style={{
-            padding: 15,
-            paddingTop: 0,
-            backgroundColor: theme.colors.primary,
-          }}>
-          <View
-            style={{
-              position: "relative",
-              backgroundColor: theme.colors.primary,
-            }}>
-            <View style={{position: "absolute", zIndex: 1, left: 15, top: 10}}>
-              <MaterialIcons name={"search"} size={30} />
-            </View>
-
-            <TextInput
-              value={searchTerm}
-              onChangeText={setSearchTerm}
-              placeholder={"Enter your location"}
-              style={{
-                paddingHorizontal: 50,
-                borderRadius: theme.roundness * 3,
-                backgroundColor: theme.colors.white,
-              }}
-            />
-          </View>
-        </View>
-
-        <View style={{alignSelf: "flex-start"}}>
-          <CurrentLocationBtn />
-        </View>
-
-        {isUpdatingProfile && (
-          <View style={{marginVertical: 10}}>
-            <ActivityIndicator size={"small"} />
-            <Text style={{textAlign: "center", marginTop: 10}}>
-              Updating Country
-            </Text>
-          </View>
-        )}
-
-        <FlatList<typeof countries[0]>
-          data={countries}
-          refreshing={isFetching}
-          ListHeaderComponent={() => <Title>Choose Country</Title>}
-          contentContainerStyle={{padding: SCREEN_PADDING_HORIZONTAL}}
-          renderItem={({item}) => {
-            if (item.type === "skeleton") {
-              return (
-                <SkeletonPlaceholder>
-                  <SkeletonPlaceholder.Item padding={5}>
-                    <SkeletonPlaceholder.Item height={40} />
-                  </SkeletonPlaceholder.Item>
-                </SkeletonPlaceholder>
-              );
-            }
-
-            const isSelected = selectedCountry?.id === item.id;
-
-            return (
-              <TouchableOpacity
-                onPress={() => {
-                  setSelectedCountry(prevSelectedCountry =>
-                    prevSelectedCountry?.id === item.id ? null : item,
-                  );
-                }}>
-                <View
-                  style={{
-                    paddingVertical: 15,
-                    alignItems: "center",
-                    borderBottomWidth: 1,
-                    flexDirection: "row",
-                    borderColor: "#667085",
-                    justifyContent: "space-between",
-                  }}>
-                  <Text
-                    style={{
-                      color: isSelected
-                        ? theme.colors.primary
-                        : theme.colors.black,
-                    }}>
-                    {item.name}
-                  </Text>
-
-                  {isSelected && (
-                    <MaterialIcons
-                      name={"check"}
-                      size={20}
-                      color={theme.colors.primary}
-                    />
-                  )}
-                </View>
-              </TouchableOpacity>
-            );
-          }}
-          ListEmptyComponent={() => (
-            <View style={{padding: 15}}>
-              <Text style={{textAlign: "center"}}>No data</Text>
-            </View>
-          )}
-          showsVerticalScrollIndicator={false}
+    <View style={{flex: 1}}>
+      <Overlay
+        isVisible={
+          isUpdatingProfile && !isUpdateProfileSuccess && !isUpdateProfileError
+        }
+        overlayStyle={{
+          width: "80%",
+          elevation: 0,
+          height: "50%",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "transparent",
+        }}>
+        <CircularProgress
+          radius={50}
+          maxValue={100}
+          duration={2000}
+          titleColor={"black"}
+          value={uploadProgress}
+          activeStrokeColor={"white"}
+          progressValueColor={"white"}
         />
-      </View>
-    </>
+      </Overlay>
+
+      <GooglePlacesAutocomplete
+        fetchDetails
+        currentLocation
+        placeholder={"Enter your location"}
+        currentLocationLabel="Use Current Location"
+        onPress={(data, details) => {
+          if (details) {
+            const location = details.name;
+            const {lat, lng} = details.geometry.location;
+
+            updateProfile({
+              location,
+              latitude: lat.toString(),
+              longitude: lng.toString(),
+              onUploadProgress(event) {
+                const progress = Math.round(event.loaded / event.total) * 100;
+                setUploadProgress(progress);
+              },
+            });
+          }
+        }}
+        onFail={error => console.error("fail", error)}
+        onNotFound={() => console.error("not found")}
+        query={{
+          language: "en",
+          key: REAC_APP_GOOGLE_MAPS_API_KEY,
+        }}
+      />
+    </View>
   );
 };
 

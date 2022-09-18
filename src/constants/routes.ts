@@ -23,7 +23,7 @@ export const RootStackRoutes = {
   CONFIRM_PURCHASE: "confirmPurchase",
   SELLER_REVIEW: "sellerReviewScreen",
 
-  CHOOSE_CITY: "chooseCity",
+  CHOOSE_LOCATION: "chooseLocation",
   CHOOSE_STATE: "chooseState",
   CHOOSE_COUNTRY: "chooseCountry",
 } as const;

@@ -11,6 +11,8 @@ import {
 } from "@src/types";
 import DatePicker from "react-native-date-picker";
 import {Text, useTheme} from "react-native-paper";
+import useAppSnackbar from "@hooks/useAppSnackbar";
+import {ScrollView} from "react-native-gesture-handler";
 import {PostItemStackRoutes} from "../constants/routes";
 import SelectionModal from "../Component/SelectionModal";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
@@ -34,7 +36,6 @@ import {
   useGetDurationsQuery,
   useLazyGetDurationsQuery,
 } from "@data/laravel/services/duration";
-import {ScrollView} from "react-native-gesture-handler";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -57,6 +58,7 @@ type FormValues = {
 export default function ProductAddPriceScreen({navigation, route}: Props) {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+  const {enqueueErrorSnackbar} = useAppSnackbar();
   const [modalType, setModalType] = React.useState("");
 
   const {control, handleSubmit, watch} = useForm<FormValues>({
@@ -75,6 +77,8 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
     },
   });
 
+  const buyNowPrice = watch("buynowprice");
+  const startingPrice = watch("startingPrice");
   const showMetalPrice = watch("showMetalPrice");
 
   const {
@@ -87,6 +91,24 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
   });
 
   const handlePostItem = handleSubmit(values => {
+    if (!values.startingPrice && !values.buynowprice) {
+      enqueueErrorSnackbar({
+        text1: "Error",
+        text2: "Please input either starting price or buy now price",
+      });
+
+      return;
+    }
+
+    if (!!values.startingPrice && !values.buynowprice && !values.duration) {
+      enqueueErrorSnackbar({
+        text1: "Error",
+        text2: "Please input duration",
+      });
+
+      return;
+    }
+
     let expectedDateForList = "";
 
     if (values.beginDay) {
@@ -103,7 +125,6 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
       expectedDateForList = d.toString();
     }
 
-    console.log("duration", values.duration?.value);
     navigation.navigate(PostItemStackRoutes.ADD_DELIVERY_METHOD, {
       ...route.params,
       expectedDateForList,
@@ -121,81 +142,88 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
 
   const ListHeaderComponent = (
     <React.Fragment>
-      <Controller
-        control={control}
-        name={"startingPrice"}
-        render={({field}) => {
-          return (
-            <React.Fragment>
-              <Text
-                style={{
-                  marginBottom: 10,
-                  color: "#222222",
-                  fontSize: 16,
-                }}>
-                Starting Price
-              </Text>
+      {!buyNowPrice && (
+        <React.Fragment>
+          <Controller
+            control={control}
+            name={"startingPrice"}
+            render={({field}) => {
+              return (
+                <React.Fragment>
+                  <Text
+                    style={{
+                      marginBottom: 10,
+                      color: "#222222",
+                      fontSize: 16,
+                    }}>
+                    Starting Price
+                  </Text>
 
-              <TextInput
-                keyboardType="numeric"
-                value={currencyTransform.inputFloat(field.value)}
-                onChangeText={price =>
-                  field.onChange(currencyTransform.outputFloat(price))
-                }
-                style={{
-                  padding: 15,
-                  fontSize: 25,
-                  maxHeight: 110,
-                  borderWidth: 1,
-                  borderColor: "#C9C9C9",
-                  borderRadius: theme.roundness * 4,
-                  backgroundColor: theme.colors.white,
-                }}
-              />
-            </React.Fragment>
-          );
-        }}
-      />
+                  <TextInput
+                    keyboardType="numeric"
+                    value={currencyTransform.inputFloat(field.value)}
+                    onChangeText={price =>
+                      field.onChange(currencyTransform.outputFloat(price))
+                    }
+                    style={{
+                      padding: 15,
+                      fontSize: 25,
+                      maxHeight: 110,
+                      borderWidth: 1,
+                      borderColor: "#C9C9C9",
+                      borderRadius: theme.roundness * 4,
+                      backgroundColor: theme.colors.white,
+                    }}
+                  />
+                </React.Fragment>
+              );
+            }}
+          />
 
-      <View style={{height: 15}} />
+          <View style={{height: 15}} />
+        </React.Fragment>
+      )}
 
-      <Controller
-        control={control}
-        name={"buynowprice"}
-        render={({field}) => {
-          return (
-            <React.Fragment>
-              <Text
-                style={{
-                  marginBottom: 10,
-                  color: "#222222",
-                  fontSize: 16,
-                }}>
-                Buy now price
-              </Text>
+      {!startingPrice && (
+        <React.Fragment>
+          <Controller
+            control={control}
+            name={"buynowprice"}
+            render={({field}) => {
+              return (
+                <React.Fragment>
+                  <Text
+                    style={{
+                      marginBottom: 10,
+                      color: "#222222",
+                      fontSize: 16,
+                    }}>
+                    Buy now price
+                  </Text>
 
-              <TextInput
-                keyboardType="numeric"
-                value={currencyTransform.inputFloat(field.value)}
-                onChangeText={price =>
-                  field.onChange(currencyTransform.outputFloat(price))
-                }
-                style={{
-                  padding: 15,
-                  fontSize: 25,
-                  maxHeight: 110,
-                  borderWidth: 1,
-                  borderColor: "#C9C9C9",
-                  borderRadius: theme.roundness * 4,
-                  backgroundColor: theme.colors.white,
-                }}
-              />
-            </React.Fragment>
-          );
-        }}
-      />
-
-      <View style={{height: 15}} />
+                  <TextInput
+                    keyboardType="numeric"
+                    value={currencyTransform.inputFloat(field.value)}
+                    onChangeText={price =>
+                      field.onChange(currencyTransform.outputFloat(price))
+                    }
+                    style={{
+                      padding: 15,
+                      fontSize: 25,
+                      maxHeight: 110,
+                      borderWidth: 1,
+                      borderColor: "#C9C9C9",
+                      borderRadius: theme.roundness * 4,
+                      backgroundColor: theme.colors.white,
+                    }}
+                  />
+                </React.Fragment>
+              );
+            }}
+          />
+          <View style={{height: 15}} />
+        </React.Fragment>
+      )}
 
       <Controller
         name={"quantity"}
@@ -235,37 +263,39 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
 
       <View style={{height: 15}} />
 
-      <Controller
-        control={control}
-        name={"duration"}
-        render={({field}) => {
-          return (
-            <React.Fragment>
-              <Pressable onPress={() => setModalType("duration")}>
-                <View
-                  style={{
-                    padding: 15,
-                    borderRadius: 8,
-                    backgroundColor: theme.colors.white,
-                    elevation: 2,
-                  }}>
-                  <Text style={{color: "#222222", fontSize: 14}}>
-                    Select Duration
-                  </Text>
-                  <Text>{field.value?.label}</Text>
-                </View>
-              </Pressable>
+      {!!startingPrice && (
+        <Controller
+          control={control}
+          name={"duration"}
+          render={({field}) => {
+            return (
+              <React.Fragment>
+                <Pressable onPress={() => setModalType("duration")}>
+                  <View
+                    style={{
+                      padding: 15,
+                      borderRadius: 8,
+                      backgroundColor: theme.colors.white,
+                      elevation: 2,
+                    }}>
+                    <Text style={{color: "#222222", fontSize: 14}}>
+                      Select Duration
+                    </Text>
+                    <Text>{field.value?.label}</Text>
+                  </View>
+                </Pressable>
 
-              <DurationSelectionModal
-                onSave={field.onChange}
-                initialValue={field.value}
-                open={modalType === "duration"}
-                onClose={() => setModalType("")}
-              />
-            </React.Fragment>
-          );
-        }}
-      />
+                <DurationSelectionModal
+                  onSave={field.onChange}
+                  initialValue={field.value}
+                  open={modalType === "duration"}
+                  onClose={() => setModalType("")}
+                />
+              </React.Fragment>
+            );
+          }}
+        />
+      )}
 
       <View
         style={{
@@ -550,7 +580,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
           }}
         />
       ) : (
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           {ListHeaderComponent}
           {ListFooterComponent}
         </ScrollView>
@@ -655,6 +685,7 @@ function MetalList({
       data={metals}
       numColumns={3}
       onEndReached={getNextMetals}
+      showsVerticalScrollIndicator={false}
       ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={ListFooterComponent}
       renderItem={({item}) => {
