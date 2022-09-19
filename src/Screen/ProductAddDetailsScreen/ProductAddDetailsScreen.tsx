@@ -339,6 +339,7 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
           <React.Fragment key={item.id}>
             <View style={{width: "100%", marginBottom: 16}}>
               <Controller
+                shouldUnregister
                 control={control}
                 rules={{
                   required: "This field is required",

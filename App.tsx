@@ -25,7 +25,7 @@ enableLatestRenderer();
 
 GoogleSignin.configure({
   webClientId:
-    "1098035251669-j4gopt4e5ce00kc8jd16hh3ua6mlg75h.apps.googleusercontent.com",
+    "384287635095-cn6g90q9h2v4mlnvpjdh1uo1qt716585.apps.googleusercontent.com",
 });
 
 const App = () => {

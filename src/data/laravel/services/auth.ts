@@ -68,16 +68,23 @@ export const authApi = api.injectEndpoints({
           console.log("googleCredential", googleCredential);
 
           // Sign-in the user with the credential
-          const {
-            user: {uid, displayName, email},
-          } = await auth().signInWithCredential(googleCredential);
+          const userCreds = await auth().signInWithCredential(googleCredential);
 
-          console.log("got firebase user creds", uid, displayName, email);
+          console.log(
+            "got firebase user creds",
+            userCreds.user.uid,
+            userCreds.user.email,
+            userCreds.user.displayName,
+          );
+
+          const fbIdToken = await userCreds.user.getIdToken();
+
+          console.log("got fbIdToken", fbIdToken);
 
           const response = await apiClient.post<LoginResponse>("social-login", {
-            email: email,
-            name: displayName,
-            firebase_auth_id: uid,
+            email: userCreds.user.email,
+            name: userCreds.user.displayName,
+            firebase_auth_id: fbIdToken,
           });
 
           console.log("got server res", response.data);

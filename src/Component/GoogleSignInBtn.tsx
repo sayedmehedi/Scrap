@@ -1,5 +1,5 @@
 import React from "react";
-import {useTheme} from "react-native-paper";
+import {Text, useTheme} from "react-native-paper";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {TouchableOpacity, Image} from "react-native";
 import {useLoginWithGoogleMutation} from "@data/laravel/services/auth";
@@ -30,17 +30,20 @@ export default function GoogleSignInBtn() {
   }, [enqueueSuccessSnackbar, isSuccess, data, enqueueErrorSnackbar]);
 
   return (
-    <TouchableOpacity
-      disabled={isLoading}
-      onPress={onGoogleButtonPress}
-      style={{
-        width: 60,
-        height: 60,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: theme.colors.white,
-      }}>
-      <Image source={require("@assets/Images/google.png")} />
-    </TouchableOpacity>
+    <React.Fragment>
+      <TouchableOpacity
+        disabled={isLoading}
+        onPress={onGoogleButtonPress}
+        style={{
+          width: 60,
+          height: 60,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: theme.colors.white,
+        }}>
+        <Image source={require("@assets/Images/google.png")} />
+      </TouchableOpacity>
+      {isLoading && <Text>Loading..</Text>}
+    </React.Fragment>
   );
 }
