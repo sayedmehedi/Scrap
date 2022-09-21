@@ -73,7 +73,7 @@ export const offerNBidsApi = api.injectEndpoints({
           : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
     makeBidWinnerOrAcceptOffer: builder.mutation<
-      {success: string},
+      {success: string} | {error: string},
       {offerOrBidId: number}
     >({
       query({offerOrBidId}) {

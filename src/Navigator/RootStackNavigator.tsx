@@ -61,6 +61,7 @@ const RootStackNavigator = () => {
         component={SingleConversationScreen}
         name={RootStackRoutes.SINGLE_CONVERSATION}
         options={{
+          headerShown: false,
           presentation: "modal",
           cardStyleInterpolator: forFade,
         }}

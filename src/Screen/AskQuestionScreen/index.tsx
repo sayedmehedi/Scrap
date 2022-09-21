@@ -4,12 +4,11 @@ import {Avatar} from "react-native-elements";
 import {RootStackParamList} from "@src/types";
 import {RootStackRoutes} from "@constants/routes";
 import useAppSnackbar from "@hooks/useAppSnackbar";
+import {View, Image, TextInput} from "react-native";
 import {Text, Title, useTheme} from "react-native-paper";
-import {View, Image, TextInput, FlatList} from "react-native";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
+import {useSendMessageMutation} from "@data/laravel/services/message";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {useCreateAskQuestionMutation} from "@data/laravel/services/question";
-import {ScrollView} from "react-native-gesture-handler";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -19,32 +18,52 @@ type Props = NativeStackScreenProps<
 const AskQuestionScreen = ({route}: Props) => {
   const theme = useTheme();
   const [question, setQuestion] = React.useState("");
-  const {enqueueSuccessSnackbar} = useAppSnackbar();
+  const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
   const [
     askQuestion,
     {
+      data: askQuestionData,
       isLoading: isAskingQuestion,
       isSuccess: isAskQuestionSuccess,
-      data: askQuestionData,
     },
-  ] = useCreateAskQuestionMutation();
+  ] = useSendMessageMutation();
 
   React.useEffect(() => {
-    if (isAskQuestionSuccess && !!askQuestionData) {
+    if (isAskQuestionSuccess && !!askQuestionData && "msg" in askQuestionData) {
       enqueueSuccessSnackbar({
-        text1: askQuestionData.success,
+        text1: "Success",
+        text2: askQuestionData.msg,
       });
-      setQuestion("");
     }
-  }, [isAskQuestionSuccess, askQuestionData, enqueueSuccessSnackbar]);
 
-  const handleAskQuestion = React.useCallback(() => {
+    if (
+      isAskQuestionSuccess &&
+      !!askQuestionData &&
+      "error" in askQuestionData
+    ) {
+      enqueueErrorSnackbar({
+        text1: "Error",
+        text2: askQuestionData.error,
+      });
+    }
+  }, [
+    askQuestionData,
+    isAskQuestionSuccess,
+    enqueueErrorSnackbar,
+    enqueueSuccessSnackbar,
+  ]);
+
+  const handleAskQuestion = () => {
     askQuestion({
-      question,
+      message: question,
       product_id: +route.params.productId,
-      seller_id: +route.params.sellerId,
-    });
-  }, [route.params.productId, route.params.sellerId, question]);
+      receiver_id: +route.params.sellerId,
+    })
+      .unwrap()
+      .then(() => {
+        setQuestion("");
+      });
+  };
 
   const ListHeaderComponent = React.useMemo(() => {
     return (

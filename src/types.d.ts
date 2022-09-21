@@ -173,10 +173,9 @@ export type RootStackParamList = {
     productId: number | string;
   };
   [RootStackRoutes.SINGLE_CONVERSATION]: {
-    conversationId: number;
     userName: string;
+    productId: number;
     userImage: string;
-    userLocation: string;
     productPrice: number;
     productImage: string;
   };
@@ -615,17 +614,16 @@ export type GetSaleOrArchivedProductsReponse = {
 
 export interface Conversation {
   id: number;
+  date: string;
+  has_msg: boolean;
   user_name: string;
   user_image: string;
-  has_offer: boolean;
-  has_msg: boolean;
-  product:
-    | ""
-    | {
-        title: string;
-        image: string;
-        price: string;
-      };
+  product: {
+    title: string;
+    image: string;
+    price: number;
+    product_id: number;
+  };
   message: {
     title: string;
     created_at: string;
@@ -640,6 +638,8 @@ export interface ConversationMessage {
   id: number;
   title: string;
   created_at: string;
+  product_id: number;
+  receiver_id: number;
   sender_name: string;
   sender_image: string;
   receiver_name: string;
@@ -648,11 +648,35 @@ export interface ConversationMessage {
 
 export type GetConversationDetailsResponse = {
   messages: SimplePaginatedResponse<ConversationMessage>;
+  user: {
+    id: number;
+    name: string;
+    image: string;
+    location?: string;
+  };
+  seller: {
+    id: number;
+    name: string;
+    image: string;
+    rating: number;
+    reviews: number;
+    location: string;
+  };
+  product: {
+    id: number;
+    title: string;
+    price: number;
+    image: string;
+    package_id: number;
+    package_name: string;
+    package_price: number;
+  };
 };
 
 export type SendMessageRequest = {
-  receiver_id: number;
   message: string;
+  product_id: number;
+  receiver_id: number;
 };
 
 export interface AppNotification {

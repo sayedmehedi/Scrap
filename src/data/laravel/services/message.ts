@@ -28,21 +28,21 @@ export const messageApi = api.injectEndpoints({
     }),
     getConversationDetails: builder.query<
       GetConversationDetailsResponse,
-      {conversationId: number} & PaginationQueryParams
+      {product_id: number; user_id: number} & PaginationQueryParams
     >({
-      query: ({conversationId, ...params}) => ({
+      query: params => ({
         params,
-        url: `user-messages/${conversationId}`,
+        url: `user-messages`,
       }),
-      providesTags: (result, error, {conversationId: id}) =>
+      providesTags: (result, error, {product_id, user_id}) =>
         result
-          ? [{type: QUERY_KEYS.CONVERSATION, id}]
+          ? [{type: QUERY_KEYS.CONVERSATION, id: `${product_id}-${user_id}`}]
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
     sendMessage: builder.mutation<
-      {msg: string},
+      {msg: string} | {error: string},
       SendMessageRequest & {conversationId?: number}
     >({
       query(body) {

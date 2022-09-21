@@ -1,14 +1,14 @@
 import React from "react";
 import EachConversation from "./EachConversation";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import {SafeAreaView, View, Text, FlatList} from "react-native";
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {GetConversationsResponse, PaginationQueryParams} from "@src/types";
 import {
   useGetConversationsQuery,
   useLazyGetConversationsQuery,
 } from "@data/laravel/services/message";
-import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
-import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
 const ConversationListScreen = () => {
   const [getConversations, {isFetching: isFetchingNextPage}] =
