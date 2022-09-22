@@ -1,4 +1,5 @@
 export const AuthStackRoutes = {
+  OTP: "otp",
   LOGIN: "login",
   REGISTRATION: "registration",
   RESET_PASSWORD: "resetPassword",

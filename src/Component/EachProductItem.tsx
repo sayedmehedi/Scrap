@@ -46,8 +46,7 @@ const EachProductItem = ({
         })
       }>
       <Image
-        resizeMode={"center"}
-        source={{uri: item.image}}
+        source={{uri: item.images.small}}
         style={{
           height: 130,
           width: "100%",

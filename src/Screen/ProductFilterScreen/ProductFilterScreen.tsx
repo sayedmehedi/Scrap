@@ -14,6 +14,7 @@ import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {useLazyGetConditionsQuery} from "@data/laravel/services/condition";
 import {ListItem, Divider, CheckBox, Button} from "react-native-elements";
 import {combinedDefaultTheme} from "../../Providers/PreferencesProvider/theme";
+import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {
   Condition,
   ConditionResponse,

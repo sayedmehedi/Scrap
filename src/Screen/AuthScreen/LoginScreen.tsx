@@ -1,13 +1,14 @@
 import React from "react";
 import useAppSnackbar from "@hooks/useAppSnackbar";
-import {useTheme, Text} from "react-native-paper";
 import {useForm, Controller} from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
 import {ErrorMessage} from "@hookform/error-message";
 import {useNavigation} from "@react-navigation/native";
+import GoogleSignInBtn from "@src/Component/GoogleSignInBtn";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {AuthStackParamList, RootStackParamList} from "@src/types";
+import {useTheme, Text, ActivityIndicator} from "react-native-paper";
 import {AuthStackRoutes, RootStackRoutes} from "../../constants/routes";
 import {useAppDispatch, useAppSelector, useAppStore} from "@hooks/store";
 import {addServerErrors, isJoteyQueryError} from "@utils/error-handling";
@@ -36,7 +37,6 @@ import {
   setGlobalStyles,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
-import GoogleSignInBtn from "@src/Component/GoogleSignInBtn";
 
 setGlobalStyles.containerStyles = {
   height: 58,
@@ -80,6 +80,9 @@ const LoginScreen = ({navigation, route}: Props) => {
   const rootNavigation = useNavigation<RootStackNavigationProp>();
   const [togglePassword, setTogglePassword] = React.useState(false);
   const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
+  const socialLoginState = useAppSelector(
+    state => state.authLoading.socialLoginState,
+  );
 
   const [login, {isLoading, isError, error, isSuccess, data}] =
     useLoginMutation();
@@ -125,10 +128,10 @@ const LoginScreen = ({navigation, route}: Props) => {
     if (isAuthenticated && isGettingProfileSuccess && !!profileData) {
       const {firstTimeLogin} = store.getState().auth;
       if (firstTimeLogin) {
+        dispatch(setFirstTimeLoginFalse());
         rootNavigation.replace(RootStackRoutes.LOCATION_PROMPT, {
           nextScreen: route.params.nextScreen,
         });
-        dispatch(setFirstTimeLoginFalse());
       } else if (route.params?.nextScreen) {
         // @ts-ignore
         navigation.replace(
@@ -159,6 +162,14 @@ const LoginScreen = ({navigation, route}: Props) => {
         getProfile(undefined, false);
       });
   });
+
+  if (isLoading || socialLoginState === "pending") {
+    return (
+      <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+        <ActivityIndicator size={"large"} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaProvider>

@@ -15,7 +15,7 @@ import {
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
-  typeof RootStackRoutes.CHOOSE_COUNTRY
+  typeof RootStackRoutes.CHOOSE_LOCATION
 >;
 
 const ChooseCountryScreen = ({navigation, route}: Props) => {

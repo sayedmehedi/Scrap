@@ -84,6 +84,7 @@ const CategoryList = ({
     <FlatList<typeof categories[0]>
       data={categories}
       contentContainerStyle={{
+        paddingBottom: 90,
         marginHorizontal: 20,
       }}
       showsVerticalScrollIndicator={false}
@@ -154,7 +155,7 @@ const CategoryList = ({
                 {open && (
                   <FlatList
                     data={item.sub_categories}
-                    renderItem={({item}) => {
+                    renderItem={({item: subcategory}) => {
                       return (
                         <View style={{paddingLeft: 15}}>
                           <TouchableOpacity
@@ -165,7 +166,8 @@ const CategoryList = ({
                                 HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA,
                                 {
                                   categoryId: item.id,
-                                  categoryTitle: item.title,
+                                  subcategoryId: subcategory.id,
+                                  screenTitle: subcategory.title,
                                 },
                               )
                             }
@@ -177,7 +179,7 @@ const CategoryList = ({
                                 fontFamily: "Inter-Light",
                                 color: "#403C39",
                               }}>
-                              {item.title}
+                              {subcategory.title}
                             </Text>
                           </TouchableOpacity>
                         </View>

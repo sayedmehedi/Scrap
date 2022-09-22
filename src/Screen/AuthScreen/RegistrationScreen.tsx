@@ -1,7 +1,6 @@
 import React from "react";
 import {AuthStackParamList} from "@src/types";
 import useAppSnackbar from "@hooks/useAppSnackbar";
-import {useTheme, Text} from "react-native-paper";
 import {useForm, Controller} from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
 import {ErrorMessage} from "@hookform/error-message";
@@ -10,6 +9,7 @@ import GoogleSignInBtn from "@src/Component/GoogleSignInBtn";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import {useRegisterMutation} from "@data/laravel/services/auth";
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import {useTheme, Text, ActivityIndicator} from "react-native-paper";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {addServerErrors, isJoteyQueryError} from "@utils/error-handling";
 import {
@@ -24,6 +24,7 @@ import {
   setGlobalStyles,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
+import {useAppSelector} from "@hooks/store";
 
 setGlobalStyles.containerStyles = {
   height: 58,
@@ -63,6 +64,9 @@ const RegistrationScreen = ({navigation}: Props) => {
   const [togglePassword, setTogglePassword] = React.useState(false);
   const [toggleConfirmPassword, setToggleConfirmPassword] =
     React.useState(false);
+  const socialLoginState = useAppSelector(
+    state => state.authLoading.socialLoginState,
+  );
 
   const [register, {isLoading, isError, error, isSuccess, data}] =
     useRegisterMutation();
@@ -101,6 +105,14 @@ const RegistrationScreen = ({navigation}: Props) => {
   const handleRegistration = handleSubmit(values => {
     register(values);
   });
+
+  if (isLoading || socialLoginState === "pending") {
+    return (
+      <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+        <ActivityIndicator size={"large"} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaProvider>

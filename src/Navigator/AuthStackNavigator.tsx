@@ -1,10 +1,12 @@
 import React from "react";
-import { forFade } from "@utils/misc";
-import { useTheme } from "react-native-paper";
-import { AuthStackParamList } from "@src/types";
-import { AuthStackRoutes } from "../constants/routes";
+import {forFade} from "@utils/misc";
+import {useTheme} from "react-native-paper";
+import {TouchableOpacity} from "react-native";
+import {AuthStackParamList} from "@src/types";
+import {AuthStackRoutes, RootStackRoutes} from "../constants/routes";
 import LoginScreen from "../Screen/AuthScreen/LoginScreen";
-import { createStackNavigator } from "@react-navigation/stack";
+import {createStackNavigator} from "@react-navigation/stack";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import RegistrationScreen from "../Screen/AuthScreen/RegistrationScreen";
 import ResetPasswordScreen from "../Screen/AuthScreen/ResetPasswordScreen";
 import ForgotPasswordScreen from "../Screen/AuthScreen/ForgotPasswordScreen";
@@ -32,9 +34,31 @@ const AuthStackNavigator = () => {
         cardStyleInterpolator: forFade,
       }}>
       <AuthStack.Screen
-        options={{
+        options={({navigation, route}) => ({
           title: "Login",
-        }}
+          headerLeft: ({onPress}) => {
+            return (
+              <TouchableOpacity
+                style={{paddingLeft: 15}}
+                onPress={() => {
+                  if (route.params.backScreen) {
+                    navigation.navigate(
+                      route.params.backScreen.name,
+                      route.params.backScreen.params,
+                    );
+                  } else {
+                    navigation.navigate(RootStackRoutes.HOME);
+                  }
+                }}>
+                <MaterialIcons
+                  size={22}
+                  color={"white"}
+                  name="keyboard-backspace"
+                />
+              </TouchableOpacity>
+            );
+          },
+        })}
         component={LoginScreen}
         name={AuthStackRoutes.LOGIN}
       />

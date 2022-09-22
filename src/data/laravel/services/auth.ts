@@ -77,14 +77,14 @@ export const authApi = api.injectEndpoints({
             userCreds.user.displayName,
           );
 
-          const fbIdToken = await userCreds.user.getIdToken();
+          // const fbIdToken = await userCreds.user.getIdToken();
 
-          console.log("got fbIdToken", fbIdToken);
+          // console.log("got fbIdToken", fbIdToken);
 
           const response = await apiClient.post<LoginResponse>("social-login", {
             email: userCreds.user.email,
             name: userCreds.user.displayName,
-            firebase_auth_id: fbIdToken,
+            firebase_auth_id: userCreds.user.uid,
           });
 
           console.log("got server res", response.data);

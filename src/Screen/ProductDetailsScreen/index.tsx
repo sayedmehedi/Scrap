@@ -7,16 +7,18 @@ import {useTimer} from "react-timer-hook";
 import Colors from "../../constants/Colors";
 import {metalNameToCode} from "@utils/metal";
 import {Rating} from "react-native-elements";
+import {useAppSelector} from "@hooks/store";
 import {RootStackParamList} from "@src/types";
 import useAppConfig from "@hooks/useAppConfig";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import Feather from "react-native-vector-icons/Feather";
-import {RootStackRoutes} from "../../constants/routes";
+import {AuthStackRoutes, RootStackRoutes} from "../../constants/routes";
 import Octicons from "react-native-vector-icons/Octicons";
 import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EachProductItem from "../../Component/EachProductItem";
 import AppPrimaryButton from "@src/Component/AppPrimaryButton";
+import {selectIsAuthenticated} from "@store/slices/authSlice";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MapView, {PROVIDER_GOOGLE, Marker} from "react-native-maps";
 import {useCreateCartMutation} from "@data/laravel/services/order";
@@ -49,6 +51,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   const config = useAppConfig();
   const [image, setImage] = React.useState("");
   const {enqueueSuccessSnackbar} = useAppSnackbar();
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [expiryTimestamp] = React.useState(() => dayjs().toDate());
   const [metalsLivePrices, setMetalsLivePrices] = React.useState<
     Array<[string, string, [number, number]]>
@@ -63,9 +66,9 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   });
 
   const {
-    data: productDetails,
-    isLoading,
     refetch,
+    isLoading,
+    data: productDetails,
   } = useGetProductDetailsQuery({
     id: route.params.productId,
   });
@@ -162,8 +165,8 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   }, [navigation, isLoading, productDetails, toggleFavorite]);
 
   React.useEffect(() => {
-    if (productDetails && productDetails.images.length !== 0) {
-      setImage(productDetails.images[0]);
+    if (productDetails && productDetails.images.small.length !== 0) {
+      setImage(productDetails.images.medium[0]);
     }
   }, [productDetails]);
 
@@ -223,7 +226,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
         productName: productDetails.title,
         totalBids: productDetails.total_bids,
         timeLeftToBid: productDetails.time_left,
-        productImage: productDetails.images[0] ?? undefined,
+        productImage: productDetails.images.small[0] ?? undefined,
         bidStartingPrice: !!productDetails.starting_price
           ? +productDetails.starting_price
           : 0,
@@ -238,13 +241,30 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
         productName: productDetails.title,
         totalOffers: productDetails.total_offers,
         shippingCost: +productDetails.shipping_cost,
-        productImage: productDetails.images[0] ?? undefined,
+        productImage: productDetails.images.small[0] ?? undefined,
         buyPrice: !!productDetails.buy_price ? +productDetails.buy_price : 0,
       });
     }
   };
 
   const handleBuyProduct = () => {
+    if (!isAuthenticated) {
+      navigation.navigate(RootStackRoutes.AUTH, {
+        screen: AuthStackRoutes.LOGIN,
+        params: {
+          backScreen: {
+            name: route.name,
+            params: route.params,
+          },
+          nextScreen: {
+            name: route.name,
+            params: route.params,
+          },
+        },
+      });
+      return;
+    }
+
     if (productDetails && !!productDetails.buy_price) {
       createCart({
         product_id: route.params.productId,
@@ -589,22 +609,27 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
           {!!image && (
             <Image
+              resizeMode={"contain"}
               source={{
                 uri: image,
               }}
               style={{
-                height: 240,
                 width: "100%",
+                minHeight: 240,
               }}
             />
           )}
 
           <View style={{padding: 10}}>
             <FlatList
-              data={productDetails?.images ?? []}
+              data={productDetails?.images.small ?? []}
               renderItem={({item, index}) => {
                 return (
-                  <TouchableOpacity onPress={() => setImage(item)} key={index}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      setImage(productDetails.images.medium[index])
+                    }
+                    key={index}>
                     <Image
                       source={{uri: item}}
                       style={{
@@ -1149,30 +1174,31 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
               />
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.askButton}
-            onPress={() =>
-              navigation.navigate(RootStackRoutes.ASK_QUESTION, {
-                productImage: image,
-                productId: productDetails.id,
-                productName: productDetails.title,
-                sellerId: productDetails.seller.id,
-                sellerName: productDetails.seller.name,
-                sellerImage: productDetails.seller.image,
-              })
-            }>
-            <AntDesign name="questioncircleo" size={25} color={"#FFFFFF"} />
-            <Text
-              style={{
-                fontSize: 16,
-                marginLeft: 10,
-                color: "#FFFFFF",
-                fontFamily: "Inter-Medium",
-              }}>
-              Ask Question
-            </Text>
-          </TouchableOpacity>
         </ScrollView>
+
+        <TouchableOpacity
+          style={styles.askButton}
+          onPress={() =>
+            navigation.navigate(RootStackRoutes.ASK_QUESTION, {
+              productImage: image,
+              productId: productDetails.id,
+              productName: productDetails.title,
+              sellerId: productDetails.seller.id,
+              sellerName: productDetails.seller.name,
+              sellerImage: productDetails.seller.image,
+            })
+          }>
+          <AntDesign name="questioncircleo" size={25} color={"#FFFFFF"} />
+          <Text
+            style={{
+              fontSize: 16,
+              marginLeft: 10,
+              color: "#FFFFFF",
+              fontFamily: "Inter-Medium",
+            }}>
+            Ask Question
+          </Text>
+        </TouchableOpacity>
       </View>
     </>
   );

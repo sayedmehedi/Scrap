@@ -30,10 +30,27 @@ export const productApi = api.injectEndpoints({
       FilterProductsResponse,
       FilterProductQueryParams | undefined
     >({
-      query: params => ({
-        params,
-        url: "filter-product",
-      }),
+      query: queryParams => {
+        let params: Record<string, any> = {};
+
+        if (queryParams) {
+          const {attributes, ...rest} = queryParams;
+          params = {
+            ...(rest ?? {}),
+          };
+
+          if (attributes) {
+            Object.entries(attributes).forEach(([attrId, termId]) => {
+              params[`attributes[${attrId}]`] = termId;
+            });
+          }
+        }
+
+        return {
+          params,
+          url: "filter-product",
+        };
+      },
       providesTags: (result, error) =>
         result
           ? [{type: QUERY_KEYS.PRODUCT, id: "FILTER-LIST"}]

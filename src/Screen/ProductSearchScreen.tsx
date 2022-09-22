@@ -1,5 +1,6 @@
 import React from "react";
 import {HomeStackParamList} from "@src/types";
+import {HomeStackRoutes} from "@constants/routes";
 import useDebouncedState from "@hooks/useDebouncedState";
 import {useNavigation} from "@react-navigation/native";
 import {TextInput, View, SectionList} from "react-native";
@@ -7,38 +8,35 @@ import {useTheme, Text, Card, Divider} from "react-native-paper";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {useGetFullTextSearchQuery} from "@data/laravel/services/api";
-import {HomeStackRoutes, RootStackRoutes} from "@constants/routes";
 import {NativeStackNavigationProp} from "@react-navigation/native-stack";
-
-type SearchItemType =
-  | "categories"
-  | "sub_categories"
-  | "conditions"
-  | "attributes";
 
 type HomeStackNavigatorProps = NativeStackNavigationProp<HomeStackParamList>;
 
 const Item = ({
-  title,
-  type,
-  id,
+  data,
 }: {
-  title: string;
-  type: SearchItemType;
-  id: number;
+  data:
+    | {id: number; type: "term"; title: string; attributeId: number}
+    | {
+        id: number;
+        title: string;
+        type: "categories" | "sub_categories" | "conditions";
+      };
 }) => {
   const homestackNavigation = useNavigation<HomeStackNavigatorProps>();
 
   return (
     <Card
       onPress={() => {
-        switch (type) {
-          case "attributes":
+        switch (data.type) {
+          case "term":
             homestackNavigation.navigate(
               HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA,
               {
-                attributeId: id,
-                categoryTitle: title,
+                attributes: {
+                  [data.attributeId]: data.id,
+                },
+                screenTitle: data.title,
               },
             );
             break;
@@ -47,10 +45,10 @@ const Item = ({
             homestackNavigation.navigate(
               HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA,
               {
-                categoryTitle: title,
+                screenTitle: data.title,
                 condition: {
-                  id,
-                  title,
+                  id: data.id,
+                  title: data.title,
                 },
               },
             );
@@ -60,8 +58,8 @@ const Item = ({
             homestackNavigation.navigate(
               HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA,
               {
-                categoryTitle: title,
-                categoryId: id,
+                categoryId: data.id,
+                screenTitle: data.title,
               },
             );
             break;
@@ -70,8 +68,8 @@ const Item = ({
             homestackNavigation.navigate(
               HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA,
               {
-                categoryTitle: title,
-                categoryId: id,
+                subcategoryId: data.id,
+                screenTitle: data.title,
               },
             );
             break;
@@ -81,7 +79,7 @@ const Item = ({
         }
       }}>
       <Card.Content style={{padding: 10}}>
-        <Text>{title}</Text>
+        <Text>{data.title}</Text>
       </Card.Content>
     </Card>
   );
@@ -180,8 +178,8 @@ const ProductSearchScreen = () => {
             },
             {
               id: 3,
-              title: "skeleton" as const,
               type: "skeleton" as const,
+              title: "skeleton" as const,
             },
           ],
         },
@@ -190,10 +188,29 @@ const ProductSearchScreen = () => {
 
     return Object.entries(data ?? {}).map(([title, data]) => ({
       title: title.split("_").join(" "),
-      data: data.map(datum => ({
-        type: title as SearchItemType,
-        ...datum,
-      })),
+      data: data.flatMap<
+        | {id: number; type: "term"; title: string; attributeId: number}
+        | {
+            id: number;
+            title: string;
+            type: "categories" | "sub_categories" | "conditions";
+          }
+      >(datum => {
+        if ("terms" in datum) {
+          return datum.terms.map(term => {
+            return {
+              ...term,
+              attributeId: datum.id,
+              type: "term" as "term",
+            };
+          });
+        }
+
+        return {
+          type: title as "categories" | "sub_categories" | "conditions",
+          ...datum,
+        };
+      }),
     }));
   }, [data, isLoading]);
 
@@ -233,6 +250,7 @@ const ProductSearchScreen = () => {
           sections={searchResult}
           contentContainerStyle={{
             margin: 15,
+            paddingBottom: 60,
           }}
           ListEmptyComponent={() => (
             <View>
@@ -252,7 +270,7 @@ const ProductSearchScreen = () => {
               );
             }
 
-            return <Item type={item.type} id={item.id} title={item.title} />;
+            return <Item data={item} />;
           }}
         />
       </View>

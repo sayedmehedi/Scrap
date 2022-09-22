@@ -412,7 +412,18 @@ function SellerAction({product}: {product: ProductDetails}) {
           source={require("@assets/Images/van.png")}
         />
 
-        {product.has_offer ? (
+        {product.has_bid &&
+        product.time_left !== "0 days 0 hours 0 mins 0 secs" ? (
+          <Text
+            style={{
+              fontSize: 12,
+              marginLeft: 8,
+              color: "#023047",
+              fontFamily: "Inter-Medium",
+            }}>
+            Bid price: ${product.bid === "" ? "" : product.bid?.price ?? "0"}
+          </Text>
+        ) : product.has_offer ? (
           <Text
             style={{
               fontSize: 12,
@@ -422,16 +433,6 @@ function SellerAction({product}: {product: ProductDetails}) {
             }}>
             Offer price: $
             {product.offer === "" ? "" : product.offer?.price ?? "0"}
-          </Text>
-        ) : product.has_bid ? (
-          <Text
-            style={{
-              fontSize: 12,
-              marginLeft: 8,
-              color: "#023047",
-              fontFamily: "Inter-Medium",
-            }}>
-            Bid price: ${product.bid === "" ? "" : product.bid?.price ?? "0"}
           </Text>
         ) : null}
       </View>
@@ -472,7 +473,7 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
   } = useGetConversationDetailsQuery(
     {
       product_id: productDetailsRepsonse?.id ?? 0,
-      user_id: productDetailsRepsonse?.seller.id ?? 0,
+      receiver_id: productDetailsRepsonse?.seller.id ?? 0,
     },
     {
       skip: isLoadingProductDetails && !isProductDetailsError,
@@ -560,7 +561,7 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
 
     const params: Parameters<typeof getConversationDetails>[0] = {
       product_id: productDetailsRepsonse?.id ?? 0,
-      user_id: productDetailsRepsonse?.seller.id ?? 0,
+      receiver_id: productDetailsRepsonse?.seller.id ?? 0,
     };
 
     params.page = lastProductPage.current_page + 1;
@@ -610,6 +611,9 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
           data={messages}
           onEndReached={getNextMessages}
           style={{flex: 1, paddingHorizontal: 15}}
+          contentContainerStyle={{
+            flexDirection: "column-reverse",
+          }}
           renderItem={({item}) => {
             if (item.type === "skeleton") {
               return (
@@ -650,8 +654,8 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
                     style={{
                       padding: 20,
                       maxWidth: "90%",
-                      borderRadius: theme.roundness * 3,
                       backgroundColor: "#667085",
+                      borderRadius: theme.roundness * 3,
                     }}>
                     <Text
                       style={{

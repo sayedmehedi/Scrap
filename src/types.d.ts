@@ -22,8 +22,9 @@ export type HomeStackParamList = {
   [HomeStackRoutes.LOCAL_PICKUP]: undefined;
   [HomeStackRoutes.ALL_CATEGORIES]: undefined;
   [HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA]: {
-    categoryTitle?: string;
-    categoryId?: string | number;
+    screenTitle?: string;
+    categoryId?: number;
+    subcategoryId?: number;
     location?: string;
     distance?: number;
     maxPrice?: number;
@@ -31,8 +32,8 @@ export type HomeStackParamList = {
     isLocale?: boolean;
     isShipping?: boolean;
     condition?: Condition;
-    attributeId?: string | number;
     hideFilterActions?: boolean;
+    attributes?: Record<number, number>;
   };
 };
 
@@ -108,6 +109,10 @@ export type AuthStackParamList = {
       name: string;
       params: Record<string, any>;
     };
+    backScreen?: {
+      name: string;
+      params: Record<string, any>;
+    };
   };
   [AuthStackRoutes.REGISTRATION]: undefined;
   [AuthStackRoutes.RESET_PASSWORD]: {
@@ -131,7 +136,7 @@ export type RootStackParamList = {
     productName: string;
     shippingCost: number;
     productImage?: string;
-    productId: string | number;
+    productId: number;
   };
   [RootStackRoutes.PLACE_BID]: {
     totalBids: number;
@@ -139,12 +144,12 @@ export type RootStackParamList = {
     timeLeftToBid: string;
     productImage?: string;
     bidStartingPrice: number;
-    productId: string | number;
+    productId: number;
   };
   [RootStackRoutes.REVIEW_OFFER]: {
     offerPrice: number;
     shippingCost: number;
-    productId: string | number;
+    productId: number;
   };
   [RootStackRoutes.ASK_QUESTION]: {
     sellerId: number | string;
@@ -158,11 +163,11 @@ export type RootStackParamList = {
   [RootStackRoutes.NOTIFICATIONS]: undefined;
   [RootStackRoutes.SEARCH_PRODUCT]: undefined;
   [RootStackRoutes.SELLER_REVIEW]: {
-    sellerId: string | number;
+    sellerId: number;
   };
   [RootStackRoutes.PRODUCT_FILTER]: {
     categoryTitle?: string;
-    categoryId?: string | number;
+    categoryId?: number;
     location?: string;
     distance?: number;
     maxPrice?: number;
@@ -182,7 +187,7 @@ export type RootStackParamList = {
   [RootStackRoutes.CONFIRM_PURCHASE]: {
     productName: string;
     productImage: string;
-    productId: string | number;
+    productId: number;
     productBuyNowPrice: number;
   };
   [RootStackRoutes.LOCATION_PROMPT]: {
@@ -317,14 +322,18 @@ export interface HomeCategory {
 }
 
 export type HomeCategoryResponse = {
-  categories: HomeCategory[];
+  categories: SimplePaginatedResponse<HomeCategory>;
 };
 
 export interface FilterProduct {
   id: number;
   title: string;
   slug: string;
-  image: string;
+  images: {
+    small: string;
+    medium: string;
+    large: string;
+  };
   location: string;
   price: string;
   is_locale: boolean;
@@ -335,21 +344,22 @@ export interface FilterProduct {
 }
 
 export type FilterProductQueryParams = Partial<{
+  page: number;
+  title: string;
+  user_id: number;
+  location: string;
+  paginate: number;
+  distance: number;
+  max_price: number;
+  min_price: number;
+  category_id: number;
+  attribute_id: number;
+  condition_id: number;
   is_locale: "1" | "0";
   is_shipping: "1" | "0";
-  category_id: string | number;
-  attribute_id: string | number;
-  sub_category_id: string | number;
-  user_id: string | number;
-  title: string;
-  location: string;
-  condition_id: string | number;
-  min_price: number;
-  max_price: number;
-  distance: number;
+  sub_category_id: number;
+  attributes: Record<number, number>;
   sort_by: "random" | "oldest" | "low_price" | "high_price";
-  paginate: number;
-  page: number;
 }>;
 
 export type FilterProductsResponse = {
@@ -390,12 +400,16 @@ export interface Attribute {
   id: number;
   title: string;
   category: string;
+  terms: {
+    id: number;
+    title: string;
+  }[];
 }
 
 export type FullTextSearchResponse = {
-  categories: MinimalCategory[];
   conditions: Condition[];
   attributes: Attribute[];
+  categories: MinimalCategory[];
   sub_categories: MinimalCategory[];
 };
 
@@ -423,7 +437,11 @@ export interface ProductDetails {
   id: number;
   distance: string;
   title: string;
-  images: string[];
+  images: {
+    small: string[];
+    medium: string[];
+    large: string[];
+  };
   is_locale: boolean;
   is_shipping: boolean;
   starting_price: string;
@@ -585,7 +603,7 @@ export interface OfferOrBid {
   user_name: string;
   user_image: string;
   type: "Bid" | "offer";
-  product_id: string | number;
+  product_id: number;
   product_title: string;
   product_price: string;
   product_image: string;

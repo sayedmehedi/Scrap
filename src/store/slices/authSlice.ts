@@ -1,7 +1,7 @@
-import type {RootState, User, UserProfile} from "@src/types";
 import {tokenReceived} from "@store/actions/auth";
 import {authApi} from "@data/laravel/services/auth";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import type {RootState, User, UserProfile} from "@src/types";
 
 type AuthState = {
   user: User | null;
@@ -62,7 +62,7 @@ const slice = createSlice({
       authApi.endpoints.loginWithGoogle.matchFulfilled,
       (state, {payload}) => {
         if ("user" in payload) {
-          state.token = payload.user?.token;
+          state.token = payload.user.token;
           state.user = payload.user;
         }
       },
