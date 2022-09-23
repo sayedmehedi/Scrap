@@ -4,18 +4,15 @@ import {useForm, Controller} from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
 import {ErrorMessage} from "@hookform/error-message";
 import {useNavigation} from "@react-navigation/native";
+import {useAppSelector, useAppStore} from "@hooks/store";
 import GoogleSignInBtn from "@src/Component/GoogleSignInBtn";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {AuthStackParamList, RootStackParamList} from "@src/types";
 import {useTheme, Text, ActivityIndicator} from "react-native-paper";
 import {AuthStackRoutes, RootStackRoutes} from "../../constants/routes";
-import {useAppDispatch, useAppSelector, useAppStore} from "@hooks/store";
 import {addServerErrors, isJoteyQueryError} from "@utils/error-handling";
-import {
-  selectIsAuthenticated,
-  setFirstTimeLoginFalse,
-} from "@store/slices/authSlice";
+import {selectIsAuthenticated} from "@store/slices/authSlice";
 import {
   useLoginMutation,
   useLazyGetProfileQuery,
@@ -37,6 +34,7 @@ import {
   setGlobalStyles,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
+import FacebookSignInBtn from "@src/Component/FacebookSignInBtn";
 
 setGlobalStyles.containerStyles = {
   height: 58,
@@ -75,7 +73,6 @@ type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const LoginScreen = ({navigation, route}: Props) => {
   const theme = useTheme();
   const store = useAppStore();
-  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const rootNavigation = useNavigation<RootStackNavigationProp>();
   const [togglePassword, setTogglePassword] = React.useState(false);
@@ -128,7 +125,6 @@ const LoginScreen = ({navigation, route}: Props) => {
     if (isAuthenticated && isGettingProfileSuccess && !!profileData) {
       const {firstTimeLogin} = store.getState().auth;
       if (firstTimeLogin) {
-        dispatch(setFirstTimeLoginFalse());
         rootNavigation.replace(RootStackRoutes.LOCATION_PROMPT, {
           nextScreen: route.params.nextScreen,
         });
@@ -148,7 +144,6 @@ const LoginScreen = ({navigation, route}: Props) => {
   }, [
     store,
     route,
-    dispatch,
     navigation,
     profileData,
     isAuthenticated,
@@ -391,16 +386,9 @@ const LoginScreen = ({navigation, route}: Props) => {
                 <GoogleSignInBtn />
               </View>
 
-              <TouchableOpacity
-                style={{
-                  width: 60,
-                  height: 60,
-                  alignItems: "center",
-                  backgroundColor: "white",
-                  justifyContent: "center",
-                }}>
-                <Image source={require("../../assets/Images/facebook.png")} />
-              </TouchableOpacity>
+              <View>
+                <FacebookSignInBtn />
+              </View>
             </View>
           </View>
         </View>

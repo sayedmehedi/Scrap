@@ -3,7 +3,7 @@ import styles from "./styles";
 import {Rating} from "react-native-elements";
 import {useAppSelector} from "@hooks/store";
 import {FlatList, View, Text} from "react-native";
-import {ActivityIndicator} from "react-native-paper";
+import {ActivityIndicator, useTheme} from "react-native-paper";
 import Feather from "react-native-vector-icons/Feather";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
@@ -20,6 +20,7 @@ import {
 } from "@data/laravel/services/product";
 
 const PublicProfileScreen = () => {
+  const theme = useTheme();
   const profile = useAppSelector(state => state.auth.profile);
   const [fetchProducts, {isFetching: isFetchingNextPage}] =
     useLazyGetSaleProductsQuery();
@@ -143,12 +144,11 @@ const PublicProfileScreen = () => {
                 </Text>
                 <View
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
                     marginVertical: 5,
+                    alignItems: "center",
+                    flexDirection: "row",
                   }}>
                   <Rating
-                    lock={true}
                     imageSize={15}
                     readonly={true}
                     showRating={false}

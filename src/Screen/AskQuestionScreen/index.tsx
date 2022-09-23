@@ -2,7 +2,6 @@ import React from "react";
 import QuestionList from "./QuestionList";
 import {Avatar} from "react-native-elements";
 import {RootStackParamList} from "@src/types";
-import useAuthGuard from "@hooks/useAuthGuard";
 import {RootStackRoutes} from "@constants/routes";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {View, Image, TextInput} from "react-native";
@@ -10,7 +9,6 @@ import {Text, Title, useTheme} from "react-native-paper";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import {useSendMessageMutation} from "@data/laravel/services/message";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import AuthGuard from "@src/Component/AuthGuard";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -124,54 +122,40 @@ const AskQuestionScreen = ({route, navigation}: Props) => {
   ]);
 
   return (
-    <AuthGuard<RootStackParamList, Props["navigation"]>
-      backScreen={() => {
-        const routes = navigation.getState().routes;
-        const previousRoute = routes[routes.length - 2];
-        return {
-          name: previousRoute.name,
-          params: previousRoute.params,
-        };
-      }}
-      nextScreen={{
-        name: route.name,
-        params: route.params,
-      }}>
+    <View style={{flex: 1}}>
       <View style={{flex: 1}}>
-        <View style={{flex: 1}}>
-          <QuestionList
-            sellerId={+route.params.sellerId}
-            productId={+route.params.productId}
-            ListHeaderComponent={ListHeaderComponent}
-          />
-        </View>
+        <QuestionList
+          sellerId={+route.params.sellerId}
+          productId={+route.params.productId}
+          ListHeaderComponent={ListHeaderComponent}
+        />
+      </View>
 
-        <View style={{padding: 15, paddingTop: 0}}>
-          <TextInput
-            multiline
-            value={question}
-            numberOfLines={6}
-            textAlign={"center"}
-            textAlignVertical={"top"}
-            onChangeText={setQuestion}
-            placeholder="Write your message"
-            style={{
-              borderWidth: 1,
-              borderColor: "#191F2B",
-              borderRadius: theme.roundness * 3,
-            }}
-          />
+      <View style={{padding: 15, paddingTop: 0}}>
+        <TextInput
+          multiline
+          value={question}
+          numberOfLines={6}
+          textAlign={"center"}
+          textAlignVertical={"top"}
+          onChangeText={setQuestion}
+          placeholder="Write your message"
+          style={{
+            borderWidth: 1,
+            borderColor: "#191F2B",
+            borderRadius: theme.roundness * 3,
+          }}
+        />
 
-          <View style={{marginTop: 30, marginBottom: 25}}>
-            <AppPrimaryButton
-              text={"Send Message"}
-              onPress={handleAskQuestion}
-              disabled={!question || isAskingQuestion}
-            />
-          </View>
+        <View style={{marginTop: 30, marginBottom: 25}}>
+          <AppPrimaryButton
+            text={"Send Message"}
+            onPress={handleAskQuestion}
+            disabled={!question || isAskingQuestion}
+          />
         </View>
       </View>
-    </AuthGuard>
+    </View>
   );
 };
 

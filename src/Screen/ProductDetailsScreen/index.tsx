@@ -220,6 +220,23 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   }, [productDetails]);
 
   const handlePlaceBid = () => {
+    if (!isAuthenticated) {
+      navigation.navigate(RootStackRoutes.AUTH, {
+        screen: AuthStackRoutes.LOGIN,
+        params: {
+          backScreen: {
+            name: route.name,
+            params: route.params,
+          },
+          nextScreen: {
+            name: route.name,
+            params: route.params,
+          },
+        },
+      });
+      return;
+    }
+
     if (productDetails) {
       navigation.navigate(RootStackRoutes.PLACE_BID, {
         productId: productDetails.id,
@@ -235,6 +252,23 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   };
 
   const handleMakeOffer = () => {
+    if (!isAuthenticated) {
+      navigation.navigate(RootStackRoutes.AUTH, {
+        screen: AuthStackRoutes.LOGIN,
+        params: {
+          backScreen: {
+            name: route.name,
+            params: route.params,
+          },
+          nextScreen: {
+            name: route.name,
+            params: route.params,
+          },
+        },
+      });
+      return;
+    }
+
     if (productDetails) {
       navigation.navigate(RootStackRoutes.MAKE_OFFER, {
         productId: productDetails.id,
@@ -305,7 +339,6 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
         style={{
           flex: 1,
           alignItems: "center",
-          backgroundColor: "#F7F7F7",
           justifyContent: "center",
         }}>
         <Text>Product not found</Text>
@@ -338,7 +371,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   // Bid scenarios: Bid placed, highest bidder, bid out, bid won
   return (
     <>
-      <View style={{flex: 1, backgroundColor: "#F7F7F7"}}>
+      <View style={{flex: 1}}>
         <ScrollView>
           {productDetails.has_bid && (
             <View>
@@ -453,7 +486,24 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                       />
 
                       <Button
-                        onPress={() =>
+                        onPress={() => {
+                          if (!isAuthenticated) {
+                            navigation.navigate(RootStackRoutes.AUTH, {
+                              screen: AuthStackRoutes.LOGIN,
+                              params: {
+                                backScreen: {
+                                  name: route.name,
+                                  params: route.params,
+                                },
+                                nextScreen: {
+                                  name: route.name,
+                                  params: route.params,
+                                },
+                              },
+                            });
+                            return;
+                          }
+
                           navigation.navigate(RootStackRoutes.ASK_QUESTION, {
                             productImage: image,
                             productId: productDetails.id,
@@ -461,8 +511,8 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                             sellerId: productDetails.seller.id,
                             sellerName: productDetails.seller.name,
                             sellerImage: productDetails.seller.image,
-                          })
-                        }
+                          });
+                        }}
                         color={theme.colors.accent}
                         style={{marginTop: 10}}
                         labelStyle={{
@@ -568,7 +618,24 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                       />
 
                       <Button
-                        onPress={() =>
+                        onPress={() => {
+                          if (!isAuthenticated) {
+                            navigation.navigate(RootStackRoutes.AUTH, {
+                              screen: AuthStackRoutes.LOGIN,
+                              params: {
+                                backScreen: {
+                                  name: route.name,
+                                  params: route.params,
+                                },
+                                nextScreen: {
+                                  name: route.name,
+                                  params: route.params,
+                                },
+                              },
+                            });
+                            return;
+                          }
+
                           navigation.navigate(RootStackRoutes.ASK_QUESTION, {
                             productImage: image,
                             productId: productDetails.id,
@@ -576,8 +643,8 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                             sellerId: productDetails.seller.id,
                             sellerName: productDetails.seller.name,
                             sellerImage: productDetails.seller.image,
-                          })
-                        }
+                          });
+                        }}
                         color={theme.colors.accent}
                         style={{marginTop: 10}}
                         labelStyle={{
@@ -1178,7 +1245,24 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
         <TouchableOpacity
           style={styles.askButton}
-          onPress={() =>
+          onPress={() => {
+            if (!isAuthenticated) {
+              navigation.navigate(RootStackRoutes.AUTH, {
+                screen: AuthStackRoutes.LOGIN,
+                params: {
+                  backScreen: {
+                    name: route.name,
+                    params: route.params,
+                  },
+                  nextScreen: {
+                    name: route.name,
+                    params: route.params,
+                  },
+                },
+              });
+              return;
+            }
+
             navigation.navigate(RootStackRoutes.ASK_QUESTION, {
               productImage: image,
               productId: productDetails.id,
@@ -1186,8 +1270,8 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
               sellerId: productDetails.seller.id,
               sellerName: productDetails.seller.name,
               sellerImage: productDetails.seller.image,
-            })
-          }>
+            });
+          }}>
           <AntDesign name="questioncircleo" size={25} color={"#FFFFFF"} />
           <Text
             style={{

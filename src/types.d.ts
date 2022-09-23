@@ -949,3 +949,15 @@ export type ContactUsRequest = {
   subject: string;
   description: string;
 };
+
+export type SocialLoginRequest = {
+  email: string;
+  name: string;
+  firebase_auth_id: string;
+};
+
+export type SocialLoginResponse = {
+  email: string;
+  name: string;
+  firebase_auth_id: string;
+};

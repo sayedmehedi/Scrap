@@ -4,24 +4,27 @@ import {container} from "@src/appEngine";
 import {QUERY_KEYS} from "@constants/query";
 import auth from "@react-native-firebase/auth";
 import LoginUserDto from "@core/domain/dto/LoginUserDto";
-import {isNativeModuleError} from "@utils/error-handling";
 import RegisterUserDto from "@core/domain/dto/RegisterUserDto";
 import {ApplicationError} from "@core/domain/ApplicationError";
 import {ServiceProviderTypes} from "@core/serviceProviderTypes";
+import {AccessToken, LoginManager} from "react-native-fbsdk-next";
+import {isErrorWithMessage, isNativeModuleError} from "@utils/error-handling";
 import {
-  GoogleSignin,
   statusCodes,
+  GoogleSignin,
 } from "@react-native-google-signin/google-signin";
 import {
   LoginResponse,
   RegisterResponse,
+  SocialLoginResponse,
+  SocialLoginRequest,
+  ResetPasswordRequest,
   UpdateProfileRequest,
   PaginationQueryParams,
   ChangePasswordRequest,
   GetUserProfileReponse,
   GetTransactionsResponse,
   GetNotificationsResponse,
-  ResetPasswordRequest,
 } from "@src/types";
 
 const apiClient = container.get<Axios>(ServiceProviderTypes.HttpClient);
@@ -57,7 +60,16 @@ export const authApi = api.injectEndpoints({
         url: "create_password",
       }),
     }),
-    loginWithGoogle: builder.mutation<LoginResponse, void>({
+    socialLogin: builder.mutation<LoginResponse, SocialLoginRequest>({
+      query(body) {
+        return {
+          body,
+          method: "POST",
+          url: "social-login",
+        };
+      },
+    }),
+    loginWithGoogle: builder.mutation<SocialLoginResponse, void>({
       async queryFn() {
         // Get the users ID token
         try {
@@ -77,39 +89,19 @@ export const authApi = api.injectEndpoints({
             userCreds.user.displayName,
           );
 
-          // const fbIdToken = await userCreds.user.getIdToken();
-
-          // console.log("got fbIdToken", fbIdToken);
-
-          const response = await apiClient.post<LoginResponse>("social-login", {
-            email: userCreds.user.email,
-            name: userCreds.user.displayName,
-            firebase_auth_id: userCreds.user.uid,
-          });
-
-          console.log("got server res", response.data);
-
-          if ("error" in response.data) {
-            return {
-              error: {
-                status: response.status,
-                data: {
-                  field_errors: {},
-                  non_field_error: response.data.error,
-                },
-              },
-              meta: response.config,
-            };
-          }
-
           return {
-            data: response.data,
+            data: {
+              email: userCreds.user.email!,
+              name: userCreds.user.displayName!,
+              firebase_auth_id: userCreds.user.uid!,
+            },
           };
         } catch (err) {
           console.log("error happended with google login", err);
-          if (isNativeModuleError(err)) {
-            let non_field_error = "";
 
+          let non_field_error = "";
+
+          if (isNativeModuleError(err)) {
             if (err.code === statusCodes.SIGN_IN_CANCELLED) {
               non_field_error = "Cancelled";
             } else if (err.code === statusCodes.IN_PROGRESS) {
@@ -119,25 +111,101 @@ export const authApi = api.injectEndpoints({
             } else {
               non_field_error = "Some native error happened";
             }
+          } else if (isErrorWithMessage(err)) {
+            non_field_error = err.message;
+          }
 
+          return {
+            error: {
+              data: {
+                field_errors: {},
+                non_field_error,
+              },
+              status: 400,
+            },
+          };
+        }
+      },
+    }),
+    loginWithFacebook: builder.mutation<SocialLoginResponse, void>({
+      async queryFn() {
+        // Get the users ID token
+        try {
+          const result = await LoginManager.logInWithPermissions([
+            "email",
+            "public_profile",
+          ]);
+
+          if (result.isCancelled) {
             return {
               error: {
                 data: {
+                  non_field_error: "Cancelled the login process",
                   field_errors: {},
-                  non_field_error,
                 },
                 status: 400,
               },
             };
           }
 
-          // @ts-ignore
-          const error: ApplicationError = err;
+          // Once signed in, get the users AccesToken
+          const data = await AccessToken.getCurrentAccessToken();
+
+          if (!data) {
+            return {
+              error: {
+                data: {
+                  non_field_error:
+                    "Something went wrong obtaining access token",
+                  field_errors: {},
+                },
+                status: 400,
+              },
+            };
+          }
+
+          console.log("fb access token", data.accessToken);
+          // Create a Google credential with the token
+          const facebookCredential = auth.FacebookAuthProvider.credential(
+            data.accessToken,
+          );
+          console.log("facebookCredential", facebookCredential);
+
+          // Sign-in the user with the credential
+          const userCreds = await auth().signInWithCredential(
+            facebookCredential,
+          );
+
+          console.log(
+            "got firebase user creds",
+            userCreds.user.uid,
+            userCreds.user.email,
+            userCreds.user.displayName,
+          );
+
           return {
-            meta: error.request,
+            data: {
+              email: userCreds.user.email!,
+              name: userCreds.user.displayName!,
+              firebase_auth_id: userCreds.user.uid!,
+            },
+          };
+        } catch (err) {
+          console.log("error happended with facebook login", err);
+
+          let non_field_error = "";
+
+          if (isErrorWithMessage(err)) {
+            non_field_error = err.message;
+          }
+
+          return {
             error: {
-              status: error.status,
-              data: error.getFormattedMessage(),
+              data: {
+                field_errors: {},
+                non_field_error,
+              },
+              status: 400,
             },
           };
         }
@@ -306,6 +374,7 @@ export const {
   useGetProfileQuery,
   useRegisterMutation,
   useLazyGetProfileQuery,
+  useSocialLoginMutation,
   useGetTransactionsQuery,
   useGetNotificationsQuery,
   useUpdateProfileMutation,
@@ -313,6 +382,7 @@ export const {
   useChangePasswordMutation,
   useForgotPasswordMutation,
   useLazyGetTransactionsQuery,
-  useLazyGetNotificationsQuery,
   useLoginWithGoogleMutation,
+  useLoginWithFacebookMutation,
+  useLazyGetNotificationsQuery,
 } = authApi;

@@ -59,7 +59,7 @@ const slice = createSlice({
     );
 
     builder.addMatcher(
-      authApi.endpoints.loginWithGoogle.matchFulfilled,
+      authApi.endpoints.socialLogin.matchFulfilled,
       (state, {payload}) => {
         if ("user" in payload) {
           state.token = payload.user.token;

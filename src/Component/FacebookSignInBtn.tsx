@@ -5,12 +5,12 @@ import useAppSnackbar from "@hooks/useAppSnackbar";
 import {TouchableOpacity, Image} from "react-native";
 import {AuthStackParamList, RootStackParamList} from "@src/types";
 import {AuthStackRoutes, RootStackRoutes} from "@constants/routes";
-import {
-  useLoginWithGoogleMutation,
-  useSocialLoginMutation,
-} from "@data/laravel/services/auth";
-import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 import {RouteProp, useNavigation, useRoute} from "@react-navigation/native";
+import {NativeStackNavigationProp} from "@react-navigation/native-stack";
+import {
+  useSocialLoginMutation,
+  useLoginWithFacebookMutation,
+} from "@data/laravel/services/auth";
 
 type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type LoginScreenNavigationProps = NativeStackNavigationProp<
@@ -23,22 +23,23 @@ type LoginScreenRouteProps = RouteProp<
   typeof AuthStackRoutes.LOGIN
 >;
 
-export default function GoogleSignInBtn() {
+export default function FacebookSignInBtn() {
   const theme = useTheme();
   const store = useAppStore();
 
   const route = useRoute<LoginScreenRouteProps>();
-  const navigation = useNavigation<LoginScreenNavigationProps>();
   const rootNavigation = useNavigation<RootStackNavigationProp>();
+  const navigation = useNavigation<LoginScreenNavigationProps>();
   const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
 
-  const [loginWithGoogle, {isLoading: isLoadingGglCreds}] =
-    useLoginWithGoogleMutation();
+  const [loginWithFacebook, {isLoading: isLoadingFbCreds}] =
+    useLoginWithFacebookMutation();
+
   const [socialLogin, {isLoading: isLoadingSocialLogin}] =
     useSocialLoginMutation();
 
   function onGoogleButtonPress() {
-    loginWithGoogle()
+    loginWithFacebook()
       .unwrap()
       .then(data => {
         return socialLogin(data).unwrap();
@@ -80,7 +81,7 @@ export default function GoogleSignInBtn() {
     <React.Fragment>
       <TouchableOpacity
         onPress={onGoogleButtonPress}
-        disabled={isLoadingGglCreds || isLoadingSocialLogin}
+        disabled={isLoadingFbCreds || isLoadingSocialLogin}
         style={{
           width: 60,
           height: 60,
@@ -88,7 +89,7 @@ export default function GoogleSignInBtn() {
           justifyContent: "center",
           backgroundColor: theme.colors.white,
         }}>
-        <Image source={require("@assets/Images/google.png")} />
+        <Image source={require("@assets/Images/facebook.png")} />
       </TouchableOpacity>
     </React.Fragment>
   );

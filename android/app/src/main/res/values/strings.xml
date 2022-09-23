@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Scrapapp</string>
+    <string name="facebook_app_id">620654362765408</string>
+    <string name="facebook_client_token">36a0d1215c26105fece4abbb31b70199</string>
 </resources>

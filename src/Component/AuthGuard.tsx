@@ -2,10 +2,10 @@ import React from "react";
 import {View} from "react-native";
 import {useAppSelector} from "@hooks/store";
 import {RootStackParamList} from "@src/types";
-import {useNavigation} from "@react-navigation/native";
 import {ActivityIndicator} from "react-native-paper";
 import {selectIsAuthenticated} from "@store/slices/authSlice";
 import {AuthStackRoutes, RootStackRoutes} from "@constants/routes";
+import {CommonActions, useNavigation} from "@react-navigation/native";
 import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -50,13 +50,33 @@ export default function AuthGuard<
           nextScreen = props.nextScreen;
         }
 
-        navigation.navigate(RootStackRoutes.AUTH, {
-          screen: AuthStackRoutes.LOGIN,
+        const navigationState = navigation.getState();
+        const initialRoutes = navigationState.routes;
+        const routes = initialRoutes.slice(0, -2);
+
+        routes.push({
+          name: RootStackRoutes.AUTH,
           params: {
-            backScreen,
-            nextScreen,
+            // @ts-ignore
+            screen: AuthStackRoutes.LOGIN,
+            params: {
+              // @ts-ignore
+              nextScreen,
+            },
           },
         });
+
+        navigation.dispatch(
+          CommonActions.reset({
+            routes,
+            key: navigationState.key,
+            type: navigationState.type,
+            stale: navigationState.stale,
+            index: navigationState.index,
+            history: navigationState.history,
+            routeNames: navigationState.routeNames,
+          }),
+        );
       }
     } else {
       setComputing(false);

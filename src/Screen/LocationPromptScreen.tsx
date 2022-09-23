@@ -2,10 +2,12 @@ import React from "react";
 import {View, Image} from "react-native";
 import {useTheme} from "react-native-paper";
 import {RootStackParamList} from "@src/types";
+import {useAppDispatch} from "@hooks/store";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import Geolocation from "@react-native-community/geolocation";
 import AppPrimaryButton from "@src/Component/AppPrimaryButton";
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import {setFirstTimeLoginFalse} from "@store/slices/authSlice";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {useUpdateProfileMutation} from "@data/laravel/services/auth";
 import {
@@ -21,6 +23,7 @@ type Props = NativeStackScreenProps<
 
 const LocationPropmtScreen = ({navigation, route}: Props) => {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
   const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
 
   const [updateProfile, {isLoading, isSuccess, data}] =
@@ -52,6 +55,10 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
       redirectIntended();
     }
   }, [enqueueSuccessSnackbar, isSuccess, data, redirectIntended]);
+
+  React.useEffect(() => {
+    dispatch(setFirstTimeLoginFalse());
+  }, [dispatch]);
 
   const handleCurrentLocation = async () => {
     Geolocation.requestAuthorization(

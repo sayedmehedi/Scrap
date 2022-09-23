@@ -239,7 +239,6 @@ const ProductSearchScreen = () => {
               style={{
                 paddingHorizontal: 50,
                 borderRadius: theme.roundness * 3,
-                // @ts-ignore
                 backgroundColor: theme.colors.white,
               }}
             />
@@ -258,6 +257,7 @@ const ProductSearchScreen = () => {
             </View>
           )}
           ItemSeparatorComponent={Divider}
+          SectionSeparatorComponent={Divider}
           keyExtractor={(item, index) => item.title + index}
           renderItem={({item, section}) => {
             if (item.type === "skeleton") {
