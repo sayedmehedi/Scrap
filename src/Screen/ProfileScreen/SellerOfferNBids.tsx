@@ -134,7 +134,7 @@ export default function SellerOfferNBids({
             <View style={{flexDirection: "row", alignItems: "flex-start"}}>
               <View>
                 <Image
-                  source={{uri: product.image}}
+                  source={{uri: product.images.small}}
                   style={{
                     width: 67,
                     height: 67,

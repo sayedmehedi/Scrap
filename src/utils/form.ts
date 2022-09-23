@@ -1,5 +1,6 @@
 export const currencyTransform = {
-  input: (value: number) => (isNaN(value) || value === 0 ? "$0" : `$${value}`),
+  input: (value: number) =>
+    isNaN(value) || value === 0 ? "$1.00" : `$${value}`,
   output: (value: string) => {
     const [, price] = value.split("$");
     const output = parseInt(price, 10);
@@ -7,7 +8,6 @@ export const currencyTransform = {
   },
 
   inputFloat: (value: string) => {
-    console.log("input is", value);
     return `$${value}`;
   },
   outputFloat: (value: string) => {

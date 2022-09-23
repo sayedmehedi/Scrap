@@ -24,15 +24,15 @@ export default function MakeOfferScreen({navigation, route}: Props) {
     handleSubmit,
   } = useForm({
     defaultValues: {
-      offerPrice: 0,
+      offerPrice: "1.00",
     },
   });
 
   const handleMakeOffer = handleSubmit(values => {
     navigation.navigate(RootStackRoutes.REVIEW_OFFER, {
-      offerPrice: values.offerPrice,
       productId: route.params.productId,
       shippingCost: route.params.shippingCost,
+      offerPrice: parseFloat(values.offerPrice),
     });
   });
 
@@ -87,6 +87,13 @@ export default function MakeOfferScreen({navigation, route}: Props) {
       <Controller
         control={control}
         name={"offerPrice"}
+        rules={{
+          required: "This field is required",
+          min: {
+            value: 1.0,
+            message: "Minimum price should be $1.00",
+          },
+        }}
         render={({field}) => {
           return (
             <TextInput
@@ -98,9 +105,9 @@ export default function MakeOfferScreen({navigation, route}: Props) {
                 borderBottomColor: theme.colors.black,
               }}
               keyboardType={"numeric"}
-              value={currencyTransform.input(field.value)}
+              value={currencyTransform.inputFloat(field.value)}
               onChangeText={price =>
-                field.onChange(currencyTransform.output(price))
+                field.onChange(currencyTransform.outputFloat(price))
               }
             />
           );

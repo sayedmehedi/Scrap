@@ -3,10 +3,11 @@ import {forFade} from "@utils/misc";
 import {useTheme} from "react-native-paper";
 import {TouchableOpacity} from "react-native";
 import {AuthStackParamList} from "@src/types";
-import {AuthStackRoutes, RootStackRoutes} from "../constants/routes";
+import OtpScreen from "@src/Screen/AuthScreen/OtpScreen";
 import LoginScreen from "../Screen/AuthScreen/LoginScreen";
 import {createStackNavigator} from "@react-navigation/stack";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import {AuthStackRoutes, RootStackRoutes} from "../constants/routes";
 import RegistrationScreen from "../Screen/AuthScreen/RegistrationScreen";
 import ResetPasswordScreen from "../Screen/AuthScreen/ResetPasswordScreen";
 import ForgotPasswordScreen from "../Screen/AuthScreen/ForgotPasswordScreen";
@@ -85,6 +86,14 @@ const AuthStackNavigator = () => {
         }}
         component={ForgotPasswordScreen}
         name={AuthStackRoutes.FORGOT_PASSWORD}
+      />
+
+      <AuthStack.Screen
+        options={{
+          title: "Email Verification",
+        }}
+        component={OtpScreen}
+        name={AuthStackRoutes.OTP}
       />
     </AuthStack.Navigator>
   );

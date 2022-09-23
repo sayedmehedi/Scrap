@@ -62,7 +62,7 @@ export default function ReviewOfferScreen({route, navigation}: Props) {
           fontWeight: "700",
           textAlign: "center",
         }}>
-        Total: ${totalPrice}
+        Total: ${totalPrice.toFixed(2)}
       </Title>
 
       <Text

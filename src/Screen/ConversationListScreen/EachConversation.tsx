@@ -1,4 +1,5 @@
 import React from "react";
+import truncate from "lodash.truncate";
 import {Conversation} from "@src/types";
 import {useNavigation} from "@react-navigation/native";
 import {RootStackRoutes} from "../../constants/routes";
@@ -11,6 +12,7 @@ const EachConversation = ({item}: {item: Conversation}) => {
     <TouchableOpacity
       onPress={() =>
         navigation.navigate(RootStackRoutes.SINGLE_CONVERSATION, {
+          userId: item.user_id,
           userName: item.user_name,
           userImage: item.user_image,
           productPrice: item.product.price,
@@ -46,7 +48,7 @@ const EachConversation = ({item}: {item: Conversation}) => {
               color: "#023047",
               fontFamily: "Inter-Regular",
             }}>
-            {item.message.title}
+            {truncate(item.message.title)}
           </Text>
 
           <Text

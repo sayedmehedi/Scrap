@@ -101,22 +101,33 @@ const ConversationListScreen = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{flex: 1, backgroundColor: "#F7F7F7"}}>
-        <View
-          style={{justifyContent: "center", alignItems: "center", padding: 10}}>
-          <Text
-            style={{
-              fontSize: 14,
-              color: "#51B764",
-              fontFamily: "Inter-Regular",
-            }}>
-            You have 2 new message
-          </Text>
-        </View>
+        {getConversationsResponse?.total_unseen_messages !== undefined &&
+          getConversationsResponse.total_unseen_messages > 0 && (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 10,
+              }}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: "#51B764",
+                  fontFamily: "Inter-Regular",
+                }}>
+                You have {getConversationsResponse?.total_unseen_messages} new
+                message
+              </Text>
+            </View>
+          )}
 
         <View>
           <FlatList<typeof conversations[0]>
             data={conversations}
             onEndReached={getNextConversations}
+            contentContainerStyle={{
+              padding: 15,
+            }}
             ListEmptyComponent={() => (
               <View>
                 <Text style={{textAlign: "center"}}>No data</Text>

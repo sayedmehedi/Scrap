@@ -33,7 +33,7 @@ export default function PlaceBidScreen({route, navigation}: Props) {
     setError,
   } = useForm({
     defaultValues: {
-      bidPrice: 0,
+      bidPrice: "1.00",
     },
   });
 
@@ -63,13 +63,13 @@ export default function PlaceBidScreen({route, navigation}: Props) {
   }, [enqueueSuccessSnackbar, data, isSuccess, navigation]);
 
   React.useEffect(() => {
-    setValue("bidPrice", route.params.bidStartingPrice);
+    setValue("bidPrice", route.params.bidStartingPrice.toString());
   }, [route]);
 
   const handlePlaceBid = handleSubmit(values => {
     makeBid({
       type: "1",
-      price: values.bidPrice,
+      price: parseFloat(values.bidPrice),
       product_id: route.params.productId,
     });
   });
@@ -126,12 +126,13 @@ export default function PlaceBidScreen({route, navigation}: Props) {
       <Controller
         control={control}
         name={"bidPrice"}
-        // rules={{
-        //   min: {
-        //     value: route.params.bidStartingPrice,
-        //     message: `Please bid $${route.params.bidStartingPrice} or higher`
-        //   }
-        // }}
+        rules={{
+          required: "This field is required",
+          min: {
+            value: route.params.bidStartingPrice,
+            message: `Minimum price should be $${route.params.bidStartingPrice}`,
+          },
+        }}
         render={({field}) => {
           return (
             <TextInput
@@ -139,13 +140,12 @@ export default function PlaceBidScreen({route, navigation}: Props) {
                 fontSize: 45,
                 textAlign: "center",
                 borderBottomWidth: 2,
-                // @ts-ignore
                 borderBottomColor: theme.colors.black,
               }}
               keyboardType={"numeric"}
-              value={currencyTransform.input(field.value)}
+              value={currencyTransform.inputFloat(field.value)}
               onChangeText={price =>
-                field.onChange(currencyTransform.output(price))
+                field.onChange(currencyTransform.outputFloat(price))
               }
             />
           );

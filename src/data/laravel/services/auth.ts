@@ -25,6 +25,7 @@ import {
   GetUserProfileReponse,
   GetTransactionsResponse,
   GetNotificationsResponse,
+  VerifyEmailRequest,
 } from "@src/types";
 
 const apiClient = container.get<Axios>(ServiceProviderTypes.HttpClient);
@@ -62,6 +63,7 @@ export const authApi = api.injectEndpoints({
     }),
     socialLogin: builder.mutation<LoginResponse, SocialLoginRequest>({
       query(body) {
+        console.log("socialLogin got called");
         return {
           body,
           method: "POST",
@@ -288,6 +290,30 @@ export const authApi = api.injectEndpoints({
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
+    verifyEmail: builder.mutation<
+      {success: string} | {error: string},
+      VerifyEmailRequest
+    >({
+      query(body) {
+        return {
+          body,
+          method: "POST",
+          url: "verify-email",
+        };
+      },
+    }),
+    resendOtp: builder.mutation<
+      {success: string} | {error: string},
+      {email: string}
+    >({
+      query(body) {
+        return {
+          body,
+          method: "POST",
+          url: "resend-otp",
+        };
+      },
+    }),
     updateProfile: builder.mutation<
       {success: string},
       UpdateProfileRequest & {onUploadProgress?: (event: ProgressEvent) => void}
@@ -373,6 +399,8 @@ export const {
   useLogoutMutation,
   useGetProfileQuery,
   useRegisterMutation,
+  useResendOtpMutation,
+  useVerifyEmailMutation,
   useLazyGetProfileQuery,
   useSocialLoginMutation,
   useGetTransactionsQuery,

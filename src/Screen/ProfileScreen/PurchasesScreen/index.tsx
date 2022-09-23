@@ -102,9 +102,14 @@ const PurchasesScreen = () => {
     <>
       <View>
         <FlatList<typeof purchaseHistories[0]>
+          onRefresh={refetch}
           data={purchaseHistories}
+          refreshing={isFetchingInitial}
           onEndReached={getNextPurchaseHistory}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            padding: 15,
+          }}
           renderItem={({item}) => {
             if (item.type === "skeleton") {
               return (

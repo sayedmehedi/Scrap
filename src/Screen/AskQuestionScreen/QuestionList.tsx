@@ -23,13 +23,13 @@ interface Props {
 }
 
 export default function QuestionList({
-  ListHeaderComponent,
-  ListFooterComponent,
   productId,
   sellerId,
+  ListHeaderComponent,
+  ListFooterComponent,
 }: Props) {
   const theme = useTheme();
-  const {enqueueSuccessSnackbar} = useAppSnackbar();
+  const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
   const [getQuestions, {isFetching: isFetchingNextPage}] =
     useLazyGetQuestionsQuery();
   const {
@@ -53,12 +53,33 @@ export default function QuestionList({
   ] = useCreateAskQuestionMutation();
 
   React.useEffect(() => {
-    if (isAskQuestionSuccess && !!askQuestionData) {
+    if (
+      isAskQuestionSuccess &&
+      !!askQuestionData &&
+      "success" in askQuestionData
+    ) {
       enqueueSuccessSnackbar({
-        text1: askQuestionData.success,
+        text1: "Success",
+        text2: askQuestionData.success,
       });
     }
-  }, [isAskQuestionSuccess, askQuestionData, enqueueSuccessSnackbar]);
+
+    if (
+      isAskQuestionSuccess &&
+      !!askQuestionData &&
+      "error" in askQuestionData
+    ) {
+      enqueueErrorSnackbar({
+        text1: "Error",
+        text2: askQuestionData.error,
+      });
+    }
+  }, [
+    askQuestionData,
+    isAskQuestionSuccess,
+    enqueueErrorSnackbar,
+    enqueueSuccessSnackbar,
+  ]);
 
   React.useEffect(() => {
     if (!isLoading && !!getQuestionsResponse) {
@@ -135,9 +156,9 @@ export default function QuestionList({
 
   const handleAskQuestion = (question: string) => {
     askQuestion({
-      question,
+      message: question,
       product_id: productId,
-      seller_id: sellerId,
+      receiver_id: sellerId,
     });
   };
 

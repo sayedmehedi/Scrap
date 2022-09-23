@@ -3,9 +3,10 @@ import styles from "./styles";
 import {FlatList} from "react-native";
 import {useAppSelector} from "@hooks/store";
 import {RootStackRoutes} from "@constants/routes";
+import useAppSnackbar from "@hooks/useAppSnackbar";
 import {Avatar, Rating} from "react-native-elements";
 import {useNavigation} from "@react-navigation/native";
-import {Text, Title, useTheme} from "react-native-paper";
+import {ActivityIndicator, Text, Title, useTheme} from "react-native-paper";
 import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -26,7 +27,6 @@ import {
   useLazyGetConversationDetailsQuery,
 } from "@data/laravel/services/message";
 import {useMakeBidWinnerOrAcceptOfferMutation} from "@data/laravel/services/offerNBids";
-import useAppSnackbar from "@hooks/useAppSnackbar";
 
 function AppBar({
   back,
@@ -161,7 +161,7 @@ function UserAction({product}: {product: ProductDetails}) {
           productName: product.title,
           totalBids: product.total_bids,
           timeLeftToBid: product.time_left,
-          productImage: product.images[0] ?? undefined,
+          productImage: product.images.small[0] ?? undefined,
           bidStartingPrice: !!product.starting_price
             ? +product.starting_price
             : 0,
@@ -192,7 +192,7 @@ function UserAction({product}: {product: ProductDetails}) {
           productName: product.title,
           totalOffers: product.total_offers,
           shippingCost: +product.shipping_cost,
-          productImage: product.images[0] ?? undefined,
+          productImage: product.images.small[0] ?? undefined,
           buyPrice: !!product.buy_price ? +product.buy_price : 0,
         });
       }}
@@ -221,7 +221,7 @@ function UserAction({product}: {product: ProductDetails}) {
           productName: product.title,
           totalBids: product.total_bids,
           timeLeftToBid: product.time_left,
-          productImage: product.images[0] ?? undefined,
+          productImage: product.images.small[0] ?? undefined,
           bidStartingPrice: !!product.starting_price
             ? +product.starting_price
             : 0,
@@ -252,7 +252,7 @@ function UserAction({product}: {product: ProductDetails}) {
           productName: product.title,
           totalOffers: product.total_offers,
           shippingCost: +product.shipping_cost,
-          productImage: product.images[0] ?? undefined,
+          productImage: product.images.small[0] ?? undefined,
           buyPrice: !!product.buy_price ? +product.buy_price : 0,
         });
       }}
@@ -449,6 +449,7 @@ type Props = NativeStackScreenProps<
 
 const SingleConversationScreen = ({navigation, route}: Props) => {
   const theme = useTheme();
+  const flatlistRef = React.useRef<FlatList>(null!);
   const [messageText, setMessageText] = React.useState("");
   const authId = useAppSelector(state => state.auth.user?.id);
   const [hasSellerRole, setHasSellerRole] = React.useState(false);
@@ -457,13 +458,10 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
     Array<GetConversationDetailsResponse["messages"]>
   >([]);
 
-  const {
-    data: productDetailsRepsonse,
-    isError: isProductDetailsError,
-    isLoading: isLoadingProductDetails,
-  } = useGetProductDetailsQuery({
-    id: route.params.productId,
-  });
+  const {data: productDetailsRepsonse, isLoading: isLoadingProductDetails} =
+    useGetProductDetailsQuery({
+      id: route.params.productId,
+    });
 
   const {
     refetch,
@@ -472,17 +470,18 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
     data: conversationDetailsResponse,
   } = useGetConversationDetailsQuery(
     {
-      product_id: productDetailsRepsonse?.id ?? 0,
-      receiver_id: productDetailsRepsonse?.seller.id ?? 0,
+      receiver_id: route.params.userId,
+      product_id: route.params.productId,
     },
     {
-      skip: isLoadingProductDetails && !isProductDetailsError,
+      refetchOnMountOrArgChange: true,
     },
   );
-  const [getConversationDetails, {isFetching: isFetchingNextPage}] =
-    useLazyGetConversationDetailsQuery();
 
   useRefreshOnFocus(refetch);
+
+  const [getConversationDetails, {isFetching: isFetchingNextPage}] =
+    useLazyGetConversationDetailsQuery();
 
   const actionCreaterRef = React.useRef<ReturnType<
     typeof getConversationDetails
@@ -532,15 +531,15 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
   const messages = React.useMemo(() => {
     if (isLoading || isLoadingProductDetails) {
       return new Array(15).fill(1).map((_, id) => ({
-        id: 1,
+        id,
         type: "skeleton" as const,
       }));
     }
 
-    return messagePages.flatMap(productPage =>
-      productPage.data.map(product => ({
+    return messagePages.flatMap(messagePage =>
+      messagePage.data.map(msg => ({
         type: "data" as const,
-        ...product,
+        ...msg,
       })),
     );
   }, [isLoading, messagePages, isLoadingProductDetails]);
@@ -594,12 +593,16 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
       .unwrap()
       .then(() => {
         setMessageText("");
+        flatlistRef.current.scrollToIndex({
+          index: 0,
+          animated: true,
+        });
       });
   };
 
   return (
     <>
-      <View style={{flex: 1, backgroundColor: "#F7F7F7"}}>
+      <View style={{flex: 1}}>
         {!!productDetailsRepsonse &&
           (hasSellerRole ? (
             <SellerAction product={productDetailsRepsonse} />
@@ -607,12 +610,29 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
             <UserAction product={productDetailsRepsonse} />
           ))}
 
+        {isFetchingNextPage ? (
+          <View
+            style={{
+              padding: 10,
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+            <ActivityIndicator size={"small"} />
+          </View>
+        ) : null}
+
         <FlatList<typeof messages[0]>
+          inverted
           data={messages}
+          ref={flatlistRef}
+          onRefresh={refetch}
+          refreshing={isFetchingInitial}
           onEndReached={getNextMessages}
-          style={{flex: 1, paddingHorizontal: 15}}
+          style={{
+            flex: 1,
+          }}
           contentContainerStyle={{
-            flexDirection: "column-reverse",
+            padding: 15,
           }}
           renderItem={({item}) => {
             if (item.type === "skeleton") {
@@ -649,17 +669,22 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
 
             if (currentUsername === item.sender_name) {
               return (
-                <View style={{alignItems: "flex-end", alignSelf: "flex-end"}}>
+                <View
+                  style={{
+                    width: "100%",
+                    alignSelf: "flex-end",
+                    alignItems: "flex-end",
+                  }}>
                   <View
                     style={{
                       padding: 20,
-                      maxWidth: "90%",
+                      width: "auto",
+                      maxWidth: "100%",
                       backgroundColor: "#667085",
                       borderRadius: theme.roundness * 3,
                     }}>
                     <Text
                       style={{
-                        // @ts-ignore
                         color: theme.colors.white,
                       }}>
                       {item.title}
@@ -677,7 +702,7 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
                         size={"small"}
                         // @ts-ignore
                         style={{height: 20, width: 20}}
-                        source={require("../../assets/Images/test.png")}
+                        source={{uri: item.sender_image}}
                       />
                     </View>
                   </View>
@@ -688,6 +713,7 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
             return (
               <View
                 style={{
+                  width: "100%",
                   marginBottom: 20,
                   flexDirection: "row",
                   alignItems: "flex-end",
@@ -701,11 +727,11 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
                   />
                 </View>
 
-                <View>
+                <View style={{flex: 1}}>
                   <View
                     style={{
                       padding: 20,
-                      maxWidth: "90%",
+                      alignSelf: "flex-start",
                       backgroundColor: "#EAECF2",
                       borderRadius: theme.roundness * 3,
                     }}>
@@ -729,22 +755,34 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
             paddingHorizontal: 10,
             backgroundColor: theme.colors.white,
           }}>
-          <View style={{flex: 1}}>
+          <View style={{flex: 1, borderWidth: 1}}>
             <TextInput
+              style={{
+                padding: 10,
+              }}
               multiline
-              numberOfLines={3}
+              numberOfLines={2}
               value={messageText}
               placeholder={"Type here.."}
               onChangeText={setMessageText}
             />
           </View>
 
-          <View>
-            <TouchableOpacity
-              onPress={handleSendMessage}
-              disabled={!messageText || isSendingMessage}>
-              <MaterialIcons name={"send"} size={30} />
-            </TouchableOpacity>
+          <View
+            style={{
+              padding: 10,
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+            {isSendingMessage ? (
+              <ActivityIndicator />
+            ) : (
+              <TouchableOpacity
+                onPress={handleSendMessage}
+                disabled={!messageText || isSendingMessage}>
+                <MaterialIcons name={"send"} size={25} />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>

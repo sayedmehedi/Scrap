@@ -27,7 +27,10 @@ export const offerNBidsApi = api.injectEndpoints({
           url: `make-offer-bid`,
         };
       },
-      invalidatesTags: (_result, _error) => [QUERY_KEYS.USER_OFFER_N_BIDS],
+      invalidatesTags: (_result, _error, {product_id}) => [
+        QUERY_KEYS.USER_OFFER_N_BIDS,
+        {type: QUERY_KEYS.PRODUCT, id: product_id},
+      ],
     }),
 
     getUserOfferNBids: builder.query<

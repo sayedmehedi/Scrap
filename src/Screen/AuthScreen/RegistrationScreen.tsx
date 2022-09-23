@@ -68,15 +68,14 @@ const RegistrationScreen = ({navigation}: Props) => {
     state => state.authLoading.socialLoginState,
   );
 
-  const [register, {isLoading, isError, error, isSuccess, data}] =
-    useRegisterMutation();
+  const [register, {isLoading, isError, error}] = useRegisterMutation();
 
   const {
-    control,
-    handleSubmit,
-    setError,
-    formState: {errors},
     reset,
+    control,
+    setError,
+    handleSubmit,
+    formState: {errors},
   } = useForm({
     defaultValues: {
       name: "",
@@ -87,23 +86,27 @@ const RegistrationScreen = ({navigation}: Props) => {
   });
 
   React.useEffect(() => {
-    if (isSuccess && !!data) {
-      enqueueSuccessSnackbar({
-        text1: data.success,
-      });
-
-      reset();
-    }
-  }, [enqueueSuccessSnackbar, isSuccess, data, reset]);
-
-  React.useEffect(() => {
     if (isError && isJoteyQueryError(error)) {
       addServerErrors(error.data.field_errors, setError);
     }
   }, [setError, isError, error]);
 
   const handleRegistration = handleSubmit(values => {
-    register(values);
+    register(values)
+      .unwrap()
+      .then(data => {
+        const email = values.email;
+
+        enqueueSuccessSnackbar({
+          text1: data.success,
+        });
+
+        reset();
+
+        navigation.navigate(AuthStackRoutes.OTP, {
+          email,
+        });
+      });
   });
 
   if (isLoading || socialLoginState === "pending") {

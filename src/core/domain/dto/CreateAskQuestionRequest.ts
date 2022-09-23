@@ -3,7 +3,7 @@ import {IsNotEmpty, IsNumber, IsString} from "class-validator";
 export default class CreateAskQuestionRequest {
   @IsNotEmpty()
   @IsNumber()
-  seller_id!: number;
+  receiver_id!: number;
 
   @IsNotEmpty()
   @IsNumber()
@@ -11,5 +11,5 @@ export default class CreateAskQuestionRequest {
 
   @IsNotEmpty()
   @IsString()
-  question!: string;
+  message!: string;
 }

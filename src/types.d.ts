@@ -119,6 +119,9 @@ export type AuthStackParamList = {
     email: string;
   };
   [AuthStackRoutes.FORGOT_PASSWORD]: undefined;
+  [AuthStackRoutes.OTP]: {
+    email: string;
+  };
 };
 
 export type AuthStackScreenProps<T extends keyof AuthStackParamList> =
@@ -152,11 +155,11 @@ export type RootStackParamList = {
     productId: number;
   };
   [RootStackRoutes.ASK_QUESTION]: {
-    sellerId: number | string;
+    sellerId: number;
     sellerName: string;
     sellerImage: string;
 
-    productId: number | string;
+    productId: number;
     productImage: string;
     productName: string;
   };
@@ -178,6 +181,7 @@ export type RootStackParamList = {
     productId: number | string;
   };
   [RootStackRoutes.SINGLE_CONVERSATION]: {
+    userId: number;
     userName: string;
     productId: number;
     userImage: string;
@@ -535,13 +539,25 @@ export interface GetCartsResponse {
 export interface Order {
   id: number;
   price: string;
-  product_id: number;
-  product_image: string;
-  product_title: string;
-  delivery_status: string;
-  product_condition: string;
-  product_category: string;
-  product_sub_category: string;
+  delivery_status: "Shipped" | "Placed" | "Paid";
+  product: {
+    id: number;
+    image: string;
+    title: string;
+    condition: string;
+    category: string;
+    sub_category: string;
+  };
+  seller: {
+    id: number;
+    name: string;
+    image: string;
+  };
+  user: {
+    id: number;
+    name: string;
+    image: string;
+  };
 }
 
 export type GetPurchaseHistoryResponse = {
@@ -633,6 +649,7 @@ export type GetSaleOrArchivedProductsReponse = {
 export interface Conversation {
   id: number;
   date: string;
+  user_id: number;
   has_msg: boolean;
   user_name: string;
   user_image: string;
@@ -650,6 +667,7 @@ export interface Conversation {
 
 export type GetConversationsResponse = {
   messages: SimplePaginatedResponse<Conversation>;
+  total_unseen_messages: number;
 };
 
 export interface ConversationMessage {
@@ -960,4 +978,9 @@ export type SocialLoginResponse = {
   email: string;
   name: string;
   firebase_auth_id: string;
+};
+
+export type VerifyEmailRequest = {
+  email: string;
+  otp: number;
 };

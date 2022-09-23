@@ -20,7 +20,7 @@ export const questionApi = api.injectEndpoints({
           : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
     createAskQuestion: builder.mutation<
-      {success: string},
+      {success: string} | {error: string},
       CreateAskQuestionRequest
     >({
       query(body) {

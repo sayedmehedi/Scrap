@@ -11,8 +11,8 @@ import {useAppSelector} from "@hooks/store";
 import {RootStackParamList} from "@src/types";
 import useAppConfig from "@hooks/useAppConfig";
 import useAppSnackbar from "@hooks/useAppSnackbar";
+import {useFocusEffect} from "@react-navigation/native";
 import Feather from "react-native-vector-icons/Feather";
-import {AuthStackRoutes, RootStackRoutes} from "../../constants/routes";
 import Octicons from "react-native-vector-icons/Octicons";
 import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -23,6 +23,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MapView, {PROVIDER_GOOGLE, Marker} from "react-native-maps";
 import {useCreateCartMutation} from "@data/laravel/services/order";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {AuthStackRoutes, RootStackRoutes} from "../../constants/routes";
 import {ActivityIndicator, Button, useTheme} from "react-native-paper";
 import {Table, TableWrapper, Row, Cell} from "react-native-table-component";
 import {
@@ -60,6 +61,19 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
     getProductmetalsLivePrice,
     {isLoading: isLoadingProductMetalsLivePrice},
   ] = useLazyGetProductMetalsLivePriceQuery();
+
+  const scrollviewRef = React.useRef<ScrollView>(null!);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        scrollviewRef.current?.scrollTo({
+          y: 0,
+          animated: true,
+        });
+      };
+    }, []),
+  );
 
   const {days, hours, minutes, seconds, restart} = useTimer({
     expiryTimestamp,
@@ -190,7 +204,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
     if (productDetails) {
       const [days, hours, mins, seconds] = productDetails.time_left
         .split(" ")
-        .filter(segment => segment.match(/\d+/)) as [
+        .filter((segment: string) => segment.match(/\d+/)) as [
         string,
         string,
         string,
@@ -372,7 +386,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   return (
     <>
       <View style={{flex: 1}}>
-        <ScrollView>
+        <ScrollView ref={scrollviewRef}>
           {productDetails.has_bid && (
             <View>
               {/* Scenario: when won the bid show the congratulations text part

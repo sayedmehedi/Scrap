@@ -7,8 +7,8 @@ import useAppSnackbar from "@hooks/useAppSnackbar";
 import {View, Image, TextInput} from "react-native";
 import {Text, Title, useTheme} from "react-native-paper";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
-import {useSendMessageMutation} from "@data/laravel/services/message";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {useCreateAskQuestionMutation} from "@data/laravel/services/question";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -26,13 +26,17 @@ const AskQuestionScreen = ({route, navigation}: Props) => {
       isLoading: isAskingQuestion,
       isSuccess: isAskQuestionSuccess,
     },
-  ] = useSendMessageMutation();
+  ] = useCreateAskQuestionMutation();
 
   React.useEffect(() => {
-    if (isAskQuestionSuccess && !!askQuestionData && "msg" in askQuestionData) {
+    if (
+      isAskQuestionSuccess &&
+      !!askQuestionData &&
+      "success" in askQuestionData
+    ) {
       enqueueSuccessSnackbar({
         text1: "Success",
-        text2: askQuestionData.msg,
+        text2: askQuestionData.success,
       });
     }
 

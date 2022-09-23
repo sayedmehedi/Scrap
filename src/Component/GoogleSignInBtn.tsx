@@ -41,6 +41,7 @@ export default function GoogleSignInBtn() {
     loginWithGoogle()
       .unwrap()
       .then(data => {
+        console.log("gonna call socialLogin", data);
         return socialLogin(data).unwrap();
       })
       .then(data => {
