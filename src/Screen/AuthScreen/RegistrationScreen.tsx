@@ -30,7 +30,7 @@ setGlobalStyles.containerStyles = {
   height: 58,
   borderRadius: 6,
   paddingHorizontal: 10,
-  backgroundColor: "#fff",
+  backgroundColor: "#F7F7F7",
 };
 
 setGlobalStyles.customLabelStyles = {

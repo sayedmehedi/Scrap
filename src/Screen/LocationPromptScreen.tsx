@@ -47,7 +47,7 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
   }, [route.params.nextScreen, navigation]);
 
   React.useEffect(() => {
-    if (isSuccess && !!data) {
+    if (isSuccess && !!data && "success" in data) {
       enqueueSuccessSnackbar({
         text1: data.success,
       });
@@ -114,7 +114,7 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
               text={"User Current Location"}
               containerStyle={{
                 width: 275,
-                backgroundColor: theme.colors.white,
+                backgroundColor: "#F7F7F7",
               }}
               iconContainerStyle={{
                 backgroundColor: "#FCDFE6",
@@ -135,7 +135,7 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
               text={"Select it Manually"}
               containerStyle={{
                 width: 275,
-                backgroundColor: theme.colors.white,
+                backgroundColor: "#F7F7F7",
               }}
               iconContainerStyle={{
                 backgroundColor: "#FCDFE6",
@@ -160,7 +160,7 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
             text={"Skip"}
             containerStyle={{
               width: 275,
-              backgroundColor: theme.colors.white,
+              backgroundColor: "#F7F7F7",
             }}
             iconContainerStyle={{
               backgroundColor: "#FCDFE6",

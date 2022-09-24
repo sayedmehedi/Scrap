@@ -24,6 +24,26 @@ export const orderApi = api.injectEndpoints({
       invalidatesTags: () => [QUERY_KEYS.ORDER],
     }),
 
+    shipOrder: builder.mutation<
+      {success: string} | {error: string},
+      {orderId: number}
+    >({
+      query({orderId}) {
+        return {
+          url: `order-ship/${orderId}`,
+        };
+      },
+      invalidatesTags: (result, error) =>
+        result
+          ? [
+              {type: QUERY_KEYS.ORDER, id: "LIST"},
+              {type: QUERY_KEYS.ORDER, id: "PURCHASE-LIST"},
+            ]
+          : error?.status === 401
+          ? [QUERY_KEYS.UNAUTHORIZED]
+          : [QUERY_KEYS.UNKNOWN_ERROR],
+    }),
+
     getCarts: builder.query<GetCartsResponse, void>({
       query() {
         return {
@@ -71,6 +91,7 @@ export const orderApi = api.injectEndpoints({
 // auto-generated based on the defined endpoints
 export const {
   useGetCartsQuery,
+  useShipOrderMutation,
   useCreateCartMutation,
   useConfirmOrderMutation,
   useGetPurchaseHistoryQuery,

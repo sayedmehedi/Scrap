@@ -8,6 +8,7 @@ import {
   useGetPurchaseHistoryQuery,
   useLazyGetPurchaseHistoryQuery,
 } from "@data/laravel/services/order";
+import {Text} from "react-native-paper";
 
 const PurchasesScreen = () => {
   const [getPurchaseHistory, {isFetching: isFetchingNextPage}] =
@@ -110,6 +111,11 @@ const PurchasesScreen = () => {
           contentContainerStyle={{
             padding: 15,
           }}
+          ListEmptyComponent={() => (
+            <View style={{padding: 15}}>
+              <Text style={{textAlign: "center"}}>No data</Text>
+            </View>
+          )}
           renderItem={({item}) => {
             if (item.type === "skeleton") {
               return (

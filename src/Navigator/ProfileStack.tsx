@@ -1,9 +1,9 @@
 import React from "react";
 import {forFade} from "@utils/misc";
 import {useTheme} from "react-native-paper";
-import ErrorScreen from "../Screen/ErrorScreen";
-import ProfileScreen from "../Screen/ProfileScreen";
 import {ProfileStackParamList} from "@src/types";
+import ProfileScreen from "../Screen/ProfileScreen";
+import {ProfileStackRoutes} from "@constants/routes";
 import {createStackNavigator} from "@react-navigation/stack";
 import PurchasesScreen from "../Screen/ProfileScreen/PurchasesScreen";
 import OfferAndBidScreen from "../Screen/ProfileScreen/OfferAndBidScreen";
@@ -11,7 +11,6 @@ import SaveProductScreen from "../Screen/ProfileScreen/SaveProductScreen";
 import PublicProfileScreen from "../Screen/ProfileScreen/PublicProfileScreen";
 import AccountSettingScreen from "../Screen/ProfileScreen/AccountSettingScreen";
 import TransactionsScreen from "@src/Screen/ProfileScreen/TransactionListScreen";
-import {ProfileStackRoutes} from "@constants/routes";
 import ContactUsScreen from "@src/Screen/ProfileScreen/ContactUsScreen";
 
 const Profile = createStackNavigator<ProfileStackParamList>();
@@ -21,7 +20,7 @@ const ProfileStack = () => {
 
   return (
     <Profile.Navigator
-      initialRouteName="profileScreen"
+      initialRouteName={ProfileStackRoutes.PROFILE_SCREEN}
       screenOptions={{
         headerStyle: {
           backgroundColor: theme.colors.primary,
@@ -29,11 +28,9 @@ const ProfileStack = () => {
         headerTitleStyle: {
           fontSize: 18,
           fontFamily: "Inter-Bold",
-          // @ts-ignore
           color: theme.colors.white,
         },
         headerTitleAlign: "center",
-        // @ts-ignore
         headerTintColor: theme.colors.white,
         cardStyleInterpolator: forFade,
       }}>
@@ -41,8 +38,8 @@ const ProfileStack = () => {
         options={{
           title: "My Account",
         }}
-        name={ProfileStackRoutes.PROFILE_SCREEN}
         component={ProfileScreen}
+        name={ProfileStackRoutes.PROFILE_SCREEN}
       />
 
       <Profile.Screen
@@ -73,8 +70,8 @@ const ProfileStack = () => {
         options={{
           title: "Public Profile",
         }}
-        name={ProfileStackRoutes.PUBLIC_PROFILE}
         component={PublicProfileScreen}
+        name={ProfileStackRoutes.PUBLIC_PROFILE}
       />
 
       <Profile.Screen
@@ -93,11 +90,11 @@ const ProfileStack = () => {
       />
 
       <Profile.Screen
-        name={ProfileStackRoutes.PURCHASES}
         options={{
           title: "Purchase History",
         }}
         component={PurchasesScreen}
+        name={ProfileStackRoutes.PURCHASES}
       />
     </Profile.Navigator>
   );

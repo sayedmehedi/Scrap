@@ -22,7 +22,10 @@ import {selectIsAuthenticated} from "@store/slices/authSlice";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MapView, {PROVIDER_GOOGLE, Marker} from "react-native-maps";
 import {useCreateCartMutation} from "@data/laravel/services/order";
-import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {
+  NativeStackScreenProps,
+  NativeStackNavigationProp,
+} from "@react-navigation/native-stack";
 import {AuthStackRoutes, RootStackRoutes} from "../../constants/routes";
 import {ActivityIndicator, Button, useTheme} from "react-native-paper";
 import {Table, TableWrapper, Row, Cell} from "react-native-table-component";
@@ -52,6 +55,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   const config = useAppConfig();
   const [image, setImage] = React.useState("");
   const {enqueueSuccessSnackbar} = useAppSnackbar();
+  const profile = useAppSelector(state => state.auth.profile);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [expiryTimestamp] = React.useState(() => dayjs().toDate());
   const [metalsLivePrices, setMetalsLivePrices] = React.useState<
@@ -85,6 +89,8 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
     data: productDetails,
   } = useGetProductDetailsQuery({
     id: route.params.productId,
+    latitude: profile?.latitude,
+    longitude: profile?.longitude,
   });
 
   useRefreshOnFocus(refetch);
@@ -162,7 +168,13 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                   onPress={() => {
                     toggleFavorite({
                       id: productDetails.id,
-                    });
+                    })
+                      .unwrap()
+                      .then(res => {
+                        enqueueSuccessSnackbar({
+                          text1: res.success,
+                        });
+                      });
                   }}>
                   <AntDesign
                     name={productDetails.is_favourite ? "heart" : "hearto"}
@@ -540,6 +552,23 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                         style={{marginTop: 10}}
                         color={theme.colors.accent}
                         onPress={() => {
+                          if (!isAuthenticated) {
+                            navigation.navigate(RootStackRoutes.AUTH, {
+                              screen: AuthStackRoutes.LOGIN,
+                              params: {
+                                backScreen: {
+                                  name: route.name,
+                                  params: route.params,
+                                },
+                                nextScreen: {
+                                  name: route.name,
+                                  params: route.params,
+                                },
+                              },
+                            });
+                            return;
+                          }
+
                           navigation.navigate(RootStackRoutes.SELLER_REVIEW, {
                             sellerId: productDetails.seller.id,
                           });
@@ -1126,47 +1155,85 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
             </View>
 
             <Text>Condition: {productDetails.condition}</Text>
-            <Text>Category: {productDetails.category}</Text>
+            <Text>
+              Category: {productDetails.category} -{" "}
+              {productDetails.sub_category}
+            </Text>
 
             {!Array.isArray(productDetails.attributes) &&
               Object.entries(productDetails.attributes).map(([attr, val]) => (
                 <Text key={attr}>
-                  `${attr}: ${val}`
+                  {attr}: {val}
                 </Text>
               ))}
 
-            <View
-              style={{
-                marginVertical: 28,
-                alignItems: "center",
-                flexDirection: "row",
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate(RootStackRoutes.SELLER_PUBLIC_PROFILE, {
+                  userId: productDetails.seller.id,
+                });
               }}>
-              <Image
-                source={{uri: productDetails.seller.image}}
-                style={{height: 75, width: 75, borderRadius: 40}}
-              />
-              <View style={{marginLeft: 10}}>
-                <Text>{productDetails.seller.name}</Text>
+              <View
+                style={{
+                  marginVertical: 28,
+                  alignItems: "center",
+                  flexDirection: "row",
+                }}>
+                <Image
+                  source={{uri: productDetails.seller.image}}
+                  style={{height: 75, width: 75, borderRadius: 40}}
+                />
+                <View style={{marginLeft: 10}}>
+                  <Text>{productDetails.seller.name}</Text>
 
-                <View
-                  style={{
-                    marginVertical: 10,
-                    alignItems: "center",
-                    flexDirection: "row",
-                  }}>
-                  <Rating
-                    lock={true}
-                    imageSize={15}
-                    readonly={true}
-                    showRating={false}
-                    startingValue={productDetails.seller.rating}
-                  />
-                  <Text>({productDetails.seller.rating} rating)</Text>
+                  <View
+                    style={{
+                      marginVertical: 10,
+                      alignItems: "center",
+                      flexDirection: "row",
+                    }}>
+                    <Rating
+                      lock={true}
+                      imageSize={15}
+                      readonly={true}
+                      showRating={false}
+                      startingValue={productDetails.seller.rating}
+                    />
+                    <Text>({productDetails.seller.rating} rating)</Text>
+                  </View>
+
+                  <Text>Member Since {productDetails.seller.join_date}</Text>
                 </View>
-
-                <Text>Member Since {productDetails.seller.join_date}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
+
+            {/* View review button */}
+
+            <Button
+              onPress={() => {
+                if (!isAuthenticated) {
+                  navigation.navigate(RootStackRoutes.AUTH, {
+                    screen: AuthStackRoutes.LOGIN,
+                    params: {
+                      backScreen: {
+                        name: route.name,
+                        params: route.params,
+                      },
+                      nextScreen: {
+                        name: route.name,
+                        params: route.params,
+                      },
+                    },
+                  });
+                  return;
+                }
+
+                navigation.navigate(RootStackRoutes.SELLER_REVIEW, {
+                  sellerId: productDetails.seller.id,
+                });
+              }}>
+              View Review
+            </Button>
 
             <Text
               style={{

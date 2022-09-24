@@ -6,13 +6,14 @@ import {ErrorMessage} from "@hookform/error-message";
 import {useNavigation} from "@react-navigation/native";
 import {useAppSelector, useAppStore} from "@hooks/store";
 import GoogleSignInBtn from "@src/Component/GoogleSignInBtn";
+import {selectIsAuthenticated} from "@store/slices/authSlice";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import FacebookSignInBtn from "@src/Component/FacebookSignInBtn";
 import {AuthStackParamList, RootStackParamList} from "@src/types";
 import {useTheme, Text, ActivityIndicator} from "react-native-paper";
 import {AuthStackRoutes, RootStackRoutes} from "../../constants/routes";
 import {addServerErrors, isJoteyQueryError} from "@utils/error-handling";
-import {selectIsAuthenticated} from "@store/slices/authSlice";
 import {
   useLoginMutation,
   useLazyGetProfileQuery,
@@ -34,13 +35,12 @@ import {
   setGlobalStyles,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
-import FacebookSignInBtn from "@src/Component/FacebookSignInBtn";
 
 setGlobalStyles.containerStyles = {
   height: 58,
   borderRadius: 6,
   paddingHorizontal: 10,
-  backgroundColor: "#fff",
+  backgroundColor: "#F7F7F7",
 };
 
 setGlobalStyles.customLabelStyles = {

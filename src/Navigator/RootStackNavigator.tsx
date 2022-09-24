@@ -4,6 +4,7 @@ import {forFade} from "@utils/misc";
 import {useTheme} from "react-native-paper";
 import {useAppSelector} from "@hooks/store";
 import {RootStackParamList} from "@src/types";
+import {RootStackRoutes} from "../constants/routes";
 import AuthStackNavigator from "./AuthStackNavigator";
 import PlaceBidScreen from "../Screen/PlaceBidScreen";
 import MakeOfferScreen from "../Screen/MakeOfferScreen";
@@ -16,11 +17,11 @@ import ProductSearchScreen from "../Screen/ProductSearchScreen";
 import ProductDetailsScreen from "../Screen/ProductDetailsScreen";
 import ChooseCountryScreen from "@src/Screen/ChooseCountryScreen";
 import LocationPropmtScreen from "@src/Screen/LocationPromptScreen";
-import {AuthStackRoutes, RootStackRoutes} from "../constants/routes";
 import ConfirmPurchaseScreen from "@src/Screen/ConfirmPurchaseScreen";
 import SingleConversationScreen from "../Screen/SingleConversationScreen";
 import SellerReviewScreen from "@src/Screen/ReviewScreen/SellerReviewScreen";
 import AddShippingAddressScreen from "@src/Screen/AddShippingAddressScreen";
+import SellerPublicProfileScreen from "@src/Screen/SellerPublicProfileScreen";
 import ProductFilterScreen from "../Screen/ProductFilterScreen/ProductFilterScreen";
 
 const RootStack = createStackNavigator<RootStackParamList>();
@@ -180,6 +181,15 @@ const RootStackNavigator = () => {
         }}
         component={AddShippingAddressScreen}
         name={RootStackRoutes.ADD_SHIPPING_ADDRESS}
+      />
+
+      <RootStack.Screen
+        options={{
+          title: "Public Profile",
+          headerTitleAlign: "center",
+        }}
+        component={SellerPublicProfileScreen}
+        name={RootStackRoutes.SELLER_PUBLIC_PROFILE}
       />
     </RootStack.Navigator>
   );

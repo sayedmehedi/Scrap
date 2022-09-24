@@ -110,9 +110,13 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
 
       <View style={{paddingHorizontal: 12}}>
         <TouchableOpacity
-          onPress={() =>
-            profileNavigation.navigate(ProfileStackRoutes.PUBLIC_PROFILE)
-          }
+          onPress={() => {
+            if (!!profile) {
+              profileNavigation.navigate(ProfileStackRoutes.PUBLIC_PROFILE, {
+                userId: profile.id,
+              });
+            }
+          }}
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <Image

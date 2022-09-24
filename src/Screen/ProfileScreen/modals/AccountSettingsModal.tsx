@@ -21,12 +21,14 @@ export default function AccountSettingsModal({
   title,
   subtitle,
   onClose,
+  onSuccess,
   inputs = [],
 }: {
   open: boolean;
   title: string;
   subtitle?: string;
   onClose: () => void;
+  onSuccess?: () => void;
   inputs: Array<TextInputProps & {name: string; error?: string}>;
 }) {
   const theme = useTheme();
@@ -48,16 +50,17 @@ export default function AccountSettingsModal({
         });
       }
     });
-  }, [inputs]);
+  }, [inputs, setValue, setError]);
 
   React.useEffect(() => {
-    if (isSuccess && !!data) {
+    if (isSuccess && !!data && "success" in data) {
       enqueueSuccessSnackbar({
         text1: data.success,
       });
+      onSuccess?.();
       onClose();
     }
-  }, [enqueueSuccessSnackbar, isSuccess, data]);
+  }, [enqueueSuccessSnackbar, isSuccess, data, onSuccess]);
 
   const handleUpdate = handleSubmit(values => {
     updateProfile(values);
@@ -100,23 +103,27 @@ export default function AccountSettingsModal({
             </Text>
           )}
 
-          {inputs.map((input, i) => (
-            <Controller
-              key={i}
-              control={control}
-              name={input.name}
-              render={({field}) => {
-                return (
-                  <TextInput
-                    value={field.value}
-                    style={styles.modalInput}
-                    onChangeText={field.onChange}
-                    placeholder={input.placeholder ?? ""}
-                  />
-                );
-              }}
-            />
-          ))}
+          {inputs.map((input, i) => {
+            const {name, error, onChangeText, ...textinputProps} = input;
+
+            return (
+              <Controller
+                key={i}
+                name={name}
+                control={control}
+                render={({field}) => {
+                  return (
+                    <TextInput
+                      value={field.value}
+                      style={styles.modalInput}
+                      onChangeText={field.onChange}
+                      {...textinputProps}
+                    />
+                  );
+                }}
+              />
+            );
+          })}
 
           <AppPrimaryButton
             disabled={isLoading}

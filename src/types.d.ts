@@ -50,7 +50,9 @@ export type ProfileStackParamList = {
   [ProfileStackRoutes.OFFER_N_BID]: undefined;
   [ProfileStackRoutes.SAVE_PRODUCT]: undefined;
   [ProfileStackRoutes.PROFILE_SCREEN]: undefined;
-  [ProfileStackRoutes.PUBLIC_PROFILE]: undefined;
+  [ProfileStackRoutes.PUBLIC_PROFILE]: {
+    userId: number;
+  };
   [ProfileStackRoutes.ACCOUNT_SETTING]: undefined;
 };
 export type ChatStackParamList = {};
@@ -168,6 +170,11 @@ export type RootStackParamList = {
   [RootStackRoutes.SELLER_REVIEW]: {
     sellerId: number;
   };
+
+  [RootStackRoutes.SELLER_PUBLIC_PROFILE]: {
+    userId: number;
+  };
+
   [RootStackRoutes.PRODUCT_FILTER]: {
     categoryTitle?: string;
     categoryId?: number;
@@ -363,7 +370,7 @@ export type FilterProductQueryParams = Partial<{
   is_shipping: "1" | "0";
   sub_category_id: number;
   attributes: Record<number, number>;
-  sort_by: "random" | "oldest" | "low_price" | "high_price";
+  sort_by: "random" | "oldest" | "low_price" | "high_price" | "newest";
 }>;
 
 export type FilterProductsResponse = {
@@ -536,10 +543,9 @@ export interface GetCartsResponse {
   success: string;
 }
 
-export interface Order {
+export interface ICommonOrder {
   id: number;
   price: string;
-  delivery_status: "Shipped" | "Placed" | "Paid";
   product: {
     id: number;
     image: string;
@@ -559,6 +565,42 @@ export interface Order {
     image: string;
   };
 }
+
+export interface IOrderWithStatusPaidDeliveryStatusPlaced extends ICommonOrder {
+  status: "Paid";
+  delivery_status: "Placed";
+}
+
+export interface IOrderWithStatusPaymentCompletedDeliveryStatusPlaced
+  extends ICommonOrder {
+  status: "Payment Completed";
+  delivery_status: "Placed";
+}
+
+export interface IOrderWithStatusPaynowDeliveryStatusPlaced
+  extends ICommonOrder {
+  status: "Pay Now";
+  delivery_status: "Placed";
+}
+
+export interface IOrderWithStatusWaitingForPaymentDeliveryStatusPlaced
+  extends ICommonOrder {
+  status: "Waiting For Payment";
+  delivery_status: "Placed";
+}
+
+export interface IOrderWithStatusPaymentCompletedDeliveryStatusShipped
+  extends ICommonOrder {
+  status: "Payment Completed";
+  delivery_status: "Shipped";
+}
+
+export type Order =
+  | IOrderWithStatusPaidDeliveryStatusPlaced
+  | IOrderWithStatusPaymentCompletedDeliveryStatusPlaced
+  | IOrderWithStatusPaynowDeliveryStatusPlaced
+  | IOrderWithStatusWaitingForPaymentDeliveryStatusPlaced
+  | IOrderWithStatusPaymentCompletedDeliveryStatusShipped;
 
 export type GetPurchaseHistoryResponse = {
   success: string;
@@ -586,6 +628,7 @@ export interface UserProfile {
   profile_image: string;
   has_product: boolean;
   is_fb_connected: boolean;
+  is_phone_verfied: boolean;
   country: {
     id: number;
     name: string;
@@ -644,6 +687,11 @@ export type GetSavedProductsReponse = {
 
 export type GetSaleOrArchivedProductsReponse = {
   products: SimplePaginatedResponse<FilterProduct>;
+};
+
+export type GetSellerProductsReponse = {
+  products: SimplePaginatedResponse<FilterProduct>;
+  user: UserProfile;
 };
 
 export interface Conversation {

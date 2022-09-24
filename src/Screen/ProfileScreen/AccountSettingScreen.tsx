@@ -7,9 +7,12 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import ChangePasswordItem from "./modals/ChangePasswordItem";
 import AccountSettingsItem from "./modals/AccountSettingsItem";
+import ChangeLocationItem from "./modals/ChangeLocationItem";
+import {useLogoutMutation} from "@data/laravel/services/auth";
 
 const AccountSettingScreen = () => {
   const profile = useAppSelector(state => state.auth.profile);
+  const [logout] = useLogoutMutation();
 
   return (
     <>
@@ -49,6 +52,9 @@ const AccountSettingScreen = () => {
               value: profile?.email,
             },
           ]}
+          onSuccess={() => {
+            logout();
+          }}
           text={profile?.email ?? ""}
           modalTitle={"Update Email Address"}
           icon={<Fontisto name="email" size={20} color={"#707070"} />}
@@ -70,14 +76,17 @@ const AccountSettingScreen = () => {
           modalInputs={[
             {
               name: "old_password",
+              secureTextEntry: true,
               placeholder: "Old Password",
             },
             {
               name: "password",
+              secureTextEntry: true,
               placeholder: "New Password",
             },
             {
               name: "password_confirmation",
+              secureTextEntry: true,
               placeholder: "Confirm Password",
             },
           ]}
@@ -86,18 +95,7 @@ const AccountSettingScreen = () => {
           icon={<EvilIcons name="lock" size={26} color={"#707070"} />}
         />
 
-        <AccountSettingsItem
-          modalInputs={[
-            {
-              name: "location",
-              placeholder: "Location",
-              value: profile?.location,
-            },
-          ]}
-          modalTitle={"Update Location"}
-          text={profile?.location ?? "No location data"}
-          icon={<Feather name="map-pin" size={20} color={"#707070"} />}
-        />
+        <ChangeLocationItem />
       </View>
     </>
   );

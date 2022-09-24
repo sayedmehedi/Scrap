@@ -68,6 +68,9 @@ export default function LocationSelectionModal({
         <Title>Location Filter</Title>
       </View>
 
+      <View style={{paddingHorizontal: 15}}>
+        <Text>Location</Text>
+      </View>
       <View style={{position: "relative", height: 50, zIndex: 1}}>
         <View
           style={{

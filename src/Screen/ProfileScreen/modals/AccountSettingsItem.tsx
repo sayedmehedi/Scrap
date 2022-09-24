@@ -1,11 +1,12 @@
-import React from 'react';
-import styles from '../styles';
-import AccountSettingsModal from './AccountSettingsModal';
-import { View, Text, TouchableOpacity, TextInputProps } from 'react-native';
+import React from "react";
+import styles from "../styles";
+import AccountSettingsModal from "./AccountSettingsModal";
+import {View, Text, TouchableOpacity, TextInputProps} from "react-native";
 
 export default function AccountSettingsItem({
   icon,
   text,
+  onSuccess,
   modalTitle,
   modalSubtitle,
   modalInputs = [],
@@ -14,17 +15,18 @@ export default function AccountSettingsItem({
   modalTitle: string;
   modalSubtitle?: string;
   icon: React.ReactNode;
-  modalInputs: Array<TextInputProps & { name: string; error?: string }>;
+  modalInputs: Array<TextInputProps & {name: string; error?: string}>;
+  onSuccess?: () => void;
 }) {
   const [openModal, setOpenModal] = React.useState(false);
 
   return (
     <React.Fragment>
       <View style={styles.buttonContainer}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{flexDirection: "row", alignItems: "center"}}>
           {icon}
 
-          <Text style={{ marginLeft: 10, color: '#707070' }}>{text}</Text>
+          <Text style={{marginLeft: 10, color: "#707070"}}>{text}</Text>
         </View>
 
         <TouchableOpacity onPress={() => setOpenModal(true)}>
@@ -35,6 +37,7 @@ export default function AccountSettingsItem({
       <AccountSettingsModal
         open={openModal}
         title={modalTitle}
+        onSuccess={onSuccess}
         inputs={modalInputs}
         subtitle={modalSubtitle}
         onClose={() => setOpenModal(false)}

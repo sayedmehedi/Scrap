@@ -8,14 +8,18 @@ import {
 import {Controller, useForm} from "react-hook-form";
 import {ErrorMessage} from "@hookform/error-message";
 import {PostItemStackRoutes} from "@constants/routes";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import SelectionModal from "../../Component/SelectionModal";
 import {HelperText, Text, useTheme} from "react-native-paper";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import {TextInput, View, ScrollView, Pressable} from "react-native";
-import {FloatingLabelInput} from "react-native-floating-label-input";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import {
+  setGlobalStyles,
+  FloatingLabelInput,
+} from "react-native-floating-label-input";
 import {
   useGetConditionsQuery,
   useLazyGetConditionsQuery,
@@ -26,7 +30,10 @@ import {
   useLazyGetCategoryListQuery,
   useGetSubcategoryByCatIdQuery,
 } from "@data/laravel/services/category";
-import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
+
+setGlobalStyles.containerStyles = {
+  backgroundColor: "#F7F7F7",
+};
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -185,7 +192,7 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                     borderRadius: 8,
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    backgroundColor: theme.colors.white,
+                    backgroundColor: "#F7F7F7",
                   }}>
                   <View>
                     <Text style={{color: "grey", marginBottom: 7}}>
@@ -232,7 +239,7 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                   style={{
                     padding: 15,
                     borderRadius: 8,
-                    backgroundColor: theme.colors.white,
+                    backgroundColor: "#F7F7F7",
                     justifyContent: "space-between",
                     flexDirection: "row",
                   }}>
@@ -285,7 +292,7 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                   style={{
                     padding: 15,
                     borderRadius: 8,
-                    backgroundColor: theme.colors.white,
+                    backgroundColor: "#F7F7F7",
                     justifyContent: "space-between",
                     flexDirection: "row",
                   }}>
@@ -341,9 +348,6 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
               <Controller
                 shouldUnregister
                 control={control}
-                rules={{
-                  required: "This field is required",
-                }}
                 // @ts-ignore
                 name={`attributes.${item.id}` as const}
                 render={({field}) => {
@@ -369,8 +373,8 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                             padding: 15,
                             borderRadius: 8,
                             flexDirection: "row",
+                            backgroundColor: "#F7F7F7",
                             justifyContent: "space-between",
-                            backgroundColor: theme.colors.white,
                           }}>
                           <View>
                             <Text style={{color: "grey", marginBottom: 7}}>
@@ -441,15 +445,15 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
               <TextInput
                 multiline
                 numberOfLines={5}
+                value={field.value}
                 textAlignVertical={"top"}
                 placeholder="Product details write here"
-                value={field.value}
                 onChangeText={field.onChange}
                 style={{
                   padding: 10,
                   maxHeight: 110,
+                  backgroundColor: "#F7F7F7",
                   borderRadius: theme.roundness * 3,
-                  backgroundColor: theme.colors.white,
                 }}
               />
             </React.Fragment>

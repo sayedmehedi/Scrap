@@ -167,7 +167,7 @@ export default function QuestionList({
       data={questions}
       keyboardDismissMode={"none"}
       onEndReached={getNextQuestions}
-      // keyboardShouldPersistTaps={"always"}
+      keyboardShouldPersistTaps={"always"}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{padding: 15}}
       ListHeaderComponent={ListHeaderComponent}

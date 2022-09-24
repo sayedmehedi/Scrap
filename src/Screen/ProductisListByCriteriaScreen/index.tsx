@@ -281,15 +281,32 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
                     checkedColor="gray"
                     uncheckedIcon="circle-o"
                     checkedIcon="dot-circle-o"
-                    checked={sortBy === "low_price"}
-                    onPress={() => setSortBy("low_price")}
+                    checked={sortBy === "newest"}
+                    onPress={() => setSortBy("newest")}
                     containerStyle={{
                       padding: 1,
                     }}
                   />
 
-                  <Text>Low Price</Text>
+                  <Text>Newest</Text>
                 </View>
+
+                <View style={{flexDirection: "row", alignItems: "center"}}>
+                  <CheckBox
+                    center
+                    checkedColor="gray"
+                    uncheckedIcon="circle-o"
+                    checkedIcon="dot-circle-o"
+                    checked={sortBy === "oldest"}
+                    onPress={() => setSortBy("oldest")}
+                    containerStyle={{
+                      padding: 1,
+                    }}
+                  />
+
+                  <Text>Oldest</Text>
+                </View>
+
                 <View style={{flexDirection: "row", alignItems: "center"}}>
                   <CheckBox
                     center
@@ -305,20 +322,21 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
 
                   <Text>High Price</Text>
                 </View>
+
                 <View style={{flexDirection: "row", alignItems: "center"}}>
                   <CheckBox
                     center
                     checkedColor="gray"
                     uncheckedIcon="circle-o"
                     checkedIcon="dot-circle-o"
-                    checked={sortBy === "oldest"}
-                    onPress={() => setSortBy("oldest")}
+                    checked={sortBy === "low_price"}
+                    onPress={() => setSortBy("low_price")}
                     containerStyle={{
                       padding: 1,
                     }}
                   />
 
-                  <Text>Oldest</Text>
+                  <Text>Low Price</Text>
                 </View>
 
                 <View style={{flexDirection: "row", alignItems: "center"}}>

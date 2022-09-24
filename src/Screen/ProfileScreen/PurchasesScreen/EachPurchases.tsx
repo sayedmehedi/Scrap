@@ -6,53 +6,62 @@ import {useAppSelector} from "@hooks/store";
 import {RootStackRoutes} from "@constants/routes";
 import {useNavigation} from "@react-navigation/native";
 import {View, Text, Image, TouchableOpacity} from "react-native";
+import {useShipOrderMutation} from "@data/laravel/services/order";
 
 const SellerActions = ({item}: {item: Order}) => {
-  const handleOrderShip = () => {};
+  const theme = useTheme();
+
+  const [shipOrder, {isLoading}] = useShipOrderMutation();
+
+  const handleOrderShip = () => {
+    shipOrder({
+      orderId: item.id,
+    });
+  };
 
   return (
-    <React.Fragment>
-      {item.delivery_status === "Paid" && (
-        <TouchableOpacity
-          onPress={handleOrderShip}
-          style={[styles.offerButton, {backgroundColor: "#E62B56"}]}>
-          <Text
-            style={{
-              fontSize: 12,
-              color: "white",
-              fontFamily: "Inter-Medium",
-            }}>
-            Ship Order
-          </Text>
-        </TouchableOpacity>
-      )}
-
-      {item.delivery_status === "Placed" && (
-        <View style={{flexDirection: "row", alignItems: "center"}}>
-          <View
-            style={{
-              padding: 10,
-              borderRadius: 10,
-              backgroundColor: "grey",
-            }}>
-            <Text style={{color: "white"}}>Waiting for payment</Text>
-          </View>
-        </View>
-      )}
+    <View style={{flexDirection: "row", alignItems: "center"}}>
+      {item.delivery_status === "Placed" &&
+        item.status === "Payment Completed" && (
+          <TouchableOpacity
+            disabled={isLoading}
+            onPress={handleOrderShip}
+            style={[styles.offerButton, {backgroundColor: "#E62B56"}]}>
+            <Text
+              style={{
+                fontSize: 12,
+                color: "white",
+                marginRight: 10,
+                fontFamily: "Inter-Medium",
+              }}>
+              Make Shipment
+            </Text>
+          </TouchableOpacity>
+        )}
 
       {item.delivery_status === "Shipped" && (
-        <View style={{flexDirection: "row", alignItems: "center"}}>
-          <View
-            style={{
-              padding: 10,
-              borderRadius: 10,
-              backgroundColor: "#1FA4DE",
-            }}>
-            <Text style={{color: "white"}}>Shipment complete</Text>
-          </View>
+        <View
+          style={{
+            padding: 10,
+            marginRight: 10,
+            borderRadius: 10,
+            backgroundColor: "#1FA4DE",
+          }}>
+          <Text style={{color: "white"}}>Shipped</Text>
         </View>
       )}
-    </React.Fragment>
+
+      {item.status === "Payment Completed" && (
+        <View
+          style={{
+            padding: 10,
+            borderRadius: 10,
+            backgroundColor: theme.colors.success,
+          }}>
+          <Text style={{color: "white"}}>Payment Completed</Text>
+        </View>
+      )}
+    </View>
   );
 };
 
@@ -71,8 +80,8 @@ const UserActions = ({item}: {item: Order}) => {
   const theme = useTheme();
 
   return (
-    <React.Fragment>
-      {item.delivery_status === "Placed" && (
+    <View style={{flexDirection: "row", alignItems: "center"}}>
+      {item.delivery_status === "Placed" && item.status !== "Paid" && (
         <View style={{flexDirection: "row", alignItems: "center"}}>
           <TouchableOpacity
             onPress={handlePayment}
@@ -81,37 +90,50 @@ const UserActions = ({item}: {item: Order}) => {
               style={{
                 fontSize: 12,
                 color: "white",
+                marginRight: 10,
                 fontFamily: "Inter-Medium",
               }}>
               Pay Now
             </Text>
           </TouchableOpacity>
+        </View>
+      )}
 
-          <View
-            style={{
-              padding: 10,
-              marginLeft: 10,
-              borderRadius: 10,
-              backgroundColor: "#1FA4DE",
-            }}>
-            <Text style={{color: "white"}}>Placed</Text>
-          </View>
+      {item.delivery_status === "Placed" && (
+        <View
+          style={{
+            padding: 10,
+            borderRadius: 10,
+            marginRight: 10,
+            backgroundColor: "#1FA4DE",
+          }}>
+          <Text style={{color: "white"}}>Placed</Text>
         </View>
       )}
 
       {item.delivery_status === "Shipped" && (
-        <View style={{flexDirection: "row", alignItems: "center"}}>
-          <View
-            style={{
-              padding: 10,
-              borderRadius: 10,
-              backgroundColor: theme.colors.success,
-            }}>
-            <Text style={{color: "white"}}>Shipped</Text>
-          </View>
+        <View
+          style={{
+            padding: 10,
+            marginRight: 10,
+            borderRadius: 10,
+            backgroundColor: "#1FA4DE",
+          }}>
+          <Text style={{color: "white"}}>Shipped</Text>
         </View>
       )}
-    </React.Fragment>
+
+      {item.status === "Paid" && (
+        <View
+          style={{
+            padding: 10,
+            borderRadius: 10,
+            backgroundColor: theme.colors.success,
+          }}>
+          <Text style={{color: "white"}}>Paid</Text>
+        </View>
+      )}
+    </View>
   );
 };
 

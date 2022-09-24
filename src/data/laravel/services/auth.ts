@@ -315,7 +315,7 @@ export const authApi = api.injectEndpoints({
       },
     }),
     updateProfile: builder.mutation<
-      {success: string},
+      {success: string} | {error: string},
       UpdateProfileRequest & {onUploadProgress?: (event: ProgressEvent) => void}
     >({
       invalidatesTags: () => [QUERY_KEYS.AUTH],

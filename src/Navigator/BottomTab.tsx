@@ -151,6 +151,7 @@ const BottomTab = () => {
           ),
         }}
       />
+
       <HomeTab.Screen
         name={HomeTabRoutes.CHAT}
         component={ConversationListScreen}

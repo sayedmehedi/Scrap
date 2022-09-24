@@ -14,6 +14,7 @@ import {
   GetSaleOrArchivedProductsReponse,
   GetProductMetalsLivePriceResponse,
   GetProductMetalsLivePriceRequest,
+  GetSellerProductsReponse,
 } from "@src/types";
 
 const metalsApiClient = container.get<AxiosInstance>(
@@ -62,10 +63,26 @@ export const productApi = api.injectEndpoints({
       ProductDetails,
       {
         id: string | number;
+        latitude?: number;
+        longitude?: number;
       }
     >({
-      query({id}) {
+      query({id, ...providedParams}) {
+        const params: {
+          latitude?: number;
+          longitude?: number;
+        } = {};
+
+        if (providedParams.latitude) {
+          params.latitude = providedParams.latitude;
+        }
+
+        if (providedParams.longitude) {
+          params.longitude = providedParams.longitude;
+        }
+
         return {
+          params,
           url: `product/${id}/anything`,
         };
       },
@@ -81,6 +98,8 @@ export const productApi = api.injectEndpoints({
       CreateProductRequest & {onUploadProgress?: (event: ProgressEvent) => void}
     >({
       queryFn({onUploadProgress, ...body}) {
+        console.log("body data is", body.attributes);
+
         const formData = new FormData();
 
         formData.append("title", body.title);
@@ -111,7 +130,7 @@ export const productApi = api.injectEndpoints({
           });
         }
 
-        Object.entries(body.attributes).forEach((attrId, termId) => {
+        Object.entries(body.attributes).forEach(([attrId, termId]) => {
           formData.append(`attributes[${attrId}]`, termId);
         });
 
@@ -144,6 +163,7 @@ export const productApi = api.injectEndpoints({
             };
           })
           .catch((error: ApplicationError) => {
+            console.log("error khaisee", error);
             return {
               error: {
                 status: error.status,
@@ -189,6 +209,25 @@ export const productApi = api.injectEndpoints({
       providesTags: (result, error) =>
         result
           ? [{type: QUERY_KEYS.PRODUCT, id: "FAVOURITE-LIST"}]
+          : error?.status === 401
+          ? [QUERY_KEYS.UNAUTHORIZED]
+          : [QUERY_KEYS.UNKNOWN_ERROR],
+    }),
+    getSellerProducts: builder.query<
+      GetSellerProductsReponse,
+      PaginationQueryParams & {
+        user_id: number;
+      }
+    >({
+      query(params) {
+        return {
+          params,
+          url: `seller-product`,
+        };
+      },
+      providesTags: (result, error) =>
+        result
+          ? [{type: QUERY_KEYS.PRODUCT, id: "SALE-LIST"}]
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
@@ -313,9 +352,11 @@ export const {
   useGetSavedProductsQuery,
   useGetFilterProductsQuery,
   useCreateProductMutation,
+  useGetSellerProductsQuery,
   useGetProductDetailsQuery,
   useLazyGetSaleProductsQuery,
   useGetArchiveProductsQuery,
+  useLazyGetSellerProductsQuery,
   useLazyGetSavedProductsQuery,
   useLazyGetFilterProductsQuery,
   useLazyGetArchiveProductsQuery,

@@ -186,15 +186,19 @@ export default function TransactionsScreen() {
         contentContainerStyle={{
           paddingBottom: 50,
         }}
+        onRefresh={refetch}
+        refreshing={isFetchingInitial}
         onEndReached={getNextNotifications}
-        renderSectionHeader={({section: {title, data}}) => (
-          <React.Fragment>
-            <Title style={{marginBottom: 15}}>{title}</Title>
-            {data.length === 0 ? (
-              <Text style={{textAlign: "center"}}>No data</Text>
-            ) : null}
-          </React.Fragment>
-        )}
+        renderSectionHeader={({section: {title, data}}) =>
+          data.length > 0 ? (
+            <React.Fragment>
+              <Title style={{marginBottom: 15}}>{title}</Title>
+              {data.length === 0 ? (
+                <Text style={{textAlign: "center"}}>No data</Text>
+              ) : null}
+            </React.Fragment>
+          ) : null
+        }
         ListEmptyComponent={() => (
           <View>
             <Text style={{textAlign: "center"}}>No data</Text>

@@ -13,6 +13,7 @@ export const RootStackRoutes = {
   MAKE_OFFER: "makeOffer",
   LOCATION_PROMPT: "locationPrompt",
   ADD_SHIPPING_ADDRESS: "addShippingAddress",
+  SELLER_PUBLIC_PROFILE: "sellerPublicProfile",
 
   REVIEW_OFFER: "reviewOffer",
   ASK_QUESTION: "askQuestion",

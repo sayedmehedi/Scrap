@@ -1,34 +1,40 @@
-import React from 'react';
-import {Image} from 'react-native-elements';
-import {Controller, useForm} from 'react-hook-form';
-import Entypo from 'react-native-vector-icons/Entypo';
-import {PostItemStackRoutes} from '../constants/routes';
-import {useNavigation} from '@react-navigation/native';
-import SelectionModal from '../Component/SelectionModal';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import AppPrimaryButton from '../Component/AppPrimaryButton';
-import {HelperText, Text, Title, useTheme} from 'react-native-paper';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {TextInput, View, Alert, ScrollView, Pressable} from 'react-native';
+import React from "react";
+import {Title} from "react-native-paper";
+import {View, Image} from "react-native";
+import {PostItemStackParamList} from "@src/types";
+import {PostItemStackRoutes} from "../constants/routes";
+import AppPrimaryButton from "@src/Component/AppPrimaryButton";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
 
-export default function ProductAddSuccessScreen() {
-  const theme = useTheme();
-  const navigation = useNavigation();
-  const [modalType, setModalType] = React.useState('');
+type Props = NativeStackScreenProps<
+  PostItemStackParamList,
+  typeof PostItemStackRoutes.SUCCESS
+>;
 
-  const handleNextScreen = () => {
-    navigation.navigate(PostItemStackRoutes.ADD_DELIVERY_METHOD);
-  };
-
+export default function ProductAddSuccessScreen({navigation}: Props) {
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Image
-        source={require('../assets/Images/success.png')}
-        style={{height: 85, width: 85, marginBottom: 15}}
+    <View
+      style={{
+        flex: 1,
+        paddingBottom: 50,
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
+      <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+        <Image
+          source={require("../assets/Images/success.png")}
+          style={{height: 85, width: 85, marginBottom: 15}}
+        />
+        <Title style={{maxWidth: "50%", textAlign: "center"}}>
+          Product items successfully post!
+        </Title>
+      </View>
+      <AppPrimaryButton
+        text={"Add More"}
+        onPress={() => {
+          navigation.navigate(PostItemStackRoutes.UPLOAD_PHOTO);
+        }}
       />
-      <Title style={{maxWidth: '50%', textAlign: 'center'}}>
-        Product items successfully post!
-      </Title>
     </View>
   );
 }

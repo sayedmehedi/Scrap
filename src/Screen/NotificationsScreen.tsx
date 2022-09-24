@@ -213,9 +213,11 @@ export default function NotificationsScreen({navigation, route}: Props) {
           paddingBottom: 50,
         }}
         onEndReached={getNextNotifications}
-        renderSectionHeader={({section: {title}}) => (
-          <Title style={{marginBottom: 15}}>{title}</Title>
-        )}
+        renderSectionHeader={({section: {title, data}}) =>
+          data.length > 0 ? (
+            <Title style={{marginBottom: 15}}>{title}</Title>
+          ) : null
+        }
         ListEmptyComponent={() => (
           <View>
             <Text style={{textAlign: "center"}}>No data</Text>

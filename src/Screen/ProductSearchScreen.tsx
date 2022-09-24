@@ -9,6 +9,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {useGetFullTextSearchQuery} from "@data/laravel/services/api";
 import {NativeStackNavigationProp} from "@react-navigation/native-stack";
+import {TouchableOpacity} from "react-native-gesture-handler";
 
 type HomeStackNavigatorProps = NativeStackNavigationProp<HomeStackParamList>;
 
@@ -26,7 +27,7 @@ const Item = ({
   const homestackNavigation = useNavigation<HomeStackNavigatorProps>();
 
   return (
-    <Card
+    <TouchableOpacity
       onPress={() => {
         switch (data.type) {
           case "term":
@@ -78,10 +79,12 @@ const Item = ({
             break;
         }
       }}>
-      <Card.Content style={{padding: 10}}>
-        <Text>{data.title}</Text>
-      </Card.Content>
-    </Card>
+      <Card>
+        <Card.Content style={{padding: 10}}>
+          <Text>{data.title}</Text>
+        </Card.Content>
+      </Card>
+    </TouchableOpacity>
   );
 };
 

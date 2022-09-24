@@ -1,35 +1,32 @@
 import React from "react";
 import styles from "./styles";
 import {Rating} from "react-native-elements";
-import {ProfileStackRoutes} from "@constants/routes";
 import {FlatList, View, Text} from "react-native";
+import {RootStackRoutes} from "@constants/routes";
 import Feather from "react-native-vector-icons/Feather";
+import {ActivityIndicator} from "react-native-paper";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
-import ProfileImageUploader from "./ProfileImageUploader";
 import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
-import EachProductItem from "../../Component/EachProductItem";
-import {ActivityIndicator, useTheme} from "react-native-paper";
+import EachProductItem from "@src/Component/EachProductItem";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import ProfileImageUploader from "../ProfileScreen/ProfileImageUploader";
 import {
+  RootStackParamList,
   PaginationQueryParams,
   GetSaleOrArchivedProductsReponse,
-  ProfileStackParamList,
 } from "@src/types";
 import {
   useGetSellerProductsQuery,
   useLazyGetSellerProductsQuery,
 } from "@data/laravel/services/product";
-import {useAppSelector} from "@hooks/store";
 
 type Props = NativeStackScreenProps<
-  ProfileStackParamList,
-  typeof ProfileStackRoutes.PUBLIC_PROFILE
+  RootStackParamList,
+  typeof RootStackRoutes.SELLER_PUBLIC_PROFILE
 >;
 
-const PublicProfileScreen = ({route}: Props) => {
-  const profile = useAppSelector(state => state.auth.profile);
-
+const SellerPublicProfileScreen = ({route}: Props) => {
   const [fetchProducts, {isFetching: isFetchingNextPage}] =
     useLazyGetSellerProductsQuery();
   const {
@@ -37,14 +34,9 @@ const PublicProfileScreen = ({route}: Props) => {
     isLoading,
     data: sellerProductsResponse,
     isFetching: isFetchingInitial,
-  } = useGetSellerProductsQuery(
-    {
-      user_id: profile?.id ?? 0,
-    },
-    {
-      skip: !profile,
-    },
-  );
+  } = useGetSellerProductsQuery({
+    user_id: route.params.userId,
+  });
 
   useRefreshOnFocus(refetch);
 
@@ -62,7 +54,7 @@ const PublicProfileScreen = ({route}: Props) => {
   }, [sellerProductsResponse, isLoading]);
 
   const getNextProducts = async () => {
-    if (isFetchingNextPage || isFetchingInitial || !profile) {
+    if (isFetchingNextPage || isFetchingInitial) {
       return;
     }
 
@@ -78,7 +70,7 @@ const PublicProfileScreen = ({route}: Props) => {
     const params: PaginationQueryParams & {
       user_id: number;
     } = {
-      user_id: profile.id,
+      user_id: route.params.userId,
     };
 
     params.page = lastProductPage.current_page + 1;
@@ -132,20 +124,10 @@ const PublicProfileScreen = ({route}: Props) => {
   return (
     <>
       <View>
-        {isFetchingNextPage ? (
-          <View
-            style={{
-              padding: 10,
-              alignItems: "center",
-              justifyContent: "center",
-            }}>
-            <ActivityIndicator size={"small"} />
-          </View>
-        ) : null}
-
         <FlatList<typeof products[0]>
           onEndReached={getNextProducts}
           contentContainerStyle={{
+            paddingBottom: 90,
             padding: SCREEN_PADDING_HORIZONTAL,
           }}
           ListHeaderComponent={() => (
@@ -159,7 +141,7 @@ const PublicProfileScreen = ({route}: Props) => {
                 }}>
                 <ProfileImageUploader />
                 <Text style={{fontFamily: "Inter-Bold", fontSize: 20}}>
-                  {profile?.name}
+                  {sellerProductsResponse?.user.name}
                 </Text>
                 <View
                   style={{
@@ -171,10 +153,10 @@ const PublicProfileScreen = ({route}: Props) => {
                     imageSize={15}
                     readonly={true}
                     showRating={false}
-                    startingValue={profile?.rating ?? 0}
+                    startingValue={sellerProductsResponse?.user.rating ?? 0}
                   />
                   <Text style={{marginLeft: 8}}>
-                    ({profile?.rating} rating)
+                    ({sellerProductsResponse?.user.rating} rating)
                   </Text>
                 </View>
                 <Text
@@ -184,7 +166,7 @@ const PublicProfileScreen = ({route}: Props) => {
                     color: "#667085",
                     marginVertical: 5,
                   }}>
-                  {profile?.location}
+                  {sellerProductsResponse?.user.location}
                 </Text>
                 <Text
                   style={{
@@ -193,7 +175,7 @@ const PublicProfileScreen = ({route}: Props) => {
                     color: "#667085",
                     marginBottom: 5,
                   }}>
-                  Joined {profile?.joined_date}
+                  Joined {sellerProductsResponse?.user.joined_date}
                 </Text>
 
                 <View
@@ -203,12 +185,12 @@ const PublicProfileScreen = ({route}: Props) => {
                     marginVertical: 10,
                   }}>
                   <View style={{alignItems: "center", marginRight: 5}}>
-                    <Text>{profile?.total_sold}</Text>
+                    <Text>{sellerProductsResponse?.user.total_sold}</Text>
                     <Text>Sold</Text>
                   </View>
 
                   <View style={{alignItems: "center", marginLeft: 5}}>
-                    <Text>{profile?.total_purchased}</Text>
+                    <Text>{sellerProductsResponse?.user.total_purchased}</Text>
                     <Text>Purchased</Text>
                   </View>
                 </View>
@@ -225,18 +207,67 @@ const PublicProfileScreen = ({route}: Props) => {
                     borderTopColor: "#E2E2E2",
                     borderBottomColor: "#E2E2E2",
                   }}>
-                  <View style={styles.socialMediaContainer}>
-                    <Fontisto name="email" size={20} color={"#707070"} />
+                  <View
+                    style={[
+                      styles.socialMediaContainer,
+                      {
+                        backgroundColor: sellerProductsResponse?.user
+                          .is_email_verified
+                          ? "red"
+                          : "#D0D0D0",
+                      },
+                    ]}>
+                    <Fontisto
+                      name="email"
+                      size={20}
+                      color={
+                        sellerProductsResponse?.user.is_email_verified
+                          ? "white"
+                          : "#707070"
+                      }
+                    />
                   </View>
 
-                  <View style={styles.socialMediaContainer}>
-                    <Fontisto name="email" size={20} color={"#707070"} />
+                  <View
+                    style={[
+                      styles.socialMediaContainer,
+                      {
+                        backgroundColor: sellerProductsResponse?.user
+                          .is_phone_verfied
+                          ? "red"
+                          : "#D0D0D0",
+                      },
+                    ]}>
+                    <Feather
+                      name="phone"
+                      size={20}
+                      color={
+                        sellerProductsResponse?.user.is_phone_verfied
+                          ? "white"
+                          : "#707070"
+                      }
+                    />
                   </View>
-                  <View style={styles.socialMediaContainer}>
-                    <Feather name="phone" size={20} color={"#707070"} />
-                  </View>
-                  <View style={styles.socialMediaContainer}>
-                    <Feather name="facebook" size={20} color={"#707070"} />
+
+                  <View
+                    style={[
+                      styles.socialMediaContainer,
+                      {
+                        backgroundColor: sellerProductsResponse?.user
+                          .is_fb_connected
+                          ? "red"
+                          : "#D0D0D0",
+                      },
+                    ]}>
+                    <Feather
+                      name="facebook"
+                      size={20}
+                      color={
+                        sellerProductsResponse?.user.is_fb_connected
+                          ? "white"
+                          : "#707070"
+                      }
+                    />
                   </View>
                 </View>
 
@@ -247,7 +278,7 @@ const PublicProfileScreen = ({route}: Props) => {
                     color: "#344054",
                     marginVertical: 10,
                   }}>
-                  This Seller Product
+                  Seller Products
                 </Text>
               </View>
             </React.Fragment>
@@ -256,10 +287,22 @@ const PublicProfileScreen = ({route}: Props) => {
           data={products}
           showsVerticalScrollIndicator={false}
           renderItem={({item}) => <EachProductItem item={item} />}
+          ListFooterComponent={() =>
+            isFetchingNextPage ? (
+              <View
+                style={{
+                  padding: 10,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                <ActivityIndicator size={"small"} />
+              </View>
+            ) : null
+          }
         />
       </View>
     </>
   );
 };
 
-export default PublicProfileScreen;
+export default SellerPublicProfileScreen;
