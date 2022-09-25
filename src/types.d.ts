@@ -75,9 +75,11 @@ export type PostItemStackParamList = {
     productCoverImage: Asset;
     productGalleryImages: Asset[];
   };
-  [PostItemStackRoutes.UPLOAD_PHOTO]: {
-    productEditInfo?: ProductEditInfo;
-  };
+  [PostItemStackRoutes.UPLOAD_PHOTO]:
+    | {
+        productEditInfo?: ProductEditInfo;
+      }
+    | undefined;
   [PostItemStackRoutes.ADD_DELIVERY_METHOD]: {
     productEditInfo?: ProductEditInfo;
     duration?: number;

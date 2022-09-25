@@ -15,8 +15,8 @@ export default function AccountSettingsItem({
   modalTitle: string;
   modalSubtitle?: string;
   icon: React.ReactNode;
-  modalInputs: Array<TextInputProps & {name: string; error?: string}>;
   onSuccess?: () => void;
+  modalInputs: Array<TextInputProps & {name: string; error?: string}>;
 }) {
   const [openModal, setOpenModal] = React.useState(false);
 

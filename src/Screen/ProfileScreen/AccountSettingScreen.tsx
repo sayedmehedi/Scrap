@@ -1,8 +1,10 @@
 import React from "react";
 import {View, Text} from "react-native";
-import {useAppSelector} from "@hooks/store";
+import {logout} from "@store/slices/authSlice";
+import useAppSnackbar from "@hooks/useAppSnackbar";
 import Feather from "react-native-vector-icons/Feather";
 import Fontisto from "react-native-vector-icons/Fontisto";
+import {useAppDispatch, useAppSelector} from "@hooks/store";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import ChangePasswordItem from "./modals/ChangePasswordItem";
@@ -10,10 +12,12 @@ import AccountSettingsItem from "./modals/AccountSettingsItem";
 import ChangeLocationItem from "./modals/ChangeLocationItem";
 import {useLogoutMutation} from "@data/laravel/services/auth";
 import FacebookSettingsItem from "./modals/FacebookSettingsItem";
+import EmailSettingsItem from "./modals/EmailSettingsItem";
 
 const AccountSettingScreen = () => {
+  const dispatch = useAppDispatch();
+  const {enqueueInfoSnackbar} = useAppSnackbar();
   const profile = useAppSelector(state => state.auth.profile);
-  const [logout] = useLogoutMutation();
 
   return (
     <>
@@ -47,20 +51,7 @@ const AccountSettingScreen = () => {
           }
         />
 
-        <AccountSettingsItem
-          modalInputs={[
-            {
-              name: "email",
-              defaultValue: profile?.email,
-            },
-          ]}
-          // onSuccess={() => {
-          //   logout();
-          // }}
-          text={profile?.email ?? ""}
-          modalTitle={"Update Email Address"}
-          icon={<Fontisto name="email" size={20} color={"#707070"} />}
-        />
+        <EmailSettingsItem />
 
         <FacebookSettingsItem />
 

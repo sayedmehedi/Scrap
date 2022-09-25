@@ -30,6 +30,7 @@ const slice = createSlice({
     shippingAddress: {
       name: "",
       phone: "",
+      email: "",
       address: "",
       city: null,
       state: null,
@@ -38,6 +39,22 @@ const slice = createSlice({
     },
   } as AuthState,
   reducers: {
+    logout(state) {
+      state.user = null;
+      state.token = null;
+      state.profile = null;
+
+      state.shippingAddress = {
+        name: "",
+        phone: "",
+        email: "",
+        address: "",
+        city: null,
+        state: null,
+        country: null,
+        postal_code: null,
+      };
+    },
     setCredentials: (
       state,
       {payload: {user, token}}: PayloadAction<{user: User; token: string}>,
@@ -149,8 +166,12 @@ const slice = createSlice({
   },
 });
 
-export const {setCredentials, setFirstTimeLoginFalse, addShippingAddress} =
-  slice.actions;
+export const {
+  setCredentials,
+  setFirstTimeLoginFalse,
+  addShippingAddress,
+  logout,
+} = slice.actions;
 
 export default slice.reducer;
 

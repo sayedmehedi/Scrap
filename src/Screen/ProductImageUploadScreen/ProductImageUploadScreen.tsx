@@ -38,13 +38,13 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
   >([]);
 
   React.useEffect(() => {
-    if (route.params.productEditInfo) {
-      if (route.params.productEditInfo.files) {
-        setEditInfoImages(route.params.productEditInfo.files);
+    if (route.params?.productEditInfo) {
+      if (route.params?.productEditInfo.files) {
+        setEditInfoImages(route.params?.productEditInfo.files);
       }
 
-      if (route.params.productEditInfo.title) {
-        setProductTitle(route.params.productEditInfo.title);
+      if (route.params?.productEditInfo.title) {
+        setProductTitle(route.params?.productEditInfo.title);
       }
     }
   }, [route.params]);
@@ -149,7 +149,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
       productTitle,
       productCoverImage: coverImage,
       productGalleryImages: galleryImages,
-      productEditInfo: route.params.productEditInfo,
+      productEditInfo: route.params?.productEditInfo,
     });
   };
 
