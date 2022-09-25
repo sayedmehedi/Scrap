@@ -59,22 +59,27 @@ export type ChatStackParamList = {};
 export type PostItemStackParamList = {
   [PostItemStackRoutes.SUCCESS]: undefined;
   [PostItemStackRoutes.ADD_PRICE]: {
+    productEditInfo?: ProductEditInfo;
     categoryId: number;
     conditionId: number;
     description: string;
     subCategoryId: number;
-    attributes: Record<number, string | number>;
     productTitle: string;
     productCoverImage: Asset;
     productGalleryImages: Asset[];
+    attributes: Record<number, string | number>;
   };
   [PostItemStackRoutes.ADD_DETAILS]: {
+    productEditInfo?: ProductEditInfo;
     productTitle: string;
     productCoverImage: Asset;
     productGalleryImages: Asset[];
   };
-  [PostItemStackRoutes.UPLOAD_PHOTO]: undefined;
+  [PostItemStackRoutes.UPLOAD_PHOTO]: {
+    productEditInfo?: ProductEditInfo;
+  };
   [PostItemStackRoutes.ADD_DELIVERY_METHOD]: {
+    productEditInfo?: ProductEditInfo;
     duration?: number;
     metals: number[];
     quantity: number;
@@ -185,7 +190,7 @@ export type RootStackParamList = {
     condition?: Condition;
   };
   [RootStackRoutes.PRODUCT_DETAILS]: {
-    productId: number | string;
+    productId: number;
   };
   [RootStackRoutes.SINGLE_CONVERSATION]: {
     userId: number;
@@ -1034,4 +1039,49 @@ export type SocialLoginResponse = {
 export type VerifyEmailRequest = {
   email: string;
   otp: number;
+};
+
+export interface ProductEditInfoImage {
+  id: number;
+  name: string;
+  url: string;
+}
+
+export interface ProductEditInfo {
+  id: number;
+  user_id: number;
+  title: string;
+  category: {
+    id: number;
+    title: string;
+  };
+  condition: {
+    id: number;
+    title: string;
+  };
+  sub_category: {
+    id: number;
+    title: string;
+  };
+  details: string;
+  status: number;
+  attributes: Record<number, {id: number; title: string} | string>;
+  starting_price: number;
+  buy_price: number;
+  duration?: {id: number; title: string};
+  is_list_now: boolean;
+  expected_date_for_list?: string;
+  show_metal_price: boolean;
+  selected_metals?: Metal[];
+  location: string;
+  latitude: number;
+  longitude: number;
+  package_id: number;
+  is_locale: boolean;
+  is_shipping: boolean;
+  files?: ProductEditInfoImage[];
+}
+
+export type GetProductEditInfoResponse = {
+  item: ProductEditInfo;
 };

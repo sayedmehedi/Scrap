@@ -947,32 +947,34 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
             </View>
 
             {/* if product has a starting price and the user did not place bid before then show the place bid button */}
-            {!!productDetails.starting_price && !productDetails.has_bid && (
-              <TouchableOpacity
-                onPress={handlePlaceBid}
-                style={styles.placeBidButton}>
-                <View></View>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: "white",
-                    fontFamily: "Inter-Regular",
-                  }}>
-                  Place Bid
-                </Text>
-                <View
-                  style={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 50,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "rgba(0,0,0,0.1)",
-                  }}>
-                  <Octicons name="arrow-right" color={"white"} size={26} />
-                </View>
-              </TouchableOpacity>
-            )}
+            {!!productDetails.starting_price &&
+              productDetails.time_left !== "0 days 0 hours 0 mins 0 secs" &&
+              !productDetails.has_bid && (
+                <TouchableOpacity
+                  onPress={handlePlaceBid}
+                  style={styles.placeBidButton}>
+                  <View></View>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: "white",
+                      fontFamily: "Inter-Regular",
+                    }}>
+                    Place Bid
+                  </Text>
+                  <View
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 50,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "rgba(0,0,0,0.1)",
+                    }}>
+                    <Octicons name="arrow-right" color={"white"} size={26} />
+                  </View>
+                </TouchableOpacity>
+              )}
 
             {/* if the user did not make offer before then show the make offer button */}
             {!productDetails.has_offer && (

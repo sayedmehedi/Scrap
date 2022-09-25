@@ -73,8 +73,9 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
   const [modalType, setModalType] = React.useState("");
 
   const {
-    control,
     watch,
+    control,
+    setValue,
     handleSubmit,
     formState: {errors},
   } = useForm<FormValues>({
@@ -88,6 +89,52 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
   });
 
   const selectedCategory = watch("category");
+
+  React.useEffect(() => {
+    if (route.params.productEditInfo) {
+      const {category, sub_category, condition, attributes, details} =
+        route.params.productEditInfo;
+
+      setValue("description", details);
+
+      setValue("category", {
+        id: category.id,
+        value: category.id,
+        label: category.title,
+      });
+
+      setValue("subCategory", {
+        id: sub_category.id,
+        value: sub_category.id,
+        label: sub_category.title,
+      });
+
+      setValue("condition", {
+        id: condition.id,
+        value: condition.id,
+        label: condition.title,
+      });
+
+      const attrs = Object.entries(attributes).reduce(
+        (acc, [key, val]) => {
+          if (typeof val === "object") {
+            acc[+key] = {
+              id: val.id,
+              value: val.id,
+              label: val.title,
+            };
+          } else {
+            acc[+key] = val;
+          }
+          return acc;
+        },
+        {} as {
+          [attrId: number]: {id: number; value: number; label: string} | string;
+        },
+      );
+      setValue("attributes", attrs);
+    }
+  }, [route.params, setValue]);
 
   const {data: subcategoriesResponse, isLoading: isSubcategoriesLoading} =
     useGetSubcategoryByCatIdQuery(

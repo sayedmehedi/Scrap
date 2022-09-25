@@ -15,6 +15,7 @@ import {
   GetProductMetalsLivePriceResponse,
   GetProductMetalsLivePriceRequest,
   GetSellerProductsReponse,
+  GetProductEditInfoResponse,
 } from "@src/types";
 
 const metalsApiClient = container.get<AxiosInstance>(
@@ -68,7 +69,7 @@ export const productApi = api.injectEndpoints({
     getProductDetails: builder.query<
       ProductDetails,
       {
-        id: string | number;
+        id: number;
         latitude?: number;
         longitude?: number;
       }
@@ -98,6 +99,13 @@ export const productApi = api.injectEndpoints({
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
+    }),
+    getProducEditInfo: builder.query<GetProductEditInfoResponse, number>({
+      query(productId) {
+        return {
+          url: `products/${productId}/edit`,
+        };
+      },
     }),
     upsertProduct: builder.mutation<
       {success: string} | {error: string},
@@ -403,6 +411,7 @@ export const {
   useGetArchiveProductsQuery,
   useLazyGetSellerProductsQuery,
   useLazyGetSavedProductsQuery,
+  useLazyGetProducEditInfoQuery,
   useLazyGetFilterProductsQuery,
   useLazyGetArchiveProductsQuery,
   useToggleProductFavoriteMutation,

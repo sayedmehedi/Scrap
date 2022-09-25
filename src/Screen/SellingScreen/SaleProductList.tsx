@@ -111,7 +111,6 @@ export default function SaleProductList({
         onRefresh={refetch}
         refreshing={isFetchingInitial}
         onEndReached={getNextProducts}
-        contentContainerStyle={{}}
         columnWrapperStyle={{
           paddingBottom: 20,
         }}
@@ -124,7 +123,7 @@ export default function SaleProductList({
         <View
           style={{
             padding: 10,
-            paddingVertical: 30,
+            marginBottom: 130,
             alignItems: "center",
             justifyContent: "center",
           }}>

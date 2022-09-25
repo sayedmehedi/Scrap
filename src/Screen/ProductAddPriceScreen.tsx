@@ -51,7 +51,7 @@ type FormValues = {
   buynowprice: string;
   startingPrice: string;
   showMetalPrice: boolean;
-  metals: {id: string; value: Metal}[];
+  metals: {id: number; value: Metal}[];
   beginHour: {id: number; value: number; label: string} | null;
   beginMinute: {id: number; value: number; label: string} | null;
   duration: {id: number; value: number; label: string} | null;
@@ -64,9 +64,10 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
   const [modalType, setModalType] = React.useState("");
 
   const {
-    control,
-    handleSubmit,
     watch,
+    control,
+    setValue,
+    handleSubmit,
     formState: {errors},
   } = useForm<FormValues>({
     defaultValues: {
@@ -84,7 +85,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
       },
       beginMinute: {
         id: 0,
-        value: 1,
+        value: 10,
         label: "00:10 min",
       },
       beginDay: new Date(),
@@ -97,13 +98,77 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
   const showMetalPrice = watch("showMetalPrice");
 
   const {
-    fields: selectedMetals,
     append: appendMetal,
     remove: removeMetal,
+    fields: selectedMetals,
   } = useFieldArray({
     control,
     name: "metals",
   });
+
+  React.useEffect(() => {
+    if (route.params.productEditInfo) {
+      const {
+        duration,
+        buy_price,
+        is_list_now,
+        starting_price,
+        selected_metals,
+        show_metal_price,
+        expected_date_for_list,
+      } = route.params.productEditInfo;
+
+      setValue("buynowprice", buy_price.toString());
+      setValue("startingPrice", starting_price.toString());
+
+      if (!!expected_date_for_list) {
+        const listDate = dayjs(expected_date_for_list, "YYYY-MM-DD HH:mm:ss");
+
+        setValue("beginDay", listDate.toDate());
+
+        const hrs = listDate.hour();
+
+        setValue("beginHour", {
+          id: hrs,
+          value: hrs + 1,
+          label: `${hrs + 1}:00 hrs`,
+        });
+
+        const mins = listDate.minute();
+        const flooredMinute = Math.floor((mins + 1) / 10);
+        const minuteId = flooredMinute - 1;
+        const minuteValue = flooredMinute * 10;
+
+        setValue("beginMinute", {
+          id: minuteId,
+          value: minuteValue,
+          label: `00:${minuteValue} min`,
+        });
+      }
+
+      if (!!duration) {
+        setValue("duration", {
+          id: duration.id,
+          value: duration.id,
+          label: duration.title,
+        });
+      }
+
+      if (show_metal_price && !!selected_metals) {
+        setValue("showMetalPrice", show_metal_price);
+
+        setValue(
+          "metals",
+          selected_metals.map(mt => ({
+            id: mt.id,
+            value: mt,
+          })),
+        );
+      }
+
+      setValue("isListNow", is_list_now);
+    }
+  }, [route.params, setValue]);
 
   const handlePostItem = handleSubmit(values => {
     if (!values.startingPrice && !values.buynowprice) {
@@ -633,10 +698,10 @@ function MetalList({
   ListHeaderComponent,
 }: {
   onRemove: (index: number) => void;
-  selectedMetals: {id: string; value: Metal}[];
+  selectedMetals: {id: number; value: Metal}[];
   ListHeaderComponent: JSX.Element;
   ListFooterComponent: JSX.Element;
-  onSelect: (item: {id: string; value: Metal}) => void;
+  onSelect: (item: {id: number; value: Metal}) => void;
 }) {
   const theme = useTheme();
   const [getMetals, {isFetching: isFetchingNextPage}] = useLazyGetMetalsQuery();
@@ -753,7 +818,7 @@ function MetalList({
                 onRemove(index);
               } else {
                 onSelect({
-                  id: item.id.toString(),
+                  id: item.id,
                   value: {
                     id: item.id,
                     title: item.text,

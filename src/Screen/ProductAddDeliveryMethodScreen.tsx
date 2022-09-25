@@ -75,34 +75,34 @@ export default function ProductAddDeliveryMethodScreen({
     null,
   );
   const [
-    createProduct,
+    upsertProduct,
     {
-      error: createProductError,
-      data: createProductResponse,
-      isError: isCreateProductError,
-      isLoading: isCreatingProduct,
-      isSuccess: isProductCreateSuccess,
+      error: upsertProductError,
+      data: upsertProductResponse,
+      isError: isUpsertProductError,
+      isLoading: isUpsertingProduct,
+      isSuccess: isProductUpsertSuccess,
     },
   ] = useUpsertProductMutation();
 
   React.useEffect(() => {
     if (
-      isCreateProductError &&
-      isJoteyQueryError(createProductError) &&
-      createProductError.status === 422
+      isUpsertProductError &&
+      isJoteyQueryError(upsertProductError) &&
+      upsertProductError.status === 422
     ) {
       setShowFieldErrors(true);
     }
-  }, [isCreateProductError, createProductError]);
+  }, [isUpsertProductError, upsertProductError]);
 
   React.useEffect(() => {
     if (
-      (!isCreatingProduct && isProductCreateSuccess) ||
-      isCreateProductError
+      (!isUpsertingProduct && isProductUpsertSuccess) ||
+      isUpsertProductError
     ) {
       setUploadProgress(0);
     }
-  }, [isProductCreateSuccess, isCreatingProduct, isCreateProductError]);
+  }, [isProductUpsertSuccess, isUpsertingProduct, isUpsertProductError]);
 
   const [packagePages, setPackagePages] = React.useState<
     Array<GetPackagesResponse["items"]>
@@ -153,12 +153,12 @@ export default function ProductAddDeliveryMethodScreen({
 
   React.useEffect(() => {
     if (
-      isProductCreateSuccess &&
-      !!createProductResponse &&
-      "success" in createProductResponse
+      isProductUpsertSuccess &&
+      !!upsertProductResponse &&
+      "success" in upsertProductResponse
     ) {
       enqueueSuccessSnackbar({
-        text1: createProductResponse.success,
+        text1: upsertProductResponse.success,
       });
 
       navigation.reset({
@@ -170,23 +170,23 @@ export default function ProductAddDeliveryMethodScreen({
     }
 
     if (
-      isProductCreateSuccess &&
-      !!createProductResponse &&
-      "error" in createProductResponse
+      isProductUpsertSuccess &&
+      !!upsertProductResponse &&
+      "error" in upsertProductResponse
     ) {
       enqueueErrorSnackbar({
         text1: "Error",
-        text2: createProductResponse.error,
+        text2: upsertProductResponse.error,
       });
     }
   }, [
-    isProductCreateSuccess,
+    isProductUpsertSuccess,
     enqueueSuccessSnackbar,
-    createProductResponse,
+    upsertProductResponse,
     enqueueErrorSnackbar,
   ]);
 
-  const metals = React.useMemo(() => {
+  const packages = React.useMemo(() => {
     if (isLoadingCategories) {
       return new Array(10).fill(1).map((_, id) => ({
         id,
@@ -217,16 +217,35 @@ export default function ProductAddDeliveryMethodScreen({
     },
   });
 
+  React.useEffect(() => {
+    if (route.params.productEditInfo) {
+      const {is_locale, package_id, is_shipping} = route.params.productEditInfo;
+
+      setValue("package", {
+        id: package_id,
+        name: "",
+        price: 0,
+        size: "",
+        weight: 0,
+      });
+
+      setValue("isLocale", is_locale);
+      setValue("isShipping", is_shipping);
+    }
+  }, [setValue, route.params]);
+
   const isShipping = watch("isShipping");
 
   React.useEffect(() => {
-    if (profile) {
-      setValue("location", profile.location ?? "");
+    if (route.params.productEditInfo?.location) {
+      setValue("location", route.params.productEditInfo?.location);
+    } else if (profile?.location) {
+      setValue("location", profile.location);
     }
-  }, [profile, setValue]);
+  }, [profile, setValue, route.params]);
 
   const handlePostItem = handleSubmit(values => {
-    createProduct({
+    upsertProduct({
       location: values.location,
       latitude: profile!.latitude!,
       longitude: profile!.longitude!,
@@ -262,7 +281,7 @@ export default function ProductAddDeliveryMethodScreen({
     <ScrollView style={{padding: 15}}>
       <Overlay
         isVisible={
-          isCreatingProduct && !isProductCreateSuccess && !isCreateProductError
+          isUpsertingProduct && !isProductUpsertSuccess && !isUpsertProductError
         }
         overlayStyle={{
           width: "80%",
@@ -301,8 +320,8 @@ export default function ProductAddDeliveryMethodScreen({
             alignItems: "center",
             justifyContent: "center",
           }}>
-          {isJoteyQueryError(createProductError) &&
-            Object.values(createProductError.data.field_errors).map(
+          {isJoteyQueryError(upsertProductError) &&
+            Object.values(upsertProductError.data.field_errors).map(
               (error, i) => {
                 return (
                   <View
@@ -474,10 +493,10 @@ export default function ProductAddDeliveryMethodScreen({
 
                 <View style={{height: 10}} />
 
-                <FlatList<typeof metals[0]>
-                  data={metals}
-                  showsVerticalScrollIndicator={false}
+                <FlatList<typeof packages[0]>
+                  data={packages}
                   onEndReached={getNextPackages}
+                  showsVerticalScrollIndicator={false}
                   renderItem={({item}) => {
                     if (item.type === "skeleton") {
                       return (
@@ -550,7 +569,7 @@ export default function ProductAddDeliveryMethodScreen({
       <AppPrimaryButton
         text={"Submit"}
         onPress={handlePostItem}
-        disabled={isCreatingProduct}
+        disabled={isUpsertingProduct}
         containerStyle={{marginVertical: 35}}
       />
     </ScrollView>

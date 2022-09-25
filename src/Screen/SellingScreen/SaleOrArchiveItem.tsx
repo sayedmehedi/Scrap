@@ -1,13 +1,19 @@
 import React from "react";
 import truncate from "lodash.truncate";
 import {FilterProduct} from "@src/types";
-import {ActivityIndicator, Colors} from "react-native-paper";
-import {Button} from "react-native-elements";
-import {RootStackRoutes} from "@constants/routes";
+import {
+  HomeTabRoutes,
+  PostItemStackRoutes,
+  RootStackRoutes,
+} from "@constants/routes";
 import {useNavigation} from "@react-navigation/native";
+import {ActivityIndicator, Colors} from "react-native-paper";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import {useDeleteProductMutation} from "@data/laravel/services/product";
+import {
+  useDeleteProductMutation,
+  useLazyGetProducEditInfoQuery,
+} from "@data/laravel/services/product";
 import {
   View,
   Text,
@@ -33,6 +39,9 @@ const SaleOrArchiveItem = ({
   const {enqueueErrorSnackbar, enqueueSuccessSnackbar} = useAppSnackbar();
   const [deleteProduct, {isLoading: isDeletingProduct}] =
     useDeleteProductMutation();
+
+  const [getProductDetailsForEditQuery, {isLoading: isGettingProductEditInfo}] =
+    useLazyGetProducEditInfoQuery();
 
   if (item.type === "skeleton") {
     return (
@@ -66,7 +75,7 @@ const SaleOrArchiveItem = ({
           flexDirection: "row",
         }}>
         <TouchableOpacity
-          disabled={isDeletingProduct}
+          disabled={isDeletingProduct || isGettingProductEditInfo}
           onPress={() => {
             deleteProduct(item.id)
               .unwrap()
@@ -99,7 +108,22 @@ const SaleOrArchiveItem = ({
         </TouchableOpacity>
 
         <TouchableOpacity
-          disabled={isDeletingProduct}
+          disabled={isDeletingProduct || isGettingProductEditInfo}
+          onPress={() => {
+            getProductDetailsForEditQuery(item.id)
+              .unwrap()
+              .then(prodData => {
+                navigation.navigate(RootStackRoutes.HOME, {
+                  screen: HomeTabRoutes.POST_ITEM,
+                  params: {
+                    screen: PostItemStackRoutes.UPLOAD_PHOTO,
+                    params: {
+                      productEditInfo: prodData.item,
+                    },
+                  },
+                });
+              });
+          }}
           style={{
             width: 25,
             height: 25,
@@ -108,12 +132,7 @@ const SaleOrArchiveItem = ({
             backgroundColor: "tomato",
             justifyContent: "center",
           }}>
-          <MaterialIcons
-            size={20}
-            name={"edit"}
-            color={"white"}
-            onPress={() => console.log("Pressed")}
-          />
+          <MaterialIcons size={20} name={"edit"} color={"white"} />
         </TouchableOpacity>
       </View>
 
@@ -135,7 +154,7 @@ const SaleOrArchiveItem = ({
             justifyContent: "center",
             backgroundColor: "#FFFFFF",
           }}>
-          {isDeletingProduct && (
+          {(isDeletingProduct || isGettingProductEditInfo) && (
             <View
               style={{
                 zIndex: 1,
