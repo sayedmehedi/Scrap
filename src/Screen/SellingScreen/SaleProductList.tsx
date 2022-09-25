@@ -20,8 +20,7 @@ export default function SaleProductList({
   const [fetchProducts, {isFetching: isFetchingNextPage}] =
     useLazyGetSaleProductsQuery();
   const {
-    // isError,
-    // isSuccess,
+    refetch,
     isLoading,
     data: saleProductsResponse,
     isFetching: isFetchingInitial,
@@ -106,31 +105,32 @@ export default function SaleProductList({
 
   return (
     <React.Fragment>
+      <FlatList<typeof products[0]>
+        numColumns={2}
+        data={products}
+        onRefresh={refetch}
+        refreshing={isFetchingInitial}
+        onEndReached={getNextProducts}
+        contentContainerStyle={{}}
+        columnWrapperStyle={{
+          paddingBottom: 20,
+        }}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={ListEmptyComponent}
+        renderItem={({item}) => <SaleOrArchiveItem item={item} />}
+      />
+
       {isFetchingNextPage ? (
         <View
           style={{
             padding: 10,
+            paddingVertical: 30,
             alignItems: "center",
             justifyContent: "center",
           }}>
           <ActivityIndicator size={"small"} />
         </View>
       ) : null}
-
-      <FlatList<typeof products[0]>
-        numColumns={3}
-        data={products}
-        onEndReached={getNextProducts}
-        contentContainerStyle={{
-          paddingLeft: SCREEN_PADDING_HORIZONTAL,
-        }}
-        columnWrapperStyle={{
-          marginBottom: 20,
-        }}
-        showsVerticalScrollIndicator={false}
-        renderItem={({item}) => <SaleOrArchiveItem item={item} />}
-        ListEmptyComponent={ListEmptyComponent}
-      />
     </React.Fragment>
   );
 }

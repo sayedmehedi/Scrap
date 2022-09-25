@@ -74,7 +74,10 @@ export const orderApi = api.injectEndpoints({
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
-    confirmOrder: builder.mutation<{success: string}, ConfirmOrderRequest>({
+    confirmOrder: builder.mutation<
+      {success: string} | {error: string},
+      ConfirmOrderRequest
+    >({
       query(body) {
         return {
           body,

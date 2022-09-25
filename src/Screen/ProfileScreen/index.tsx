@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./styles";
 import {Rating} from "react-native-elements";
 import {useAppSelector} from "@hooks/store";
+import auth from "@react-native-firebase/auth";
 import Entypo from "react-native-vector-icons/Entypo";
 import {useNavigation} from "@react-navigation/native";
 import ProfileImageUploader from "./ProfileImageUploader";
@@ -48,7 +49,17 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
         onPress: () => console.log("Cancel Pressed"),
         style: "cancel",
       },
-      {text: "Logout", onPress: () => logout()},
+      {
+        text: "Logout",
+        onPress: async () => {
+          try {
+            await auth().signOut();
+          } catch (_error) {
+          } finally {
+            logout();
+          }
+        },
+      },
     ]);
 
   React.useEffect(() => {

@@ -341,14 +341,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   };
 
   const handlePayment = () => {
-    if (productDetails) {
-      navigation.navigate(RootStackRoutes.CONFIRM_PURCHASE, {
-        productImage: image,
-        productId: productDetails.id,
-        productName: productDetails.title,
-        productBuyNowPrice: +productDetails.buy_price,
-      });
-    }
+    navigation.navigate(RootStackRoutes.CONFIRM_PURCHASE);
   };
 
   if (isLoading) {

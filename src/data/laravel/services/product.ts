@@ -6,7 +6,7 @@ import {ApplicationError} from "@core/domain/ApplicationError";
 import {ServiceProviderTypes} from "@core/serviceProviderTypes";
 import {
   ProductDetails,
-  CreateProductRequest,
+  UpsertProductRequest,
   PaginationQueryParams,
   FilterProductsResponse,
   FilterProductQueryParams,
@@ -54,7 +54,13 @@ export const productApi = api.injectEndpoints({
       },
       providesTags: (result, error) =>
         result
-          ? [{type: QUERY_KEYS.PRODUCT, id: "FILTER-LIST"}]
+          ? [
+              {type: QUERY_KEYS.PRODUCT, id: "FILTER-LIST"},
+              ...result.products.data.map(prod => ({
+                type: QUERY_KEYS.PRODUCT,
+                id: prod.id,
+              })),
+            ]
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
@@ -93,9 +99,9 @@ export const productApi = api.injectEndpoints({
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
-    createProduct: builder.mutation<
+    upsertProduct: builder.mutation<
       {success: string} | {error: string},
-      CreateProductRequest & {onUploadProgress?: (event: ProgressEvent) => void}
+      UpsertProductRequest & {onUploadProgress?: (event: ProgressEvent) => void}
     >({
       queryFn({onUploadProgress, ...body}) {
         console.log("body data is", body.attributes);
@@ -151,8 +157,12 @@ export const productApi = api.injectEndpoints({
           });
         });
 
+        const endpoint = !!body.product_id
+          ? `products/${body.product_id}`
+          : "products";
+
         return apiClient
-          .postForm<{success: string}>("products", formData, {
+          .postForm<{success: string}>(endpoint, formData, {
             onUploadProgress,
           })
           .then(res => {
@@ -208,7 +218,13 @@ export const productApi = api.injectEndpoints({
       },
       providesTags: (result, error) =>
         result
-          ? [{type: QUERY_KEYS.PRODUCT, id: "FAVOURITE-LIST"}]
+          ? [
+              {type: QUERY_KEYS.PRODUCT, id: "FAVOURITE-LIST"},
+              ...result.items.data.map(prod => ({
+                type: QUERY_KEYS.PRODUCT,
+                id: prod.id,
+              })),
+            ]
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
@@ -227,7 +243,13 @@ export const productApi = api.injectEndpoints({
       },
       providesTags: (result, error) =>
         result
-          ? [{type: QUERY_KEYS.PRODUCT, id: "SALE-LIST"}]
+          ? [
+              {type: QUERY_KEYS.PRODUCT, id: "SELLER-LIST"},
+              ...result.products.data.map(prod => ({
+                type: QUERY_KEYS.PRODUCT,
+                id: prod.id,
+              })),
+            ]
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
@@ -244,7 +266,13 @@ export const productApi = api.injectEndpoints({
       },
       providesTags: (result, error) =>
         result
-          ? [{type: QUERY_KEYS.PRODUCT, id: "SALE-LIST"}]
+          ? [
+              {type: QUERY_KEYS.PRODUCT, id: "SALE-LIST"},
+              ...result.products.data.map(prod => ({
+                type: QUERY_KEYS.PRODUCT,
+                id: prod.id,
+              })),
+            ]
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
@@ -281,9 +309,7 @@ export const productApi = api.injectEndpoints({
                 ...data,
                 symbols: data.symbols.join(","),
               },
-              headers: {
-                signal,
-              },
+              signal,
             },
           )
           .then(response => {
@@ -342,6 +368,24 @@ export const productApi = api.injectEndpoints({
           : [QUERY_KEYS.UNKNOWN_ERROR];
       },
     }),
+    deleteProduct: builder.mutation<
+      {success: string} | {error: string},
+      number
+    >({
+      query(productId) {
+        return {
+          method: "DELETE",
+          url: `products/${productId}`,
+        };
+      },
+      invalidatesTags: (result, _error, id) =>
+        result
+          ? [
+              {type: QUERY_KEYS.PRODUCT, id},
+              {type: QUERY_KEYS.PRODUCT, id: "SELLER-LIST"},
+            ]
+          : [],
+    }),
   }),
 });
 
@@ -351,8 +395,9 @@ export const {
   useGetSaleProductsQuery,
   useGetSavedProductsQuery,
   useGetFilterProductsQuery,
-  useCreateProductMutation,
+  useUpsertProductMutation,
   useGetSellerProductsQuery,
+  useDeleteProductMutation,
   useGetProductDetailsQuery,
   useLazyGetSaleProductsQuery,
   useGetArchiveProductsQuery,

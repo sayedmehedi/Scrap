@@ -10,7 +10,7 @@ import {ListItem, Switch} from "react-native-elements";
 import {isJoteyQueryError} from "@utils/error-handling";
 import AppPrimaryButton from "../Component/AppPrimaryButton";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
-import {useCreateProductMutation} from "@data/laravel/services/product";
+import {useUpsertProductMutation} from "@data/laravel/services/product";
 import CircularProgress from "react-native-circular-progress-indicator";
 import {Divider, HelperText, Text, Title, useTheme} from "react-native-paper";
 import {
@@ -83,7 +83,7 @@ export default function ProductAddDeliveryMethodScreen({
       isLoading: isCreatingProduct,
       isSuccess: isProductCreateSuccess,
     },
-  ] = useCreateProductMutation();
+  ] = useUpsertProductMutation();
 
   React.useEffect(() => {
     if (
@@ -221,15 +221,15 @@ export default function ProductAddDeliveryMethodScreen({
 
   React.useEffect(() => {
     if (profile) {
-      setValue("location", profile.location);
+      setValue("location", profile.location ?? "");
     }
   }, [profile, setValue]);
 
   const handlePostItem = handleSubmit(values => {
     createProduct({
       location: values.location,
-      latitude: profile?.latitude,
-      longitude: profile?.longitude,
+      latitude: profile!.latitude!,
+      longitude: profile!.longitude!,
       duration: route.params.duration,
       quantity: route.params.quantity,
       title: route.params.productTitle,

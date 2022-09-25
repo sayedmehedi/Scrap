@@ -9,6 +9,7 @@ import ChangePasswordItem from "./modals/ChangePasswordItem";
 import AccountSettingsItem from "./modals/AccountSettingsItem";
 import ChangeLocationItem from "./modals/ChangeLocationItem";
 import {useLogoutMutation} from "@data/laravel/services/auth";
+import FacebookSettingsItem from "./modals/FacebookSettingsItem";
 
 const AccountSettingScreen = () => {
   const profile = useAppSelector(state => state.auth.profile);
@@ -21,7 +22,7 @@ const AccountSettingScreen = () => {
           modalInputs={[
             {
               name: "name",
-              value: profile?.name,
+              defaultValue: profile?.name,
             },
           ]}
           text={profile?.name ?? ""}
@@ -33,13 +34,14 @@ const AccountSettingScreen = () => {
           modalInputs={[
             {
               name: "phone",
-              value: profile?.phone,
+              keyboardType: "number-pad",
               placeholder: "Add Your Mobile Number",
+              defaultValue: profile?.phone?.toString(),
             },
           ]}
           modalTitle={"Phone Verification"}
-          text={profile?.phone ?? "No Phone number provided"}
           icon={<Feather name="phone" size={20} color={"#707070"} />}
+          text={profile?.phone?.toString() ?? "No Phone number provided"}
           modalSubtitle={
             "Add a phone number to secure your account. We'll text you a code."
           }
@@ -49,28 +51,18 @@ const AccountSettingScreen = () => {
           modalInputs={[
             {
               name: "email",
-              value: profile?.email,
+              defaultValue: profile?.email,
             },
           ]}
-          onSuccess={() => {
-            logout();
-          }}
+          // onSuccess={() => {
+          //   logout();
+          // }}
           text={profile?.email ?? ""}
           modalTitle={"Update Email Address"}
           icon={<Fontisto name="email" size={20} color={"#707070"} />}
         />
 
-        <AccountSettingsItem
-          modalInputs={[
-            {
-              name: "facebook-account",
-              value: "softiconic@gmail.com",
-            },
-          ]}
-          text={"Connect Facebook"}
-          modalTitle={"Update Facebook Profile"}
-          icon={<Feather name="facebook" size={20} color={"#707070"} />}
-        />
+        <FacebookSettingsItem />
 
         <ChangePasswordItem
           modalInputs={[
@@ -85,8 +77,8 @@ const AccountSettingScreen = () => {
               placeholder: "New Password",
             },
             {
-              name: "password_confirmation",
               secureTextEntry: true,
+              name: "password_confirmation",
               placeholder: "Confirm Password",
             },
           ]}

@@ -195,12 +195,7 @@ export type RootStackParamList = {
     productPrice: number;
     productImage: string;
   };
-  [RootStackRoutes.CONFIRM_PURCHASE]: {
-    productName: string;
-    productImage: string;
-    productId: number;
-    productBuyNowPrice: number;
-  };
+  [RootStackRoutes.CONFIRM_PURCHASE]: undefined;
   [RootStackRoutes.LOCATION_PROMPT]: {
     nextScreen?: {
       name: string;
@@ -525,16 +520,18 @@ export interface CreateCartResponse {
 export interface CartItem {
   id: number;
   product: number;
+  product_title: string;
+  product_image: string;
   quantity: number;
   sub_total: string;
 }
 
 export interface Calculations {
-  sub_total: string;
-  shipping_cost: string;
-  discount: string;
-  vat: string;
-  total: string;
+  sub_total: number;
+  shipping_cost: number;
+  discount: number;
+  vat: number;
+  total: number;
 }
 
 export interface GetCartsResponse {
@@ -611,19 +608,24 @@ export interface ConfirmOrderRequest {
   postal_code: number;
   delivery_status: 0 | 1;
   payment_method: string;
-  city_id: number | string;
-  state_id: number | string;
-  country_id: number | string;
+  city_id: number;
+  state_id: number;
+  country_id: number;
+  address: string;
+  email: string;
+  name: string;
+  phone: string;
+  product_id: number;
 }
 
 export interface UserProfile {
   id: number;
   name: string;
-  phone?: any;
+  phone?: number;
   email: string;
-  location?: any;
-  latitude?: any;
-  longitude?: any;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
   status: number;
   profile_image: string;
   has_product: boolean;
@@ -962,7 +964,8 @@ export type GetPackagesResponse = {
   items: SimplePaginatedResponse<Package>;
 };
 
-export type CreateProductRequest = {
+export type UpsertProductRequest = {
+  product_id?: number;
   title: string;
   category_id: number;
   sub_category_id: number;

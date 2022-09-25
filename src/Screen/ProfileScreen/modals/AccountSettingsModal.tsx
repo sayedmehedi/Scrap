@@ -32,25 +32,10 @@ export default function AccountSettingsModal({
   inputs: Array<TextInputProps & {name: string; error?: string}>;
 }) {
   const theme = useTheme();
-  const {enqueueSuccessSnackbar} = useAppSnackbar();
-  const {setValue, control, handleSubmit, setError} = useForm();
+  const {control, handleSubmit} = useForm();
+  const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
   const [updateProfile, {isLoading, isSuccess, data}] =
     useUpdateProfileMutation();
-
-  React.useEffect(() => {
-    inputs.forEach(input => {
-      if (input.value) {
-        setValue(input.name, input.value);
-      }
-
-      if (input.error) {
-        setError(input.name, {
-          type: "custom",
-          message: input.error,
-        });
-      }
-    });
-  }, [inputs, setValue, setError]);
 
   React.useEffect(() => {
     if (isSuccess && !!data && "success" in data) {
@@ -60,7 +45,19 @@ export default function AccountSettingsModal({
       onSuccess?.();
       onClose();
     }
-  }, [enqueueSuccessSnackbar, isSuccess, data, onSuccess]);
+
+    if (isSuccess && !!data && "error" in data) {
+      enqueueErrorSnackbar({
+        text1: data.error,
+      });
+    }
+  }, [
+    data,
+    onSuccess,
+    isSuccess,
+    enqueueErrorSnackbar,
+    enqueueSuccessSnackbar,
+  ]);
 
   const handleUpdate = handleSubmit(values => {
     updateProfile(values);
@@ -110,6 +107,7 @@ export default function AccountSettingsModal({
               <Controller
                 key={i}
                 name={name}
+                shouldUnregister
                 control={control}
                 render={({field}) => {
                   return (
