@@ -94,16 +94,6 @@ export const authApi = api.injectEndpoints({
             userCreds.user.displayName,
           );
 
-          await firestore()
-            .collection("Users")
-            .doc(userCreds.user.uid)
-            .update({
-              google: {
-                connected: true,
-                credential: googleCredential,
-              },
-            });
-
           const userLoginInfo = (await firestore()
             .collection("Users")
             .doc(userCreds.user.uid)
@@ -115,9 +105,29 @@ export const authApi = api.injectEndpoints({
           };
 
           if (!!userLoginInfo && !userLoginInfo.facebook?.connected) {
+            await firestore()
+              .collection("Users")
+              .doc(userCreds.user.uid)
+              .update({
+                google: {
+                  connected: true,
+                  credential: googleCredential,
+                },
+              });
+
             await userCreds.user.linkWithCredential(
               userLoginInfo.facebook!.credential,
             );
+          } else {
+            await firestore()
+              .collection("Users")
+              .doc(userCreds.user.uid)
+              .set({
+                google: {
+                  connected: true,
+                  credential: googleCredential,
+                },
+              });
           }
 
           return {
@@ -214,16 +224,6 @@ export const authApi = api.injectEndpoints({
             userCreds.user.displayName,
           );
 
-          await firestore()
-            .collection("Users")
-            .doc(userCreds.user.uid)
-            .update({
-              facebook: {
-                connected: true,
-                credential: facebookCredential,
-              },
-            });
-
           const userLoginInfo = (await firestore()
             .collection("Users")
             .doc(userCreds.user.uid)
@@ -234,10 +234,32 @@ export const authApi = api.injectEndpoints({
             };
           };
 
+          console.log("userLoginInfo", userLoginInfo);
+
           if (!!userLoginInfo && !userLoginInfo.google?.connected) {
+            await firestore()
+              .collection("Users")
+              .doc(userCreds.user.uid)
+              .update({
+                facebook: {
+                  connected: true,
+                  credential: facebookCredential,
+                },
+              });
+
             await userCreds.user.linkWithCredential(
               userLoginInfo.google!.credential,
             );
+          } else {
+            await firestore()
+              .collection("Users")
+              .doc(userCreds.user.uid)
+              .set({
+                facebook: {
+                  connected: true,
+                  credential: facebookCredential,
+                },
+              });
           }
 
           return {
