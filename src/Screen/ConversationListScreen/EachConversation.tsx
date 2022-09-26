@@ -27,7 +27,7 @@ const EachConversation = ({item}: {item: Conversation}) => {
         alignItems: "center",
         flexDirection: "row",
         paddingHorizontal: 15,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "#F7F7F7",
         justifyContent: "space-between",
       }}>
       <View style={{flexDirection: "row", alignItems: "center"}}>

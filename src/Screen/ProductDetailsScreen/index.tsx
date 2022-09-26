@@ -530,6 +530,9 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                             sellerId: productDetails.seller.id,
                             sellerName: productDetails.seller.name,
                             sellerImage: productDetails.seller.image,
+                            productPrice: !!productDetails.buy_price
+                              ? +productDetails.buy_price
+                              : 0,
                           });
                         }}
                         color={theme.colors.accent}
@@ -679,6 +682,9 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                             sellerId: productDetails.seller.id,
                             sellerName: productDetails.seller.name,
                             sellerImage: productDetails.seller.image,
+                            productPrice: !!productDetails.buy_price
+                              ? +productDetails.buy_price
+                              : 0,
                           });
                         }}
                         color={theme.colors.accent}
@@ -948,7 +954,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
             {/* if product has a starting price and the user did not place bid before then show the place bid button */}
             {!!productDetails.starting_price &&
-              productDetails.time_left !== "0 days 0 hours 0 mins 0 secs" &&
+              productDetails.time_left !== "" &&
               !productDetails.has_bid && (
                 <TouchableOpacity
                   onPress={handlePlaceBid}
@@ -1346,6 +1352,9 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
               sellerId: productDetails.seller.id,
               sellerName: productDetails.seller.name,
               sellerImage: productDetails.seller.image,
+              productPrice: !!productDetails.buy_price
+                ? +productDetails.buy_price
+                : 0,
             });
           }}>
           <AntDesign name="questioncircleo" size={25} color={"#FFFFFF"} />

@@ -6,7 +6,7 @@ import useAppSnackbar from "@hooks/useAppSnackbar";
 import {FlatList} from "react-native-gesture-handler";
 import {Text, Title, useTheme} from "react-native-paper";
 import type {DefaultTheme} from "react-native-paper";
-import {RouteProp, useRoute} from "@react-navigation/native";
+import {RouteProp, useNavigation, useRoute} from "@react-navigation/native";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
@@ -27,6 +27,7 @@ import {
   useLazyGetQuestionsQuery,
   useCreateAskQuestionMutation,
 } from "@data/laravel/services/question";
+import {useAppSelector} from "@hooks/store";
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -89,6 +90,8 @@ const renderEachQuestion = ({
 
 const AskQuestionScreen = ({route}: Props) => {
   const theme = useTheme();
+  const rootNavigation = useNavigation();
+  const profile = useAppSelector(state => state.auth.profile);
   const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
   const [getQuestions, {isFetching: isFetchingNextPage}] =
     useLazyGetQuestionsQuery();
@@ -153,9 +156,22 @@ const AskQuestionScreen = ({route}: Props) => {
   const handleAskQuestion = (questionParam: string) => {
     askQuestion({
       message: questionParam,
-      product_id: +route.params.productId,
-      receiver_id: +route.params.sellerId,
-    });
+      product_id: route.params.productId,
+      receiver_id: route.params.sellerId,
+    })
+      .unwrap()
+      .then(data => {
+        if ("success" in data) {
+          rootNavigation.navigate(RootStackRoutes.SINGLE_CONVERSATION, {
+            userName: profile!.name,
+            userId: route.params.sellerId,
+            userImage: profile!.profile_image,
+            productId: route.params.productId,
+            productPrice: route.params.productPrice,
+            productImage: route.params.productImage,
+          });
+        }
+      });
   };
 
   const getNextQuestions = React.useCallback(async () => {
@@ -331,7 +347,9 @@ function ListHeaderComponent() {
 
 function ListFooterComponent() {
   const theme = useTheme();
+  const rootNavigation = useNavigation();
   const [question, setQuestion] = React.useState("");
+  const profile = useAppSelector(state => state.auth.profile);
   const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
   const route =
     useRoute<
@@ -383,8 +401,19 @@ function ListFooterComponent() {
       receiver_id: +route.params.sellerId,
     })
       .unwrap()
-      .then(() => {
+      .then(data => {
         setQuestion("");
+
+        if ("success" in data) {
+          rootNavigation.navigate(RootStackRoutes.SINGLE_CONVERSATION, {
+            userName: profile!.name,
+            userId: route.params.sellerId,
+            userImage: profile!.profile_image,
+            productId: route.params.productId,
+            productPrice: route.params.productPrice,
+            productImage: route.params.productImage,
+          });
+        }
       });
   };
 

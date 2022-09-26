@@ -96,6 +96,8 @@ export default function UserOfferNBids() {
   return (
     <FlatList<typeof offerNBids[0]>
       data={offerNBids}
+      onRefresh={refetch}
+      refreshing={isFetchingInitial}
       renderItem={({item}) => {
         if (item.type === "skeleton") {
           return (

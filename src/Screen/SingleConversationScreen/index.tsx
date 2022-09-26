@@ -213,7 +213,7 @@ function UserAction({product}: {product: ProductDetails}) {
         Update Offer
       </Text>
     </TouchableOpacity>
-  ) : product.time_left !== "0 days 0 hours 0 mins 0 secs" ? (
+  ) : product.time_left !== "" ? (
     <TouchableOpacity
       onPress={() => {
         navigation.navigate(RootStackRoutes.PLACE_BID, {
@@ -412,8 +412,7 @@ function SellerAction({product}: {product: ProductDetails}) {
           source={require("@assets/Images/van.png")}
         />
 
-        {product.has_bid &&
-        product.time_left !== "0 days 0 hours 0 mins 0 secs" ? (
+        {product.has_bid && product.time_left !== "" ? (
           <Text
             style={{
               fontSize: 12,
