@@ -69,8 +69,8 @@ type Props = NativeStackScreenProps<
 
 export default function SellerReviewScreen({route}: Props) {
   const theme = useTheme();
-  const {enqueueSuccessSnackbar} = useAppSnackbar();
-  const [myRating, setMyRating] = React.useState(0);
+  const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
+  const [myRating, setMyRating] = React.useState("");
   const [myReview, setMyReview] = React.useState("");
   const [getSellerReviews, {isFetching: isFetchingNextPage}] =
     useLazyGetSellerReviewsQuery();
@@ -106,14 +106,22 @@ export default function SellerReviewScreen({route}: Props) {
   }, [isSuccess, data, enqueueSuccessSnackbar]);
 
   const handleSendReview = React.useCallback(() => {
+    if (myRating === "") {
+      enqueueErrorSnackbar({
+        text1: "Invalid data",
+        text2: "Please add your rating",
+      });
+      return;
+    }
+
     createReview({
-      rating: myRating,
+      rating: +myRating,
       review: myReview,
       seller_id: +route.params.sellerId,
     })
       .unwrap()
       .then(() => {
-        setMyRating(0);
+        setMyRating("");
         setMyReview("");
       });
   }, [createReview, route.params.sellerId, myRating, myReview]);

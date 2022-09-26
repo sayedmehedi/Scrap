@@ -1,11 +1,12 @@
 import React from "react";
 import styles from "./styles";
 import {Rating} from "react-native-elements";
-import {useAppSelector} from "@hooks/store";
 import auth from "@react-native-firebase/auth";
+import {api} from "@data/laravel/services/api";
 import Entypo from "react-native-vector-icons/Entypo";
 import {useNavigation} from "@react-navigation/native";
 import ProfileImageUploader from "./ProfileImageUploader";
+import {useAppDispatch, useAppSelector} from "@hooks/store";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import {useLogoutMutation} from "@data/laravel/services/auth";
 import {selectIsAuthenticated} from "@store/slices/authSlice";
@@ -37,6 +38,7 @@ type Props = NativeStackScreenProps<
 type AuthNavigationProps = NativeStackNavigationProp<AuthStackParamList>;
 
 const ProfileScreen = ({navigation: profileNavigation}: Props) => {
+  const dispatch = useAppDispatch();
   const [logout] = useLogoutMutation();
   const rootNavigation = useNavigation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -56,7 +58,11 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
             await auth().signOut();
           } catch (_error) {
           } finally {
-            logout();
+            logout()
+              .unwrap()
+              .then(() => {
+                dispatch(api.util.resetApiState());
+              });
           }
         },
       },
@@ -80,43 +86,51 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
       }}>
       <View style={{alignSelf: "center", alignItems: "center"}}>
         <ProfileImageUploader />
-        <Text style={{fontFamily: "Inter-Bold", fontSize: 20}}>
-          {profile?.name}
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginVertical: 5,
+        <TouchableOpacity
+          style={{alignSelf: "center", alignItems: "center"}}
+          onPress={() => {
+            rootNavigation.navigate(RootStackRoutes.SELLER_REVIEW, {
+              sellerId: profile!.id,
+            });
           }}>
-          <Rating
-            readonly
-            imageSize={12}
-            showRating={false}
-            startingValue={profile?.rating ?? 0}
-          />
-          <Text style={{marginLeft: 8}}>
-            ({profile?.rating?.toFixed(2) ?? 0} rating)
+          <Text style={{fontFamily: "Inter-Bold", fontSize: 20}}>
+            {profile?.name}
           </Text>
-        </View>
-        <Text
-          style={{
-            fontFamily: "Inter-Regular",
-            fontSize: 12,
-            color: "#667085",
-            marginVertical: 5,
-          }}>
-          {profile?.location}
-        </Text>
-        <Text
-          style={{
-            fontFamily: "Inter-Regular",
-            fontSize: 12,
-            color: "#667085",
-            marginBottom: 5,
-          }}>
-          Joined {profile?.joined_date}
-        </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginVertical: 5,
+            }}>
+            <Rating
+              readonly
+              imageSize={12}
+              showRating={false}
+              startingValue={profile?.rating ?? 0}
+            />
+            <Text style={{marginLeft: 8}}>
+              ({profile?.rating?.toFixed(2) ?? 0} rating)
+            </Text>
+          </View>
+          <Text
+            style={{
+              fontFamily: "Inter-Regular",
+              fontSize: 12,
+              color: "#667085",
+              marginVertical: 5,
+            }}>
+            {profile?.location}
+          </Text>
+          <Text
+            style={{
+              fontFamily: "Inter-Regular",
+              fontSize: 12,
+              color: "#667085",
+              marginBottom: 5,
+            }}>
+            Joined {profile?.joined_date}
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <View style={{paddingHorizontal: 12}}>

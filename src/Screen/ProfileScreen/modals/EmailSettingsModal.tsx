@@ -5,6 +5,7 @@ import auth from "@react-native-firebase/auth";
 import {AuthStackParamList} from "@src/types";
 import {logout} from "@store/slices/authSlice";
 import Toast from "react-native-toast-message";
+import {api} from "@data/laravel/services/api";
 import {AuthStackRoutes} from "@constants/routes";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {Controller, useForm} from "react-hook-form";
@@ -70,6 +71,8 @@ export default function EmailSettingsModal({
       } catch (_error) {}
 
       dispatch(logout());
+      dispatch(api.util.resetApiState());
+
       enqueueInfoSnackbar({
         text1: "Info",
         text2: "You need to verify your email",

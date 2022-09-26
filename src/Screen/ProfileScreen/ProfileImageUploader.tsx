@@ -25,9 +25,17 @@ export default function ProfileImageUploader() {
   }, [isSuccess, isLoading, isError]);
 
   React.useEffect(() => {
-    if (isSuccess && !!data) {
+    if (isSuccess && !!data && "success" in data) {
       enqueueSuccessSnackbar({
-        text1: data.success,
+        text1: "Success",
+        text2: data.success,
+      });
+    }
+
+    if (isSuccess && !!data && "error" in data) {
+      enqueueSuccessSnackbar({
+        text1: "Error",
+        text2: data.error,
       });
     }
   }, [isSuccess, data, enqueueSuccessSnackbar]);

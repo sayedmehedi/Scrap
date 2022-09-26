@@ -225,18 +225,52 @@ const PublicProfileScreen = ({route}: Props) => {
                     borderTopColor: "#E2E2E2",
                     borderBottomColor: "#E2E2E2",
                   }}>
-                  <View style={styles.socialMediaContainer}>
-                    <Fontisto name="email" size={20} color={"#707070"} />
+                  <View
+                    style={[
+                      styles.socialMediaContainer,
+                      {
+                        backgroundColor: profile?.is_email_verified
+                          ? "red"
+                          : "#D0D0D0",
+                      },
+                    ]}>
+                    <Fontisto
+                      name="email"
+                      size={20}
+                      color={profile?.is_email_verified ? "white" : "#707070"}
+                    />
                   </View>
 
-                  <View style={styles.socialMediaContainer}>
-                    <Fontisto name="email" size={20} color={"#707070"} />
+                  <View
+                    style={[
+                      styles.socialMediaContainer,
+                      {
+                        backgroundColor: profile?.is_phone_verfied
+                          ? "red"
+                          : "#D0D0D0",
+                      },
+                    ]}>
+                    <Feather
+                      name="phone"
+                      size={20}
+                      color={profile?.is_phone_verfied ? "white" : "#707070"}
+                    />
                   </View>
-                  <View style={styles.socialMediaContainer}>
-                    <Feather name="phone" size={20} color={"#707070"} />
-                  </View>
-                  <View style={styles.socialMediaContainer}>
-                    <Feather name="facebook" size={20} color={"#707070"} />
+
+                  <View
+                    style={[
+                      styles.socialMediaContainer,
+                      {
+                        backgroundColor: profile?.is_fb_connected
+                          ? "red"
+                          : "#D0D0D0",
+                      },
+                    ]}>
+                    <Feather
+                      name="facebook"
+                      size={20}
+                      color={profile?.is_fb_connected ? "white" : "#707070"}
+                    />
                   </View>
                 </View>
 
@@ -247,7 +281,7 @@ const PublicProfileScreen = ({route}: Props) => {
                     color: "#344054",
                     marginVertical: 10,
                   }}>
-                  This Seller Product
+                  Seller Products
                 </Text>
               </View>
             </React.Fragment>

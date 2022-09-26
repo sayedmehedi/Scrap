@@ -5,23 +5,25 @@ import useAppSnackbar from "@hooks/useAppSnackbar";
 import Feather from "react-native-vector-icons/Feather";
 import {View, Text, TouchableOpacity} from "react-native";
 import {
-  useLoginWithFacebookMutation,
   useSocialLoginMutation,
+  useLoginWithFacebookMutation,
+  useLazyGetProfileQuery,
 } from "@data/laravel/services/auth";
 
 export default function FacebookSettingsItem({}: {}) {
   const profile = useAppSelector(state => state.auth.profile);
-  // const [openModal, setOpenModal] = React.useState(false);
 
   const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
 
   const [loginWithFacebook, {isLoading: isLoadingFbCreds}] =
     useLoginWithFacebookMutation();
 
+  const [getProfileData] = useLazyGetProfileQuery();
+
   const [socialLogin, {isLoading: isLoadingSocialLogin}] =
     useSocialLoginMutation();
 
-  function onGoogleButtonPress() {
+  function onFacebookButtonPress() {
     loginWithFacebook()
       .unwrap()
       .then(data => {
@@ -30,8 +32,10 @@ export default function FacebookSettingsItem({}: {}) {
       .then(data => {
         if (!!data && "success" in data) {
           enqueueSuccessSnackbar({
-            text1: data.success,
+            text1: "Facebook connected",
           });
+
+          getProfileData();
         }
 
         if (!!data && "error" in data) {
@@ -55,12 +59,12 @@ export default function FacebookSettingsItem({}: {}) {
 
         {!profile?.is_fb_connected ? (
           <TouchableOpacity
-            onPress={onGoogleButtonPress}
+            onPress={onFacebookButtonPress}
             disabled={isLoadingFbCreds || isLoadingSocialLogin}>
             <Text style={styles.editText}>Connect</Text>
           </TouchableOpacity>
         ) : (
-          <Text>Connected</Text>
+          <Text style={{color: "red"}}>Connected</Text>
         )}
       </View>
     </React.Fragment>

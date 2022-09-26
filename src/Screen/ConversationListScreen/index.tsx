@@ -127,6 +127,7 @@ const ConversationListScreen = () => {
             onEndReached={getNextConversations}
             contentContainerStyle={{
               padding: 15,
+              paddingBottom: 90,
             }}
             ListEmptyComponent={() => (
               <View>

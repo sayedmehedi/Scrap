@@ -193,7 +193,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
       </View>
 
       {!coverImage ? (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleSelectImage}>
           <Text
             style={{
               fontSize: 16,

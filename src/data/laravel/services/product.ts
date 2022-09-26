@@ -3,6 +3,7 @@ import {container} from "@src/appEngine";
 import {QUERY_KEYS} from "@constants/query";
 import {AxiosError, AxiosInstance} from "axios";
 import {ApplicationError} from "@core/domain/ApplicationError";
+import {REACT_APP_METALS_API_TOKEN} from "react-native-dotenv";
 import {ServiceProviderTypes} from "@core/serviceProviderTypes";
 import {
   ProductDetails,
@@ -11,11 +12,11 @@ import {
   FilterProductsResponse,
   FilterProductQueryParams,
   GetSavedProductsReponse,
+  GetSellerProductsReponse,
+  GetProductEditInfoResponse,
   GetSaleOrArchivedProductsReponse,
   GetProductMetalsLivePriceResponse,
   GetProductMetalsLivePriceRequest,
-  GetSellerProductsReponse,
-  GetProductEditInfoResponse,
 } from "@src/types";
 
 const metalsApiClient = container.get<AxiosInstance>(
@@ -312,8 +313,7 @@ export const productApi = api.injectEndpoints({
             "https://metals-api.com/api/fluctuation",
             {
               params: {
-                access_key:
-                  "lism66o45m1yy7598jgr16763m9sr5si26cn3ywyx7iqvnlhaquggcpnxp26",
+                access_key: REACT_APP_METALS_API_TOKEN,
                 ...data,
                 symbols: data.symbols.join(","),
               },

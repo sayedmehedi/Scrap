@@ -169,8 +169,9 @@ export type RootStackParamList = {
     sellerImage: string;
 
     productId: number;
-    productImage: string;
     productName: string;
+    productImage: string;
+    productPrice: number;
   };
   [RootStackRoutes.NOTIFICATIONS]: undefined;
   [RootStackRoutes.SEARCH_PRODUCT]: undefined;
