@@ -2,13 +2,13 @@ import {api} from "./api";
 import {Axios} from "axios";
 import {container} from "@src/appEngine";
 import {QUERY_KEYS} from "@constants/query";
-import auth, {FirebaseAuthTypes} from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import LoginUserDto from "@core/domain/dto/LoginUserDto";
 import RegisterUserDto from "@core/domain/dto/RegisterUserDto";
 import {ApplicationError} from "@core/domain/ApplicationError";
 import {ServiceProviderTypes} from "@core/serviceProviderTypes";
 import {AccessToken, LoginManager} from "react-native-fbsdk-next";
+import auth, {FirebaseAuthTypes} from "@react-native-firebase/auth";
 import {isErrorWithMessage, isNativeModuleError} from "@utils/error-handling";
 import {
   statusCodes,
@@ -94,8 +94,7 @@ export const authApi = api.injectEndpoints({
             userCreds.user.displayName,
           );
 
-          const userLoginInfo = (await firestore()
-            .collection("Users")
+          const userLoginInfo = (await usersCollection
             .doc(userCreds.user.uid)
             .get()) as {
             facebook?: {
@@ -224,8 +223,7 @@ export const authApi = api.injectEndpoints({
             userCreds.user.displayName,
           );
 
-          const userLoginInfo = (await firestore()
-            .collection("Users")
+          const userLoginInfo = (await usersCollection
             .doc(userCreds.user.uid)
             .get()) as {
             google?: {
