@@ -3,24 +3,16 @@ import styles from "./styles";
 import {Rating} from "react-native-elements";
 import auth from "@react-native-firebase/auth";
 import {api} from "@data/laravel/services/api";
+import {ProfileStackParamList} from "@src/types";
 import Entypo from "react-native-vector-icons/Entypo";
 import {useNavigation} from "@react-navigation/native";
 import ProfileImageUploader from "./ProfileImageUploader";
 import {useAppDispatch, useAppSelector} from "@hooks/store";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import {useLogoutMutation} from "@data/laravel/services/auth";
-import {selectIsAuthenticated} from "@store/slices/authSlice";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import {AuthStackParamList, ProfileStackParamList} from "@src/types";
-import {
-  AuthStackRoutes,
-  ProfileStackRoutes,
-  RootStackRoutes,
-} from "@constants/routes";
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
+import {ProfileStackRoutes, RootStackRoutes} from "@constants/routes";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {
   View,
   Text,
@@ -35,13 +27,10 @@ type Props = NativeStackScreenProps<
   typeof ProfileStackRoutes.PROFILE_SCREEN
 >;
 
-type AuthNavigationProps = NativeStackNavigationProp<AuthStackParamList>;
-
 const ProfileScreen = ({navigation: profileNavigation}: Props) => {
   const dispatch = useAppDispatch();
   const [logout] = useLogoutMutation();
   const rootNavigation = useNavigation();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const profile = useAppSelector(state => state.auth.profile);
 
   const signoutPress = () =>
@@ -67,16 +56,6 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
         },
       },
     ]);
-
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      // @ts-ignore
-      rootNavigation.replace(RootStackRoutes.AUTH, {
-        screen: AuthStackRoutes.LOGIN,
-        params: {},
-      });
-    }
-  }, [isAuthenticated, rootNavigation]);
 
   return (
     <ScrollView

@@ -11,10 +11,14 @@ import {
   RootStackRoutes,
   ProfileStackRoutes,
   PostItemStackRoutes,
+  ProductActionsStackRoutes,
+  LocationStackRoutes,
+  ChatStackRoutes,
+  SaleStackRoutes,
 } from "@constants/routes";
+import {Asset} from "react-native-image-picker";
 import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {Asset} from "react-native-image-picker";
 
 export type HomeStackParamList = {
   [HomeStackRoutes.HOME]: undefined;
@@ -37,6 +41,48 @@ export type HomeStackParamList = {
   };
 };
 
+export type LocationStackParamList = {
+  [LocationStackRoutes.LOCATION_PROMPT]: undefined;
+  [LocationStackRoutes.CHOOSE_LOCATION]: undefined;
+};
+
+export type ProductActionsStackParamList = {
+  [ProductActionsStackRoutes.MAKE_OFFER]: {
+    buyPrice: number;
+    totalOffers: number;
+    productName: string;
+    shippingCost: number;
+    productImage?: string;
+    productId: number;
+  };
+  [ProductActionsStackRoutes.PLACE_BID]: {
+    totalBids: number;
+    productName: string;
+    timeLeftToBid: string;
+    productImage?: string;
+    bidStartingPrice: number;
+    productId: number;
+  };
+  [ProductActionsStackRoutes.REVIEW_OFFER]: {
+    offerPrice: number;
+    shippingCost: number;
+    productId: number;
+  };
+  [ProductActionsStackRoutes.ASK_QUESTION]: {
+    sellerId: number;
+    sellerName: string;
+    sellerImage: string;
+
+    productId: number;
+    productName: string;
+    productImage: string;
+    productPrice: number;
+  };
+
+  [ProductActionsStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+  [ProductActionsStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+};
+
 export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
   CompositeScreenProps<
     NativeStackScreenProps<HomeStackParamList, T>,
@@ -44,6 +90,9 @@ export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
   >;
 
 export type ProfileStackParamList = {
+  [ProfileStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+  [ProfileStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+
   [ProfileStackRoutes.CONTACT]: undefined;
   [ProfileStackRoutes.PURCHASES]: undefined;
   [ProfileStackRoutes.TRANSACTION]: undefined;
@@ -55,8 +104,33 @@ export type ProfileStackParamList = {
   };
   [ProfileStackRoutes.ACCOUNT_SETTING]: undefined;
 };
-export type ChatStackParamList = {};
+
+export type ChatStackParamList = {
+  [ChatStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+  [ChatStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+
+  [ChatStackRoutes.CONVERSATION_LIST]: undefined;
+  [ChatStackRoutes.SINGLE_CONVERSATION]: {
+    userId: number;
+    userName: string;
+    productId: number;
+    userImage: string;
+    productPrice: number;
+    productImage: string;
+  };
+};
+
+export type SaleOrArchiveStackParamList = {
+  [SaleStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+  [SaleStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+
+  [SaleStackRoutes.SALE_OR_ARCHIVE]: undefined;
+};
+
 export type PostItemStackParamList = {
+  [PostItemStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+  [PostItemStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+
   [PostItemStackRoutes.SUCCESS]: undefined;
   [PostItemStackRoutes.ADD_PRICE]: {
     productEditInfo?: ProductEditInfo;
@@ -102,11 +176,12 @@ export type PostItemStackParamList = {
 };
 
 export type HomeTabParamList = {
-  [HomeTabRoutes.SELLING]: undefined;
+  [HomeTabRoutes.SALE]: NavigatorScreenParams<SaleOrArchiveStackParamList>;
   [HomeTabRoutes.HOME]: NavigatorScreenParams<HomeStackParamList>;
   [HomeTabRoutes.CHAT]: NavigatorScreenParams<ChatStackParamList>;
   [HomeTabRoutes.PROFILE]: NavigatorScreenParams<ProfileStackParamList>;
   [HomeTabRoutes.POST_ITEM]: NavigatorScreenParams<PostItemStackParamList>;
+  [HomeTabRoutes.EDIT_ITEM]: NavigatorScreenParams<PostItemStackParamList>;
 };
 
 export type HomeTabScreenProps<T extends keyof HomeTabParamList> =
@@ -140,39 +215,9 @@ export type AuthStackScreenProps<T extends keyof AuthStackParamList> =
   >;
 
 export type RootStackParamList = {
-  [RootStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+  [RootStackRoutes.PRODUCT_ACTIONS]: NavigatorScreenParams<ProductActionsStackParamList>;
   [RootStackRoutes.HOME]: NavigatorScreenParams<HomeTabParamList>;
-  [RootStackRoutes.MAKE_OFFER]: {
-    buyPrice: number;
-    totalOffers: number;
-    productName: string;
-    shippingCost: number;
-    productImage?: string;
-    productId: number;
-  };
-  [RootStackRoutes.PLACE_BID]: {
-    totalBids: number;
-    productName: string;
-    timeLeftToBid: string;
-    productImage?: string;
-    bidStartingPrice: number;
-    productId: number;
-  };
-  [RootStackRoutes.REVIEW_OFFER]: {
-    offerPrice: number;
-    shippingCost: number;
-    productId: number;
-  };
-  [RootStackRoutes.ASK_QUESTION]: {
-    sellerId: number;
-    sellerName: string;
-    sellerImage: string;
 
-    productId: number;
-    productName: string;
-    productImage: string;
-    productPrice: number;
-  };
   [RootStackRoutes.NOTIFICATIONS]: undefined;
   [RootStackRoutes.SEARCH_PRODUCT]: undefined;
   [RootStackRoutes.SELLER_REVIEW]: {
@@ -195,27 +240,9 @@ export type RootStackParamList = {
   [RootStackRoutes.PRODUCT_DETAILS]: {
     productId: number;
   };
-  [RootStackRoutes.SINGLE_CONVERSATION]: {
-    userId: number;
-    userName: string;
-    productId: number;
-    userImage: string;
-    productPrice: number;
-    productImage: string;
-  };
+
   [RootStackRoutes.CONFIRM_PURCHASE]: undefined;
-  [RootStackRoutes.LOCATION_PROMPT]: {
-    nextScreen?: {
-      name: string;
-      params: Record<string, any>;
-    };
-  };
-  [RootStackRoutes.CHOOSE_LOCATION]: {
-    nextScreen?: {
-      name: string;
-      params: Record<string, any>;
-    };
-  };
+
   [RootStackRoutes.ADD_SHIPPING_ADDRESS]: undefined;
 };
 

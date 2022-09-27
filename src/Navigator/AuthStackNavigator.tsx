@@ -1,13 +1,11 @@
 import React from "react";
 import {forFade} from "@utils/misc";
 import {useTheme} from "react-native-paper";
-import {TouchableOpacity} from "react-native";
 import {AuthStackParamList} from "@src/types";
+import {AuthStackRoutes} from "../constants/routes";
 import OtpScreen from "@src/Screen/AuthScreen/OtpScreen";
 import LoginScreen from "../Screen/AuthScreen/LoginScreen";
 import {createStackNavigator} from "@react-navigation/stack";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import {AuthStackRoutes, RootStackRoutes} from "../constants/routes";
 import RegistrationScreen from "../Screen/AuthScreen/RegistrationScreen";
 import ResetPasswordScreen from "../Screen/AuthScreen/ResetPasswordScreen";
 import ForgotPasswordScreen from "../Screen/AuthScreen/ForgotPasswordScreen";
@@ -32,35 +30,7 @@ const AuthStackNavigator = () => {
         headerTintColor: theme.colors.white,
         cardStyleInterpolator: forFade,
       }}>
-      <AuthStack.Screen
-        options={({navigation, route}) => ({
-          title: "Login",
-          headerLeft: ({onPress}) => {
-            return (
-              <TouchableOpacity
-                style={{paddingLeft: 15}}
-                onPress={() => {
-                  if (route.params.backScreen) {
-                    navigation.navigate(
-                      route.params.backScreen.name,
-                      route.params.backScreen.params,
-                    );
-                  } else {
-                    navigation.navigate(RootStackRoutes.HOME);
-                  }
-                }}>
-                <MaterialIcons
-                  size={22}
-                  color={"white"}
-                  name="keyboard-backspace"
-                />
-              </TouchableOpacity>
-            );
-          },
-        })}
-        component={LoginScreen}
-        name={AuthStackRoutes.LOGIN}
-      />
+      <AuthStack.Screen component={LoginScreen} name={AuthStackRoutes.LOGIN} />
 
       <AuthStack.Screen
         options={{
