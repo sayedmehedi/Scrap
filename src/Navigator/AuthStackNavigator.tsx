@@ -27,10 +27,8 @@ const AuthStackNavigator = () => {
         headerTitleStyle: {
           fontSize: 18,
           fontFamily: "Inter-Bold",
-          // @ts-ignore
           color: theme.colors.white,
         },
-        // @ts-ignore
         headerTintColor: theme.colors.white,
         cardStyleInterpolator: forFade,
       }}>

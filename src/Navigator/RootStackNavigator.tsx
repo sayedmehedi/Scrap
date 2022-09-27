@@ -118,7 +118,7 @@ const RootStackNavigator = () => {
         component={PlaceBidScreen}
         name={RootStackRoutes.PLACE_BID}
         options={{
-          title: !isAuthenticated ? "" : "Place Bid",
+          title: "Place Bid",
           headerTitleAlign: "center",
         }}
       />
@@ -127,7 +127,7 @@ const RootStackNavigator = () => {
         component={MakeOfferScreen}
         name={RootStackRoutes.MAKE_OFFER}
         options={{
-          title: !isAuthenticated ? "" : "Make an offer",
+          title: "Make an offer",
           headerTitleAlign: "center",
         }}
       />
@@ -140,7 +140,7 @@ const RootStackNavigator = () => {
 
       <RootStack.Screen
         component={AskQuestionScreen}
-        options={{title: !isAuthenticated ? "" : "Ask Question"}}
+        options={{title: "Ask Question"}}
         name={RootStackRoutes.ASK_QUESTION}
       />
 
