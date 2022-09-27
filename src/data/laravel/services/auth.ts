@@ -2,7 +2,6 @@ import {api} from "./api";
 import {Axios} from "axios";
 import {container} from "@src/appEngine";
 import {QUERY_KEYS} from "@constants/query";
-import firestore from "@react-native-firebase/firestore";
 import LoginUserDto from "@core/domain/dto/LoginUserDto";
 import RegisterUserDto from "@core/domain/dto/RegisterUserDto";
 import {ApplicationError} from "@core/domain/ApplicationError";
@@ -28,8 +27,6 @@ import {
   GetNotificationsResponse,
   VerifyEmailRequest,
 } from "@src/types";
-
-const usersCollection = firestore().collection("Users");
 
 const apiClient = container.get<Axios>(ServiceProviderTypes.HttpClient);
 
@@ -76,6 +73,12 @@ export const authApi = api.injectEndpoints({
     }),
     loginWithGoogle: builder.mutation<SocialLoginResponse, void>({
       async queryFn() {
+        // First e user er login info anbo
+        // jdi kono info na thake tar mane ety first google diye login
+        // sei khetre just login kre info gula store kra
+        // noile jdi info thake r oi info er mddhe google er info na thake to eta google diye first time r fb diye already hoe gese
+        // ty age fb er credentials ta diye login kre then google er take link kra
+
         // Get the users ID token
         try {
           const {idToken} = await GoogleSignin.signIn();
@@ -93,41 +96,6 @@ export const authApi = api.injectEndpoints({
             userCreds.user.email,
             userCreds.user.displayName,
           );
-
-          const userLoginInfo = (await usersCollection
-            .doc(userCreds.user.uid)
-            .get()) as {
-            facebook?: {
-              connected: boolean;
-              credential: FirebaseAuthTypes.AuthCredential;
-            };
-          };
-
-          if (!!userLoginInfo && !userLoginInfo.facebook?.connected) {
-            await firestore()
-              .collection("Users")
-              .doc(userCreds.user.uid)
-              .update({
-                google: {
-                  connected: true,
-                  credential: googleCredential,
-                },
-              });
-
-            await userCreds.user.linkWithCredential(
-              userLoginInfo.facebook!.credential,
-            );
-          } else {
-            await firestore()
-              .collection("Users")
-              .doc(userCreds.user.uid)
-              .set({
-                google: {
-                  connected: true,
-                  credential: googleCredential,
-                },
-              });
-          }
 
           return {
             data: {
@@ -222,43 +190,6 @@ export const authApi = api.injectEndpoints({
             userCreds.user.email,
             userCreds.user.displayName,
           );
-
-          const userLoginInfo = (await usersCollection
-            .doc(userCreds.user.uid)
-            .get()) as {
-            google?: {
-              connected: boolean;
-              credential: FirebaseAuthTypes.AuthCredential;
-            };
-          };
-
-          console.log("userLoginInfo", userLoginInfo);
-
-          if (!!userLoginInfo && !userLoginInfo.google?.connected) {
-            await firestore()
-              .collection("Users")
-              .doc(userCreds.user.uid)
-              .update({
-                facebook: {
-                  connected: true,
-                  credential: facebookCredential,
-                },
-              });
-
-            await userCreds.user.linkWithCredential(
-              userLoginInfo.google!.credential,
-            );
-          } else {
-            await firestore()
-              .collection("Users")
-              .doc(userCreds.user.uid)
-              .set({
-                facebook: {
-                  connected: true,
-                  credential: facebookCredential,
-                },
-              });
-          }
 
           return {
             data: {
