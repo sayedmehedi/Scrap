@@ -1031,12 +1031,14 @@ export type SocialLoginRequest = {
   email: string;
   name: string;
   firebase_auth_id: string;
+  provider: "google" | "facebook";
 };
 
 export type SocialLoginResponse = {
   email: string;
   name: string;
   firebase_auth_id: string;
+  provider: "google" | "facebook";
 };
 
 export type VerifyEmailRequest = {

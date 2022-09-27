@@ -99,6 +99,7 @@ export const authApi = api.injectEndpoints({
 
           return {
             data: {
+              provider: "google",
               email: userCreds.user.email!,
               name: userCreds.user.displayName!,
               firebase_auth_id: userCreds.user.uid!,
@@ -193,6 +194,7 @@ export const authApi = api.injectEndpoints({
 
           return {
             data: {
+              provider: "facebook",
               email: userCreds.user.email!,
               name: userCreds.user.displayName!,
               firebase_auth_id: userCreds.user.uid!,
