@@ -800,7 +800,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                 }}>
                 <Feather name="map-pin" size={14} color={"#191F2B"} />
                 <Text style={{fontFamily: "Inter-Regular", color: "#667085"}}>
-                  {productDetails.location}: {productDetails.distance}
+                  {productDetails.location} - {productDetails.distance}
                 </Text>
               </View>
             </View>

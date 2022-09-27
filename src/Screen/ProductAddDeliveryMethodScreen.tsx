@@ -203,10 +203,11 @@ export default function ProductAddDeliveryMethodScreen({
   }, [isLoadingCategories, packagePages]);
 
   const {
+    reset,
+    watch,
     control,
     setValue,
     handleSubmit,
-    watch,
     formState: {errors},
   } = useForm<FormValues>({
     defaultValues: {
@@ -218,15 +219,22 @@ export default function ProductAddDeliveryMethodScreen({
   });
 
   React.useEffect(() => {
+    return () => {
+      console.log("first");
+      reset();
+    };
+  }, [navigation, reset]);
+
+  React.useEffect(() => {
     if (route.params.productEditInfo) {
       const {is_locale, package_id, is_shipping} = route.params.productEditInfo;
 
       setValue("package", {
-        id: package_id,
-        name: "",
         price: 0,
-        size: "",
         weight: 0,
+        id: package_id.id,
+        name: package_id.name,
+        size: package_id.size,
       });
 
       setValue("isLocale", is_locale);
@@ -245,7 +253,14 @@ export default function ProductAddDeliveryMethodScreen({
   }, [profile, setValue, route.params]);
 
   const handlePostItem = handleSubmit(values => {
+    const images = [...route.params.productGalleryImages];
+
+    if (route.params.productCoverImage) {
+      images.push(route.params.productCoverImage);
+    }
+
     upsertProduct({
+      images,
       location: values.location,
       latitude: profile!.latitude!,
       longitude: profile!.longitude!,
@@ -263,18 +278,14 @@ export default function ProductAddDeliveryMethodScreen({
       starting_price: route.params.startingPrice,
       is_shipping: values.isShipping ? "1" : "0",
       sub_category_id: route.params.subCategoryId,
+      product_id: route.params.productEditInfo?.id,
       is_list_now: route.params.isListNow ? "1" : "0",
       show_metal_price: route.params.showMetalPrice ? "1" : "0",
       expected_date_for_list: route.params.expectedDateForList,
-      images: [
-        route.params.productCoverImage,
-        ...route.params.productGalleryImages,
-      ],
       onUploadProgress(event) {
         const progress = Math.round(event.loaded / event.total) * 100;
         setUploadProgress(progress);
       },
-      product_id: route.params.productEditInfo?.id,
     });
   });
 

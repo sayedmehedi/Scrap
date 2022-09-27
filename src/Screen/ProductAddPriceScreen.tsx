@@ -109,6 +109,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
   React.useEffect(() => {
     if (route.params.productEditInfo) {
       const {
+        quantity,
         duration,
         buy_price,
         is_list_now,
@@ -118,6 +119,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
         expected_date_for_list,
       } = route.params.productEditInfo;
 
+      setValue("quantity", quantity);
       setValue("buynowprice", buy_price.toString());
       setValue("startingPrice", starting_price.toString());
 
@@ -211,7 +213,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
         d = d.set("minutes", values.beginMinute.value);
       }
 
-      expectedDateForList = d.toString();
+      expectedDateForList = d.format("YYYY-MM-DD HH:mm:ss");
     }
 
     navigation.navigate(PostItemStackRoutes.ADD_DELIVERY_METHOD, {

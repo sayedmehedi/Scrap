@@ -129,16 +129,36 @@ const LoginScreen = ({navigation, route}: Props) => {
           nextScreen: route.params.nextScreen,
         });
       } else if (route.params?.nextScreen) {
-        // @ts-ignore
-        navigation.replace(
-          // @ts-ignore
-          route.params?.nextScreen.name,
-          // @ts-ignore
-          route.params?.nextScreen.params,
-        );
+        // // @ts-ignore
+        // navigation.replace(
+        //   // @ts-ignore
+        //   route.params!.nextScreen.name,
+        //   // @ts-ignore
+        //   route.params!.nextScreen.params,
+        // );
+
+        navigation.getParent()?.reset({
+          index: 0,
+          routes: [
+            {
+              name: route.params!.nextScreen.name,
+              params: route.params!.nextScreen.params,
+            },
+          ],
+        });
       } else {
         // @ts-ignore
-        navigation.replace(RootStackRoutes.HOME);
+        // navigation.replace(RootStackRoutes.HOME);
+
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              // @ts-ignore
+              name: RootStackRoutes.HOME,
+            },
+          ],
+        });
       }
     }
   }, [
@@ -146,6 +166,7 @@ const LoginScreen = ({navigation, route}: Props) => {
     route,
     navigation,
     profileData,
+    rootNavigation,
     isAuthenticated,
     isGettingProfileSuccess,
   ]);

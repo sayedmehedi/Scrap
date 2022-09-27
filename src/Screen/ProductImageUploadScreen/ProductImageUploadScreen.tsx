@@ -1,18 +1,15 @@
 import React from "react";
 import useAppSnackbar from "@hooks/useAppSnackbar";
-import {
-  PostItemStackParamList,
-  ProductEditInfo,
-  ProductEditInfoImage,
-} from "@src/types";
 import Entypo from "react-native-vector-icons/Entypo";
 import {PostItemStackRoutes} from "../../constants/routes";
+import {useFocusEffect} from "@react-navigation/native";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import {HelperText, Text, useTheme} from "react-native-paper";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
-import {TextInput, View, Alert, ScrollView, Image} from "react-native";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {TextInput, View, Alert, ScrollView, Image} from "react-native";
+import {ProductEditInfoImage, PostItemStackParamList} from "@src/types";
 import {
   Asset,
   launchCamera,
@@ -39,6 +36,19 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
   const [editInfoImages, setEditInfoImages] = React.useState<
     ProductEditInfoImage[]
   >([]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("edit info", route.params);
+      // Do something when the screen is focused
+
+      return () => {
+        navigation.setParams({
+          productEditInfo: undefined,
+        });
+      };
+    }, [navigation]),
+  );
 
   React.useEffect(() => {
     if (route.params?.productEditInfo) {
@@ -127,7 +137,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
   };
 
   const handleNextScreen = () => {
-    if (!coverImage) {
+    if (!coverImage && editInfoImages.length === 0) {
       enqueueErrorSnackbar({
         text1: "Please add a cover image",
       });
@@ -150,8 +160,8 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
 
     navigation.navigate(PostItemStackRoutes.ADD_DETAILS, {
       productTitle,
-      productCoverImage: coverImage,
       productGalleryImages: galleryImages,
+      productCoverImage: coverImage ?? undefined,
       productEditInfo: route.params?.productEditInfo,
     });
   };

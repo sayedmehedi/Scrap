@@ -65,15 +65,15 @@ export type PostItemStackParamList = {
     description: string;
     subCategoryId: number;
     productTitle: string;
-    productCoverImage: Asset;
+    productCoverImage?: Asset;
     productGalleryImages: Asset[];
     attributes: Record<number, string | number>;
   };
   [PostItemStackRoutes.ADD_DETAILS]: {
-    productEditInfo?: ProductEditInfo;
     productTitle: string;
-    productCoverImage: Asset;
+    productCoverImage?: Asset;
     productGalleryImages: Asset[];
+    productEditInfo?: ProductEditInfo;
   };
   [PostItemStackRoutes.UPLOAD_PHOTO]:
     | {
@@ -94,7 +94,7 @@ export type PostItemStackParamList = {
     buynowprice: number;
     subCategoryId: number;
     showMetalPrice: boolean;
-    productCoverImage: Asset;
+    productCoverImage?: Asset;
     expectedDateForList: string;
     productGalleryImages: Asset[];
     attributes: Record<number, string | number>;
@@ -912,9 +912,9 @@ export type GetProductMetalsLivePriceResponse =
   | {
       success: false;
       error: {
-        code: number;
+        code: MetalsApiErrorCode;
         type: string;
-        info: string;
+        info: MetalsApiErrorMessage;
       };
     };
 
@@ -1056,6 +1056,7 @@ export interface ProductEditInfo {
   id: number;
   user_id: number;
   title: string;
+  quantity: number;
   category: {
     id: number;
     title: string;
@@ -1081,7 +1082,11 @@ export interface ProductEditInfo {
   location: string;
   latitude: number;
   longitude: number;
-  package_id: number;
+  package_id: {
+    id: number;
+    name: string;
+    size: string;
+  };
   is_locale: boolean;
   is_shipping: boolean;
   files?: ProductEditInfoImage[];
@@ -1090,3 +1095,41 @@ export interface ProductEditInfo {
 export type GetProductEditInfoResponse = {
   item: ProductEditInfo;
 };
+
+export type MetalsApiErrorCode =
+  | 404
+  | 101
+  | 103
+  | 104
+  | 105
+  | 106
+  | 102
+  | 201
+  | 202
+  | 301
+  | 302
+  | 403
+  | 501
+  | 502
+  | 503
+  | 504
+  | 505;
+
+export type MetalsApiErrorMessage =
+  | "The requested resource does not exist."
+  | "No API Key was specified or an invalid API Key was specified."
+  | "The requested API endpoint does not exist."
+  | "The maximum allowed amount of monthly API requests has been reached."
+  | "The current subscription plan does not support this API endpoint."
+  | "The current request did not return any results."
+  | "The account this API request is coming from is inactive."
+  | "An invalid base currency has been entered."
+  | "One or more invalid symbols have been specified."
+  | "No date has been specified. [historical]"
+  | "An invalid date has been specified. [historical, convert]"
+  | "No or an invalid amount has been specified. [convert]"
+  | "No or an invalid timeframe has been specified. [timeseries]"
+  | "No or an invalid 'start_date' has been specified. [timeseries, fluctuation]"
+  | "No or an invalid 'end_date' has been specified. [timeseries, fluctuation]"
+  | "An invalid timeframe has been specified. [timeseries, fluctuation]"
+  | "The specified timeframe is too long, exceeding 365 days. [timeseries, fluctuation]";

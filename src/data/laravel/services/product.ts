@@ -7,6 +7,8 @@ import {REACT_APP_METALS_API_TOKEN} from "react-native-dotenv";
 import {ServiceProviderTypes} from "@core/serviceProviderTypes";
 import {
   ProductDetails,
+  MetalsApiErrorCode,
+  MetalsApiErrorMessage,
   UpsertProductRequest,
   PaginationQueryParams,
   FilterProductsResponse,
@@ -346,11 +348,18 @@ export const productApi = api.injectEndpoints({
               };
             }
           })
-          .catch(error => {
+          .catch(err => {
+            const error: AxiosError<{
+              success: false;
+              error: {
+                code: MetalsApiErrorCode;
+                info: MetalsApiErrorMessage;
+              };
+            }> = err;
             console.log("error is", error);
             return {
               error: {
-                status: error.status,
+                status: error.response?.data.error.code ?? error.status,
                 data: {
                   non_field_error:
                     error.response?.data.error.info ?? error.message,

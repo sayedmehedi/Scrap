@@ -3,6 +3,7 @@ import BottomTab from "./BottomTab";
 import {forFade} from "@utils/misc";
 import {useTheme} from "react-native-paper";
 import {useAppSelector} from "@hooks/store";
+import {TouchableOpacity} from "react-native";
 import {RootStackParamList} from "@src/types";
 import {RootStackRoutes} from "../constants/routes";
 import AuthStackNavigator from "./AuthStackNavigator";
@@ -16,6 +17,7 @@ import {selectIsAuthenticated} from "@store/slices/authSlice";
 import ProductSearchScreen from "../Screen/ProductSearchScreen";
 import ProductDetailsScreen from "../Screen/ProductDetailsScreen";
 import ChooseCountryScreen from "@src/Screen/ChooseCountryScreen";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import LocationPropmtScreen from "@src/Screen/LocationPromptScreen";
 import ConfirmPurchaseScreen from "@src/Screen/ConfirmPurchaseScreen";
 import SingleConversationScreen from "../Screen/SingleConversationScreen";
@@ -83,8 +85,30 @@ const RootStackNavigator = () => {
       />
 
       <RootStack.Screen
-        options={{
-          title: "",
+        options={({navigation, route}) => {
+          return {
+            title: "",
+
+            headerLeft: ({onPress}) => {
+              return (
+                <TouchableOpacity
+                  style={{paddingLeft: 15}}
+                  onPress={() => {
+                    if (!!onPress) {
+                      onPress();
+                    } else {
+                      navigation.navigate(RootStackRoutes.HOME);
+                    }
+                  }}>
+                  <MaterialIcons
+                    size={22}
+                    color={"white"}
+                    name="keyboard-backspace"
+                  />
+                </TouchableOpacity>
+              );
+            },
+          };
         }}
         component={ProductDetailsScreen}
         name={RootStackRoutes.PRODUCT_DETAILS}

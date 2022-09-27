@@ -31,7 +31,7 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
 
   const redirectIntended = React.useCallback(() => {
     if (route.params.nextScreen) {
-      navigation.navigate(
+      navigation.replace(
         // @ts-ignore
         route.params.nextScreen.name,
         route.params.nextScreen.params,
