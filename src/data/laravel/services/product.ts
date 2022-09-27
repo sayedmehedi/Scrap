@@ -394,6 +394,24 @@ export const productApi = api.injectEndpoints({
             ]
           : [],
     }),
+    deleteProductFile: builder.mutation<
+      {success: string} | {error: string},
+      {
+        product_id: number;
+        file: string;
+      }
+    >({
+      query(body) {
+        return {
+          body,
+          method: "POST",
+          url: `delete-file`,
+        };
+      },
+      invalidatesTags: (_result, _error, body) => [
+        {type: QUERY_KEYS.PRODUCT, id: body.product_id},
+      ],
+    }),
   }),
 });
 
@@ -409,6 +427,7 @@ export const {
   useGetProductDetailsQuery,
   useLazyGetSaleProductsQuery,
   useGetArchiveProductsQuery,
+  useDeleteProductFileMutation,
   useLazyGetSellerProductsQuery,
   useLazyGetSavedProductsQuery,
   useLazyGetProducEditInfoQuery,

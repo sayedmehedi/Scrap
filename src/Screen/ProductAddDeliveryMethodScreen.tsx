@@ -274,6 +274,7 @@ export default function ProductAddDeliveryMethodScreen({
         const progress = Math.round(event.loaded / event.total) * 100;
         setUploadProgress(progress);
       },
+      product_id: route.params.productEditInfo?.id,
     });
   });
 

@@ -88,6 +88,8 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
     },
   });
 
+  console.log("product title updated", route.params.productTitle);
+
   const selectedCategory = watch("category");
 
   React.useEffect(() => {

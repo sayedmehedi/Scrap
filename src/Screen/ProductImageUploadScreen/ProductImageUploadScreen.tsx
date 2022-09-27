@@ -19,6 +19,7 @@ import {
   launchImageLibrary,
   ImagePickerResponse,
 } from "react-native-image-picker";
+import {useDeleteProductFileMutation} from "@data/laravel/services/product";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -29,10 +30,12 @@ const MAX_ALLOWED_NUM_IMAGE = 8;
 
 export default function ProductImageUploadScreen({navigation, route}: Props) {
   const theme = useTheme();
-  const {enqueueErrorSnackbar} = useAppSnackbar();
   const [productTitle, setProductTitle] = React.useState("");
+  const {enqueueErrorSnackbar, enqueueSuccessSnackbar} = useAppSnackbar();
   const [galleryImages, setGalleryImages] = React.useState<Asset[]>([]);
   const [coverImage, setCoverImage] = React.useState<Asset | null>(null);
+  const [deleteProductFile, {isLoading: isDeletingProductFile}] =
+    useDeleteProductFileMutation();
   const [editInfoImages, setEditInfoImages] = React.useState<
     ProductEditInfoImage[]
   >([]);
@@ -263,6 +266,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
                   position: "absolute",
                 }}>
                 <TouchableOpacity
+                  disabled={isDeletingProductFile}
                   style={{
                     width: 20,
                     height: 20,
@@ -317,8 +321,31 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
                     backgroundColor: theme.colors.white,
                   }}
                   onPress={() => {
-                    // TODO: here remove this file from api
-                    // ! AND remove from editInfoImages state value as well
+                    if (!!route.params?.productEditInfo?.id) {
+                      deleteProductFile({
+                        file: file.url,
+                        product_id: route.params.productEditInfo.id,
+                      })
+                        .unwrap()
+                        .then(data => {
+                          if ("success" in data) {
+                            enqueueSuccessSnackbar({
+                              text1: "Success",
+                              text2: data.success,
+                            });
+                            setEditInfoImages(prevImages => {
+                              return prevImages.filter(
+                                eachFile => eachFile.url !== file.url,
+                              );
+                            });
+                          } else {
+                            enqueueErrorSnackbar({
+                              text1: "Error",
+                              text2: data.error,
+                            });
+                          }
+                        });
+                    }
                   }}>
                   <EvilIcons name={"close"} size={20} />
                 </TouchableOpacity>
@@ -360,7 +387,8 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
 
           <View style={{flexGrow: 1, width: "100%", marginBottom: 40}}>
             <Text>
-              Using {galleryImages.length}/{MAX_ALLOWED_NUM_IMAGE} images
+              Using {galleryImages.length + editInfoImages.length}/
+              {MAX_ALLOWED_NUM_IMAGE} images
             </Text>
           </View>
         </View>
