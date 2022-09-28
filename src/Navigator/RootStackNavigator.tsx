@@ -14,6 +14,7 @@ import SellerReviewScreen from "@src/Screen/ReviewScreen/SellerReviewScreen";
 import AddShippingAddressScreen from "@src/Screen/AddShippingAddressScreen";
 import SellerPublicProfileScreen from "@src/Screen/SellerPublicProfileScreen";
 import ProductFilterScreen from "../Screen/ProductFilterScreen/ProductFilterScreen";
+import AuthStackNavigator from "./AuthStackNavigator";
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -44,11 +45,25 @@ const RootStackNavigator = () => {
       />
 
       <RootStack.Screen
+        options={{
+          title: "",
+        }}
         component={ProductDetailsScreen}
         name={RootStackRoutes.PRODUCT_DETAILS}
       />
 
       <RootStack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name={RootStackRoutes.AUTH}
+        component={AuthStackNavigator}
+      />
+
+      <RootStack.Screen
+        options={{
+          headerShown: false,
+        }}
         name={RootStackRoutes.PRODUCT_ACTIONS}
         component={ProductActionsStackNavigator}
       />

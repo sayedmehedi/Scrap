@@ -112,15 +112,15 @@ export default function TransactionsScreen() {
           title: "Yesterday",
           data: [
             {
-              id: 1,
+              id: 4,
               type: "skeleton" as const,
             },
             {
-              id: 2,
+              id: 5,
               type: "skeleton" as const,
             },
             {
-              id: 3,
+              id: 6,
               type: "skeleton" as const,
             },
           ],

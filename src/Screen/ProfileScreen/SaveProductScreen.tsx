@@ -115,6 +115,8 @@ const SaveProductScreen = () => {
       <FlatList<typeof products[0]>
         numColumns={3}
         data={products}
+        onRefresh={refetch}
+        refreshing={isFetchingInitial}
         onEndReached={getNextProducts}
         contentContainerStyle={{padding: 15}}
         showsVerticalScrollIndicator={false}

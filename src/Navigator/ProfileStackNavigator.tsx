@@ -2,15 +2,17 @@ import React from "react";
 import {forFade} from "@utils/misc";
 import {useTheme} from "react-native-paper";
 import {useAppSelector} from "@hooks/store";
-import {ProfileStackParamList} from "@src/types";
 import ProfileScreen from "../Screen/ProfileScreen";
 import {ProfileStackRoutes} from "@constants/routes";
+import {defaultTabBarStyles} from "@constants/Colors";
 import AuthStackNavigator from "./AuthStackNavigator";
 import {createStackNavigator} from "@react-navigation/stack";
 import {selectIsAuthenticated} from "@store/slices/authSlice";
 import LocationStackNavigator from "./LocationStackNavigator";
+import {HomeTabParamList, ProfileStackParamList} from "@src/types";
 import PurchasesScreen from "../Screen/ProfileScreen/PurchasesScreen";
 import ContactUsScreen from "@src/Screen/ProfileScreen/ContactUsScreen";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import OfferAndBidScreen from "../Screen/ProfileScreen/OfferAndBidScreen";
 import SaveProductScreen from "../Screen/ProfileScreen/SaveProductScreen";
 import PublicProfileScreen from "../Screen/ProfileScreen/PublicProfileScreen";
@@ -19,10 +21,24 @@ import TransactionsScreen from "@src/Screen/ProfileScreen/TransactionListScreen"
 
 const ProfileStack = createStackNavigator<ProfileStackParamList>();
 
-const ProfileStackNavigator = () => {
+type Props = NativeStackScreenProps<HomeTabParamList>;
+
+const ProfileStackNavigator = ({navigation: tabNavigation}: Props) => {
   const theme = useTheme();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isFirstTimeLogin = useAppSelector(state => state.auth.firstTimeLogin);
+
+  React.useEffect(() => {
+    const options: Record<string, any> = {};
+
+    if (isFirstTimeLogin || !isAuthenticated) {
+      options.tabBarStyle = {display: "none"};
+    } else {
+      options.tabBarStyle = defaultTabBarStyles;
+    }
+
+    tabNavigation.setOptions(options);
+  }, [tabNavigation, isAuthenticated, isFirstTimeLogin]);
 
   return (
     <ProfileStack.Navigator

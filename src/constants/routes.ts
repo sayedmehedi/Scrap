@@ -30,8 +30,10 @@ export const ProductActionsStackRoutes = {
 } as const;
 
 export const RootStackRoutes = {
+  AUTH: "auth",
+  LOCATION: "location",
+
   HOME: "home",
-  LOCATION_PROMPT: "locationPrompt",
   ADD_SHIPPING_ADDRESS: "addShippingAddress",
   SELLER_PUBLIC_PROFILE: "sellerPublicProfile",
 

@@ -125,7 +125,9 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
                 color: theme.colors.text,
               }}
               onPress={() => {
-                navigation.navigate(LocationStackRoutes.CHOOSE_LOCATION);
+                navigation.navigate(LocationStackRoutes.CHOOSE_LOCATION, {
+                  nextScreen: route.params.nextScreen,
+                });
               }}
             />
           </View>

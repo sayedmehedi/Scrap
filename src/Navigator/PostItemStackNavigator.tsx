@@ -2,24 +2,42 @@ import React from "react";
 import {forFade} from "@utils/misc";
 import {useTheme} from "react-native-paper";
 import {useAppSelector} from "@hooks/store";
-import {PostItemStackParamList} from "@src/types";
 import {PostItemStackRoutes} from "../constants/routes";
 import AuthStackNavigator from "./AuthStackNavigator";
+import {defaultTabBarStyles} from "@constants/Colors";
 import {createStackNavigator} from "@react-navigation/stack";
 import LocationStackNavigator from "./LocationStackNavigator";
 import {selectIsAuthenticated} from "@store/slices/authSlice";
 import ProductAddPriceScreen from "../Screen/ProductAddPriceScreen";
+import {HomeTabParamList, PostItemStackParamList} from "@src/types";
 import ProductImageUploadScreen from "../Screen/ProductImageUploadScreen";
 import ProductAddSuccessScreen from "../Screen/ProductAddSuccessScreen";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import ProductAddDeliveryMethodScreen from "../Screen/ProductAddDeliveryMethodScreen";
 import ProductAddDetailsScreen from "../Screen/ProductAddDetailsScreen/ProductAddDetailsScreen";
 
 const PostItemStack = createStackNavigator<PostItemStackParamList>();
 
-export default function PostItemStackNavigator() {
+type Props = NativeStackScreenProps<HomeTabParamList>;
+
+export default function PostItemStackNavigator({
+  navigation: tabNavigation,
+}: Props) {
   const theme = useTheme();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isFirstTimeLogin = useAppSelector(state => state.auth.firstTimeLogin);
+
+  React.useEffect(() => {
+    const options: Record<string, any> = {};
+
+    if (isFirstTimeLogin || !isAuthenticated) {
+      options.tabBarStyle = {display: "none"};
+    } else {
+      options.tabBarStyle = defaultTabBarStyles;
+    }
+
+    tabNavigation.setOptions(options);
+  }, [tabNavigation, isAuthenticated, isFirstTimeLogin]);
 
   return (
     <PostItemStack.Navigator

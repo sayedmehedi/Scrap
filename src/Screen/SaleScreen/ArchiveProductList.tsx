@@ -16,8 +16,8 @@ export default function ArchiveProductList() {
   const [fetchProducts, {isFetching: isFetchingNextPage}] =
     useLazyGetArchiveProductsQuery();
   const {
+    refetch,
     data: archivedProductsResponse,
-    isLoading,
     isFetching: isFetchingInitial,
   } = useGetArchiveProductsQuery({});
 
@@ -29,10 +29,10 @@ export default function ArchiveProductList() {
   > | null>(null);
 
   React.useEffect(() => {
-    if (!isLoading && !!archivedProductsResponse) {
+    if (!isFetchingInitial && !!archivedProductsResponse) {
       setProductPages([archivedProductsResponse.products]);
     }
-  }, [archivedProductsResponse, isLoading]);
+  }, [archivedProductsResponse, isFetchingInitial]);
 
   const getNextProducts = async () => {
     if (isFetchingNextPage || isFetchingInitial) {
@@ -73,7 +73,7 @@ export default function ArchiveProductList() {
   }, []);
 
   const products = React.useMemo(() => {
-    if (isLoading) {
+    if (isFetchingInitial) {
       return [
         {
           id: 1,
@@ -96,10 +96,29 @@ export default function ArchiveProductList() {
         ...product,
       })),
     );
-  }, [isLoading, productPages]);
+  }, [isFetchingInitial, productPages]);
 
   return (
     <React.Fragment>
+      <FlatList<typeof products[0]>
+        numColumns={3}
+        data={products}
+        onRefresh={refetch}
+        refreshing={isFetchingInitial}
+        onEndReached={getNextProducts}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 90,
+          paddingLeft: SCREEN_PADDING_HORIZONTAL,
+        }}
+        ListEmptyComponent={() => (
+          <View style={{flex: 1}}>
+            <Text style={{textAlign: "center"}}>No data</Text>
+          </View>
+        )}
+        renderItem={({item}) => <SaleOrArchiveItem item={item} />}
+      />
+
       {isFetchingNextPage ? (
         <View
           style={{
@@ -110,22 +129,6 @@ export default function ArchiveProductList() {
           <ActivityIndicator size={"small"} />
         </View>
       ) : null}
-
-      <FlatList<typeof products[0]>
-        numColumns={3}
-        data={products}
-        onEndReached={getNextProducts}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingLeft: SCREEN_PADDING_HORIZONTAL,
-        }}
-        ListEmptyComponent={() => (
-          <View>
-            <Text style={{textAlign: "center"}}>No data</Text>
-          </View>
-        )}
-        renderItem={({item}) => <SaleOrArchiveItem item={item} />}
-      />
     </React.Fragment>
   );
 }

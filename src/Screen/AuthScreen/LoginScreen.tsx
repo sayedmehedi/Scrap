@@ -6,13 +6,16 @@ import {ErrorMessage} from "@hookform/error-message";
 import {useNavigation} from "@react-navigation/native";
 import {useAppSelector, useAppStore} from "@hooks/store";
 import GoogleSignInBtn from "@src/Component/GoogleSignInBtn";
-import {selectIsAuthenticated} from "@store/slices/authSlice";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import FacebookSignInBtn from "@src/Component/FacebookSignInBtn";
 import {AuthStackParamList, RootStackParamList} from "@src/types";
 import {useTheme, Text, ActivityIndicator} from "react-native-paper";
-import {AuthStackRoutes, RootStackRoutes} from "../../constants/routes";
+import {
+  AuthStackRoutes,
+  LocationStackRoutes,
+  RootStackRoutes,
+} from "../../constants/routes";
 import {addServerErrors, isJoteyQueryError} from "@utils/error-handling";
 import {
   useLoginMutation,
@@ -73,7 +76,6 @@ type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const LoginScreen = ({navigation, route}: Props) => {
   const theme = useTheme();
   const store = useAppStore();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const rootNavigation = useNavigation<RootStackNavigationProp>();
   const [togglePassword, setTogglePassword] = React.useState(false);
   const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
@@ -81,8 +83,10 @@ const LoginScreen = ({navigation, route}: Props) => {
     state => state.authLoading.socialLoginState,
   );
 
-  const [login, {isLoading, isError, error, isSuccess, data}] =
-    useLoginMutation();
+  const [
+    login,
+    {isLoading, isError, error, isSuccess: isLoginSuccess, data: loginData},
+  ] = useLoginMutation();
 
   const [getProfile, {isSuccess: isGettingProfileSuccess, data: profileData}] =
     useLazyGetProfileQuery();
@@ -101,74 +105,65 @@ const LoginScreen = ({navigation, route}: Props) => {
   });
 
   React.useEffect(() => {
+    if (
+      isLoginSuccess &&
+      !!loginData &&
+      "success" in loginData &&
+      isGettingProfileSuccess &&
+      !!profileData &&
+      "success" in profileData
+    ) {
+      if (route.params?.nextScreen) {
+        if (store.getState().auth.firstTimeLogin) {
+          rootNavigation.replace(RootStackRoutes.LOCATION, {
+            screen: LocationStackRoutes.LOCATION_PROMPT,
+            params: {
+              nextScreen: route.params.nextScreen,
+            },
+          });
+        } else {
+          rootNavigation.replace(
+            // @ts-ignore
+            route.params.nextScreen?.name,
+            route.params.nextScreen?.params,
+          );
+        }
+      }
+    }
+  }, [
+    store,
+    profileData,
+    route.params,
+    isLoginSuccess,
+    rootNavigation,
+    isGettingProfileSuccess,
+  ]);
+
+  React.useEffect(() => {
     if (isError && isJoteyQueryError(error)) {
       addServerErrors(error.data.field_errors, setError);
     }
   }, [setError, isError, error]);
 
   React.useEffect(() => {
-    if (isSuccess && !!data && "success" in data) {
+    if (isLoginSuccess && !!loginData && "success" in loginData) {
       reset();
       enqueueSuccessSnackbar({
-        text1: data.success,
+        text1: loginData.success,
       });
     }
 
-    if (isSuccess && !!data && "error" in data) {
+    if (isLoginSuccess && !!loginData && "error" in loginData) {
       enqueueErrorSnackbar({
-        text1: data.error,
+        text1: loginData.error,
       });
-    }
-  }, [enqueueSuccessSnackbar, isSuccess, data, reset, enqueueErrorSnackbar]);
-
-  React.useEffect(() => {
-    if (isAuthenticated && isGettingProfileSuccess && !!profileData) {
-      const {firstTimeLogin} = store.getState().auth;
-      if (firstTimeLogin) {
-        rootNavigation.replace(RootStackRoutes.LOCATION_PROMPT, {
-          nextScreen: route.params.nextScreen,
-        });
-      } else if (route.params?.nextScreen) {
-        // // @ts-ignore
-        // navigation.replace(
-        //   // @ts-ignore
-        //   route.params!.nextScreen.name,
-        //   // @ts-ignore
-        //   route.params!.nextScreen.params,
-        // );
-
-        navigation.getParent()?.reset({
-          index: 0,
-          routes: [
-            {
-              name: route.params!.nextScreen.name,
-              params: route.params!.nextScreen.params,
-            },
-          ],
-        });
-      } else {
-        // @ts-ignore
-        // navigation.replace(RootStackRoutes.HOME);
-
-        navigation.reset({
-          index: 0,
-          routes: [
-            {
-              // @ts-ignore
-              name: RootStackRoutes.HOME,
-            },
-          ],
-        });
-      }
     }
   }, [
-    store,
-    route,
-    navigation,
-    profileData,
-    rootNavigation,
-    isAuthenticated,
-    isGettingProfileSuccess,
+    enqueueSuccessSnackbar,
+    isLoginSuccess,
+    loginData,
+    reset,
+    enqueueErrorSnackbar,
   ]);
 
   const handleLogin = handleSubmit(values => {

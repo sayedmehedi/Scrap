@@ -2,21 +2,30 @@ import React from "react";
 import {TextInput, View} from "react-native";
 import {Avatar} from "react-native-elements";
 import {currencyTransform} from "@utils/form";
-import {RootStackParamList} from "@src/types";
 import {Text, useTheme} from "react-native-paper";
-import {RootStackRoutes} from "../constants/routes";
 import {Controller, useForm} from "react-hook-form";
+import {ProductActionsStackParamList} from "@src/types";
 import {ErrorMessage} from "@hookform/error-message";
+import {useFocusEffect} from "@react-navigation/native";
 import AppPrimaryButton from "../Component/AppPrimaryButton";
+import {ProductActionsStackRoutes} from "../constants/routes";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 
 type Props = NativeStackScreenProps<
-  RootStackParamList,
-  typeof RootStackRoutes.MAKE_OFFER
+  ProductActionsStackParamList,
+  typeof ProductActionsStackRoutes.MAKE_OFFER
 >;
 
 export default function MakeOfferScreen({navigation, route}: Props) {
   const theme = useTheme();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (route.params.isInitial) {
+        navigation.goBack();
+      }
+    }, [route.params, navigation]),
+  );
 
   const {
     control,
@@ -29,7 +38,7 @@ export default function MakeOfferScreen({navigation, route}: Props) {
   });
 
   const handleMakeOffer = handleSubmit(values => {
-    navigation.navigate(RootStackRoutes.REVIEW_OFFER, {
+    navigation.navigate(ProductActionsStackRoutes.REVIEW_OFFER, {
       productId: route.params.productId,
       shippingCost: route.params.shippingCost,
       offerPrice: parseFloat(values.offerPrice),
@@ -43,7 +52,6 @@ export default function MakeOfferScreen({navigation, route}: Props) {
           padding: 10,
           flexDirection: "row",
           borderRadius: theme.roundness * 3,
-          // @ts-ignore
           backgroundColor: theme.colors.white,
         }}>
         {!!route.params.productImage && (

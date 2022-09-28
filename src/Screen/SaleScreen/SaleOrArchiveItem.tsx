@@ -114,7 +114,7 @@ const SaleOrArchiveItem = ({
               .unwrap()
               .then(prodData => {
                 navigation.navigate(RootStackRoutes.HOME, {
-                  screen: HomeTabRoutes.POST_ITEM,
+                  screen: HomeTabRoutes.EDIT_ITEM,
                   params: {
                     screen: PostItemStackRoutes.UPLOAD_PHOTO,
                     params: {

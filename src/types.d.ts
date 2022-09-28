@@ -42,18 +42,30 @@ export type HomeStackParamList = {
 };
 
 export type LocationStackParamList = {
-  [LocationStackRoutes.LOCATION_PROMPT]: undefined;
-  [LocationStackRoutes.CHOOSE_LOCATION]: undefined;
+  [LocationStackRoutes.LOCATION_PROMPT]: {
+    nextScreen?: {
+      name: string;
+      params: Record<string, any>;
+    };
+  };
+  [LocationStackRoutes.CHOOSE_LOCATION]: {
+    nextScreen?: {
+      name: string;
+      params: Record<string, any>;
+    };
+  };
 };
 
 export type ProductActionsStackParamList = {
   [ProductActionsStackRoutes.MAKE_OFFER]: {
     buyPrice: number;
+    productId: number;
     totalOffers: number;
     productName: string;
     shippingCost: number;
     productImage?: string;
-    productId: number;
+
+    isInitial?: boolean;
   };
   [ProductActionsStackRoutes.PLACE_BID]: {
     totalBids: number;
@@ -62,11 +74,15 @@ export type ProductActionsStackParamList = {
     productImage?: string;
     bidStartingPrice: number;
     productId: number;
+
+    isInitial?: boolean;
   };
   [ProductActionsStackRoutes.REVIEW_OFFER]: {
     offerPrice: number;
     shippingCost: number;
     productId: number;
+
+    isInitial?: boolean;
   };
   [ProductActionsStackRoutes.ASK_QUESTION]: {
     sellerId: number;
@@ -77,6 +93,8 @@ export type ProductActionsStackParamList = {
     productName: string;
     productImage: string;
     productPrice: number;
+
+    isInitial?: boolean;
   };
 
   [ProductActionsStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
@@ -215,6 +233,9 @@ export type AuthStackScreenProps<T extends keyof AuthStackParamList> =
   >;
 
 export type RootStackParamList = {
+  [SaleStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+  [ProductActionsStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+
   [RootStackRoutes.PRODUCT_ACTIONS]: NavigatorScreenParams<ProductActionsStackParamList>;
   [RootStackRoutes.HOME]: NavigatorScreenParams<HomeTabParamList>;
 

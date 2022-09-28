@@ -26,7 +26,11 @@ import {
   NativeStackScreenProps,
   NativeStackNavigationProp,
 } from "@react-navigation/native-stack";
-import {AuthStackRoutes, RootStackRoutes} from "../../constants/routes";
+import {
+  AuthStackRoutes,
+  ProductActionsStackRoutes,
+  RootStackRoutes,
+} from "../../constants/routes";
 import {ActivityIndicator, Button, useTheme} from "react-native-paper";
 import {Table, TableWrapper, Row, Cell} from "react-native-table-component";
 import {
@@ -246,63 +250,35 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   }, [productDetails]);
 
   const handlePlaceBid = () => {
-    if (!isAuthenticated) {
-      navigation.navigate(RootStackRoutes.AUTH, {
-        screen: AuthStackRoutes.LOGIN,
-        params: {
-          backScreen: {
-            name: route.name,
-            params: route.params,
-          },
-          nextScreen: {
-            name: route.name,
-            params: route.params,
-          },
-        },
-      });
-      return;
-    }
-
     if (productDetails) {
-      navigation.navigate(RootStackRoutes.PLACE_BID, {
-        productId: productDetails.id,
-        productName: productDetails.title,
-        totalBids: productDetails.total_bids,
-        timeLeftToBid: productDetails.time_left,
-        productImage: productDetails.images.small[0] ?? undefined,
-        bidStartingPrice: !!productDetails.starting_price
-          ? +productDetails.starting_price
-          : 0,
+      navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+        screen: ProductActionsStackRoutes.PLACE_BID,
+        params: {
+          productId: productDetails.id,
+          productName: productDetails.title,
+          totalBids: productDetails.total_bids,
+          timeLeftToBid: productDetails.time_left,
+          productImage: productDetails.images.small[0] ?? undefined,
+          bidStartingPrice: !!productDetails.starting_price
+            ? +productDetails.starting_price
+            : 0,
+        },
       });
     }
   };
 
   const handleMakeOffer = () => {
-    if (!isAuthenticated) {
-      navigation.navigate(RootStackRoutes.AUTH, {
-        screen: AuthStackRoutes.LOGIN,
-        params: {
-          backScreen: {
-            name: route.name,
-            params: route.params,
-          },
-          nextScreen: {
-            name: route.name,
-            params: route.params,
-          },
-        },
-      });
-      return;
-    }
-
     if (productDetails) {
-      navigation.navigate(RootStackRoutes.MAKE_OFFER, {
-        productId: productDetails.id,
-        productName: productDetails.title,
-        totalOffers: productDetails.total_offers,
-        shippingCost: +productDetails.shipping_cost,
-        productImage: productDetails.images.small[0] ?? undefined,
-        buyPrice: !!productDetails.buy_price ? +productDetails.buy_price : 0,
+      navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+        screen: ProductActionsStackRoutes.MAKE_OFFER,
+        params: {
+          productId: productDetails.id,
+          productName: productDetails.title,
+          totalOffers: productDetails.total_offers,
+          shippingCost: +productDetails.shipping_cost,
+          productImage: productDetails.images.small[0] ?? undefined,
+          buyPrice: !!productDetails.buy_price ? +productDetails.buy_price : 0,
+        },
       });
     }
   };
@@ -312,16 +288,13 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
       navigation.navigate(RootStackRoutes.AUTH, {
         screen: AuthStackRoutes.LOGIN,
         params: {
-          backScreen: {
-            name: route.name,
-            params: route.params,
-          },
           nextScreen: {
             name: route.name,
             params: route.params,
           },
         },
       });
+
       return;
     }
 
@@ -506,33 +479,19 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
                       <Button
                         onPress={() => {
-                          if (!isAuthenticated) {
-                            navigation.navigate(RootStackRoutes.AUTH, {
-                              screen: AuthStackRoutes.LOGIN,
-                              params: {
-                                backScreen: {
-                                  name: route.name,
-                                  params: route.params,
-                                },
-                                nextScreen: {
-                                  name: route.name,
-                                  params: route.params,
-                                },
-                              },
-                            });
-                            return;
-                          }
-
-                          navigation.navigate(RootStackRoutes.ASK_QUESTION, {
-                            productImage: image,
-                            productId: productDetails.id,
-                            productName: productDetails.title,
-                            sellerId: productDetails.seller.id,
-                            sellerName: productDetails.seller.name,
-                            sellerImage: productDetails.seller.image,
-                            productPrice: !!productDetails.buy_price
-                              ? +productDetails.buy_price
-                              : 0,
+                          navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+                            screen: ProductActionsStackRoutes.ASK_QUESTION,
+                            params: {
+                              productImage: image,
+                              productId: productDetails.id,
+                              productName: productDetails.title,
+                              sellerId: productDetails.seller.id,
+                              sellerName: productDetails.seller.name,
+                              sellerImage: productDetails.seller.image,
+                              productPrice: !!productDetails.buy_price
+                                ? +productDetails.buy_price
+                                : 0,
+                            },
                           });
                         }}
                         color={theme.colors.accent}
@@ -548,23 +507,6 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                         style={{marginTop: 10}}
                         color={theme.colors.accent}
                         onPress={() => {
-                          if (!isAuthenticated) {
-                            navigation.navigate(RootStackRoutes.AUTH, {
-                              screen: AuthStackRoutes.LOGIN,
-                              params: {
-                                backScreen: {
-                                  name: route.name,
-                                  params: route.params,
-                                },
-                                nextScreen: {
-                                  name: route.name,
-                                  params: route.params,
-                                },
-                              },
-                            });
-                            return;
-                          }
-
                           navigation.navigate(RootStackRoutes.SELLER_REVIEW, {
                             sellerId: productDetails.seller.id,
                           });
@@ -658,33 +600,19 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
                       <Button
                         onPress={() => {
-                          if (!isAuthenticated) {
-                            navigation.navigate(RootStackRoutes.AUTH, {
-                              screen: AuthStackRoutes.LOGIN,
-                              params: {
-                                backScreen: {
-                                  name: route.name,
-                                  params: route.params,
-                                },
-                                nextScreen: {
-                                  name: route.name,
-                                  params: route.params,
-                                },
-                              },
-                            });
-                            return;
-                          }
-
-                          navigation.navigate(RootStackRoutes.ASK_QUESTION, {
-                            productImage: image,
-                            productId: productDetails.id,
-                            productName: productDetails.title,
-                            sellerId: productDetails.seller.id,
-                            sellerName: productDetails.seller.name,
-                            sellerImage: productDetails.seller.image,
-                            productPrice: !!productDetails.buy_price
-                              ? +productDetails.buy_price
-                              : 0,
+                          navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+                            screen: ProductActionsStackRoutes.ASK_QUESTION,
+                            params: {
+                              productImage: image,
+                              productId: productDetails.id,
+                              productName: productDetails.title,
+                              sellerId: productDetails.seller.id,
+                              sellerName: productDetails.seller.name,
+                              sellerImage: productDetails.seller.image,
+                              productPrice: !!productDetails.buy_price
+                                ? +productDetails.buy_price
+                                : 0,
+                            },
                           });
                         }}
                         color={theme.colors.accent}
@@ -1212,23 +1140,6 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
             <Button
               onPress={() => {
-                if (!isAuthenticated) {
-                  navigation.navigate(RootStackRoutes.AUTH, {
-                    screen: AuthStackRoutes.LOGIN,
-                    params: {
-                      backScreen: {
-                        name: route.name,
-                        params: route.params,
-                      },
-                      nextScreen: {
-                        name: route.name,
-                        params: route.params,
-                      },
-                    },
-                  });
-                  return;
-                }
-
                 navigation.navigate(RootStackRoutes.SELLER_REVIEW, {
                   sellerId: productDetails.seller.id,
                 });
@@ -1328,33 +1239,19 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
         <TouchableOpacity
           style={styles.askButton}
           onPress={() => {
-            if (!isAuthenticated) {
-              navigation.navigate(RootStackRoutes.AUTH, {
-                screen: AuthStackRoutes.LOGIN,
-                params: {
-                  backScreen: {
-                    name: route.name,
-                    params: route.params,
-                  },
-                  nextScreen: {
-                    name: route.name,
-                    params: route.params,
-                  },
-                },
-              });
-              return;
-            }
-
-            navigation.navigate(RootStackRoutes.ASK_QUESTION, {
-              productImage: image,
-              productId: productDetails.id,
-              productName: productDetails.title,
-              sellerId: productDetails.seller.id,
-              sellerName: productDetails.seller.name,
-              sellerImage: productDetails.seller.image,
-              productPrice: !!productDetails.buy_price
-                ? +productDetails.buy_price
-                : 0,
+            navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+              screen: ProductActionsStackRoutes.ASK_QUESTION,
+              params: {
+                productImage: image,
+                productId: productDetails.id,
+                productName: productDetails.title,
+                sellerId: productDetails.seller.id,
+                sellerName: productDetails.seller.name,
+                sellerImage: productDetails.seller.image,
+                productPrice: !!productDetails.buy_price
+                  ? +productDetails.buy_price
+                  : 0,
+              },
             });
           }}>
           <AntDesign name="questioncircleo" size={25} color={"#FFFFFF"} />

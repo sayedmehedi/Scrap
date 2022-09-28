@@ -29,7 +29,7 @@ type Props = NativeStackScreenProps<
 
 const ProfileScreen = ({navigation: profileNavigation}: Props) => {
   const dispatch = useAppDispatch();
-  const [logout] = useLogoutMutation();
+  const [logout, {isLoading: isLoggingOut}] = useLogoutMutation();
   const rootNavigation = useNavigation();
   const profile = useAppSelector(state => state.auth.profile);
 
@@ -222,7 +222,10 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
           <AntDesign name="right" size={12} />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={signoutPress} style={styles.buttonContainer}>
+        <TouchableOpacity
+          disabled={isLoggingOut}
+          onPress={signoutPress}
+          style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <Entypo name="login" size={12} color={"#707070"} />
             <Text style={{marginLeft: 10, color: "#707070"}}>Sign Out</Text>

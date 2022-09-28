@@ -1,6 +1,6 @@
 import React from "react";
 import HomeStack from "./HomeStack";
-import Colors from "../constants/Colors";
+import Colors, {defaultTabBarStyles} from "../constants/Colors";
 import {useTheme} from "react-native-paper";
 import {HomeTabParamList} from "@src/types";
 import ChatStackNavigator from "./ChatStackNavigator";
@@ -47,22 +47,10 @@ const HomeTabNavigator = () => {
           color: theme.colors.white,
         },
         tabBarShowLabel: false,
-        headerTintColor: theme.colors.white,
-        tabBarStyle: {
-          height: 70,
-          elevation: 10,
-          paddingBottom: 0,
-          shadowRadius: 3.84,
-          shadowOpacity: 0.2,
-          backgroundColor: "#FFFFFF",
-          shadowColor: Colors.PRIMARY_COLOR,
-          shadowOffset: {
-            width: 0,
-            height: 5,
-          },
-        },
         tabBarHideOnKeyboard: true,
+        tabBarStyle: defaultTabBarStyles,
         tabBarButton: buttonNativeFeedback,
+        headerTintColor: theme.colors.white,
       }}>
       <HomeTab.Screen
         component={HomeStack}
@@ -99,6 +87,28 @@ const HomeTabNavigator = () => {
         component={ChatStackNavigator}
         options={{
           headerShown: false,
+          tabBarIcon: ({focused}) => (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                flex: 1,
+              }}>
+              <Entypo
+                size={22}
+                name="message"
+                color={focused ? Colors.PRIMARY_COLOR : "gray"}
+              />
+              <Text
+                style={{
+                  color: focused ? Colors.PRIMARY_COLOR : "gray",
+                  fontSize: 10,
+                  fontFamily: "Inter-SemiBold",
+                }}>
+                Messages
+              </Text>
+            </View>
+          ),
         }}
       />
 
@@ -138,29 +148,7 @@ const HomeTabNavigator = () => {
         component={PostItemStackNavigator}
         options={{
           headerShown: false,
-          tabBarIcon: () => (
-            <View
-              style={{
-                flex: 1,
-                width: 80,
-                padding: 15,
-                alignItems: "center",
-                borderTopLeftRadius: 35,
-                borderTopRightRadius: 35,
-                justifyContent: "center",
-                backgroundColor: Colors.PRIMARY_COLOR,
-              }}>
-              <FontAwesome5 name="edit" size={20} color={"white"} />
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 10,
-                  fontFamily: "Inter-SemiBold",
-                }}>
-                Post Item
-              </Text>
-            </View>
-          ),
+          tabBarButton: () => null,
         }}
       />
 

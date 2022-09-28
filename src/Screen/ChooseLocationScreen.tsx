@@ -4,8 +4,8 @@ import {Overlay} from "react-native-elements";
 import {useAppDispatch} from "@hooks/store";
 import {LocationStackParamList} from "@src/types";
 import {LocationStackRoutes} from "@constants/routes";
-import {REAC_APP_GOOGLE_MAPS_API_KEY} from "react-native-dotenv";
 import {setFirstTimeLoginFalse} from "@store/slices/authSlice";
+import {REAC_APP_GOOGLE_MAPS_API_KEY} from "react-native-dotenv";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {useUpdateProfileMutation} from "@data/laravel/services/auth";
 import CircularProgress from "react-native-circular-progress-indicator";
@@ -20,10 +20,24 @@ const ChooseCountryScreen = ({navigation, route}: Props) => {
   const dispatch = useAppDispatch();
   const [uploadProgress, setUploadProgress] = React.useState(0);
 
+  const redirectIntended = React.useCallback(() => {
+    if (route.params?.nextScreen) {
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            // @ts-ignore
+            name: route.params.nextScreen.name,
+            params: route.params.nextScreen.params,
+          },
+        ],
+      });
+    }
+  }, [route, navigation]);
+
   const [
     updateProfile,
     {
-      data: updateProfileReponse,
       isLoading: isUpdatingProfile,
       isError: isUpdateProfileError,
       isSuccess: isUpdateProfileSuccess,
@@ -77,6 +91,7 @@ const ChooseCountryScreen = ({navigation, route}: Props) => {
               .unwrap()
               .then(() => {
                 dispatch(setFirstTimeLoginFalse());
+                redirectIntended();
               });
           }
         }}

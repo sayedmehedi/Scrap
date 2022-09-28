@@ -1,21 +1,22 @@
 import React from "react";
 import {TextInput, View} from "react-native";
 import {Avatar} from "react-native-elements";
-import {RootStackParamList} from "@src/types";
 import {currencyTransform} from "@utils/form";
-import {RootStackRoutes} from "@constants/routes";
 import {Text, useTheme} from "react-native-paper";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {ErrorMessage} from "@hookform/error-message";
 import {Controller, useForm} from "react-hook-form";
+import {useFocusEffect} from "@react-navigation/native";
+import {ProductActionsStackParamList} from "@src/types";
+import {ProductActionsStackRoutes} from "@constants/routes";
 import AppPrimaryButton from "../Component/AppPrimaryButton";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {useUpsertBidOrOfferMutation} from "@data/laravel/services/offerNBids";
 import {isErrorWithSuggestion, isJoteyQueryError} from "@utils/error-handling";
 
 type Props = NativeStackScreenProps<
-  RootStackParamList,
-  typeof RootStackRoutes.PLACE_BID
+  ProductActionsStackParamList,
+  typeof ProductActionsStackRoutes.PLACE_BID
 >;
 
 export default function PlaceBidScreen({route, navigation}: Props) {
@@ -24,6 +25,14 @@ export default function PlaceBidScreen({route, navigation}: Props) {
 
   const [makeBid, {isSuccess, data, error, isError}] =
     useUpsertBidOrOfferMutation();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (route.params.isInitial) {
+        navigation.goBack();
+      }
+    }, [route.params, navigation]),
+  );
 
   const {
     control,
