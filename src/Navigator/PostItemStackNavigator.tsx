@@ -24,6 +24,7 @@ export default function PostItemStackNavigator({
   navigation: tabNavigation,
 }: Props) {
   const theme = useTheme();
+  const profile = useAppSelector(state => state.auth.profile);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isFirstTimeLogin = useAppSelector(state => state.auth.firstTimeLogin);
 
@@ -54,7 +55,8 @@ export default function PostItemStackNavigator({
         headerTintColor: theme.colors.white,
         cardStyleInterpolator: forFade,
       }}>
-      {isAuthenticated && isFirstTimeLogin ? (
+      {(isAuthenticated && isFirstTimeLogin) ||
+      (!profile?.location && !profile?.latitude && !profile?.longitude) ? (
         <PostItemStack.Screen
           component={LocationStackNavigator}
           name={PostItemStackRoutes.LOCATION}
