@@ -65,7 +65,7 @@ export type ProductActionsStackParamList = {
     shippingCost: number;
     productImage?: string;
 
-    isInitial?: boolean;
+    isInitial: boolean;
   };
   [ProductActionsStackRoutes.PLACE_BID]: {
     totalBids: number;
@@ -75,14 +75,14 @@ export type ProductActionsStackParamList = {
     bidStartingPrice: number;
     productId: number;
 
-    isInitial?: boolean;
+    isInitial: boolean;
   };
   [ProductActionsStackRoutes.REVIEW_OFFER]: {
     offerPrice: number;
     shippingCost: number;
     productId: number;
 
-    isInitial?: boolean;
+    isInitial: boolean;
   };
   [ProductActionsStackRoutes.ASK_QUESTION]: {
     sellerId: number;
@@ -94,7 +94,7 @@ export type ProductActionsStackParamList = {
     productImage: string;
     productPrice: number;
 
-    isInitial?: boolean;
+    isInitial: boolean;
   };
 
   [ProductActionsStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;

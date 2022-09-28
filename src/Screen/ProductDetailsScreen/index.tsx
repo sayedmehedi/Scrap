@@ -262,6 +262,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
           bidStartingPrice: !!productDetails.starting_price
             ? +productDetails.starting_price
             : 0,
+          isInitial: false,
         },
       });
     }
@@ -278,6 +279,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
           shippingCost: +productDetails.shipping_cost,
           productImage: productDetails.images.small[0] ?? undefined,
           buyPrice: !!productDetails.buy_price ? +productDetails.buy_price : 0,
+          isInitial: false,
         },
       });
     }
@@ -491,6 +493,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                               productPrice: !!productDetails.buy_price
                                 ? +productDetails.buy_price
                                 : 0,
+                              isInitial: false,
                             },
                           });
                         }}
@@ -612,6 +615,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                               productPrice: !!productDetails.buy_price
                                 ? +productDetails.buy_price
                                 : 0,
+                              isInitial: false,
                             },
                           });
                         }}
@@ -1251,6 +1255,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                 productPrice: !!productDetails.buy_price
                   ? +productDetails.buy_price
                   : 0,
+                isInitial: false,
               },
             });
           }}>

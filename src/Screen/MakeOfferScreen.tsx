@@ -42,6 +42,7 @@ export default function MakeOfferScreen({navigation, route}: Props) {
       productId: route.params.productId,
       shippingCost: route.params.shippingCost,
       offerPrice: parseFloat(values.offerPrice),
+      isInitial: false,
     });
   });
 

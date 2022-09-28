@@ -1,12 +1,21 @@
 import React from "react";
 import {Avatar} from "react-native-elements";
-import {ListRenderItem, StyleSheet} from "react-native";
-import {RootStackRoutes} from "@constants/routes";
+import {
+  ChatStackRoutes,
+  HomeTabRoutes,
+  ProductActionsStackRoutes,
+  RootStackRoutes,
+} from "@constants/routes";
 import useAppSnackbar from "@hooks/useAppSnackbar";
-import {FlatList} from "react-native-gesture-handler";
-import {Text, Title, useTheme} from "react-native-paper";
 import type {DefaultTheme} from "react-native-paper";
-import {RouteProp, useNavigation, useRoute} from "@react-navigation/native";
+import {ListRenderItem, StyleSheet} from "react-native";
+import {Text, Title, useTheme} from "react-native-paper";
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
@@ -21,6 +30,7 @@ import {
   RootStackParamList,
   GetQuestionsResponse,
   PaginationQueryParams,
+  ProductActionsStackParamList,
 } from "@src/types";
 import {
   useGetQuestionsQuery,
@@ -30,8 +40,8 @@ import {
 import {useAppSelector} from "@hooks/store";
 
 type Props = NativeStackScreenProps<
-  RootStackParamList,
-  typeof RootStackRoutes.ASK_QUESTION
+  ProductActionsStackParamList,
+  typeof ProductActionsStackRoutes.ASK_QUESTION
 >;
 
 const renderEachQuestion = ({
@@ -88,7 +98,7 @@ const renderEachQuestion = ({
   return renderer;
 };
 
-const AskQuestionScreen = ({route}: Props) => {
+const AskQuestionScreen = ({route, navigation}: Props) => {
   const theme = useTheme();
   const rootNavigation = useNavigation();
   const profile = useAppSelector(state => state.auth.profile);
@@ -106,6 +116,16 @@ const AskQuestionScreen = ({route}: Props) => {
   const [questionPages, setQuestionPages] = React.useState<
     Array<GetQuestionsResponse["items"]>
   >([]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // if (route.params.isInitial) {
+      //   navigation.goBack();
+      // }
+
+      console.log("first", route.params.isInitial);
+    }, [route.params, navigation]),
+  );
 
   const [
     askQuestion,
@@ -162,13 +182,19 @@ const AskQuestionScreen = ({route}: Props) => {
       .unwrap()
       .then(data => {
         if ("success" in data) {
-          rootNavigation.navigate(RootStackRoutes.SINGLE_CONVERSATION, {
-            userName: profile!.name,
-            userId: route.params.sellerId,
-            userImage: profile!.profile_image,
-            productId: route.params.productId,
-            productPrice: route.params.productPrice,
-            productImage: route.params.productImage,
+          rootNavigation.navigate(RootStackRoutes.HOME, {
+            screen: HomeTabRoutes.CHAT,
+            params: {
+              screen: ChatStackRoutes.SINGLE_CONVERSATION,
+              params: {
+                userName: profile!.name,
+                userId: route.params.sellerId,
+                userImage: profile!.profile_image,
+                productId: route.params.productId,
+                productPrice: route.params.productPrice,
+                productImage: route.params.productImage,
+              },
+            },
           });
         }
       });
@@ -288,7 +314,10 @@ function ListHeaderComponent() {
   const theme = useTheme();
   const route =
     useRoute<
-      RouteProp<RootStackParamList, typeof RootStackRoutes.ASK_QUESTION>
+      RouteProp<
+        ProductActionsStackParamList,
+        typeof ProductActionsStackRoutes.ASK_QUESTION
+      >
     >();
 
   return (
@@ -353,7 +382,10 @@ function ListFooterComponent() {
   const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
   const route =
     useRoute<
-      RouteProp<RootStackParamList, typeof RootStackRoutes.ASK_QUESTION>
+      RouteProp<
+        ProductActionsStackParamList,
+        typeof ProductActionsStackRoutes.ASK_QUESTION
+      >
     >();
 
   const [
@@ -405,13 +437,19 @@ function ListFooterComponent() {
         setQuestion("");
 
         if ("success" in data) {
-          rootNavigation.navigate(RootStackRoutes.SINGLE_CONVERSATION, {
-            userName: profile!.name,
-            userId: route.params.sellerId,
-            userImage: profile!.profile_image,
-            productId: route.params.productId,
-            productPrice: route.params.productPrice,
-            productImage: route.params.productImage,
+          rootNavigation.navigate(RootStackRoutes.HOME, {
+            screen: HomeTabRoutes.CHAT,
+            params: {
+              screen: ChatStackRoutes.SINGLE_CONVERSATION,
+              params: {
+                userName: profile!.name,
+                userId: route.params.sellerId,
+                userImage: profile!.profile_image,
+                productId: route.params.productId,
+                productPrice: route.params.productPrice,
+                productImage: route.params.productImage,
+              },
+            },
           });
         }
       });
