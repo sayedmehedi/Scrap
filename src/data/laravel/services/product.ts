@@ -3,14 +3,19 @@ import {container} from "@src/appEngine";
 import {QUERY_KEYS} from "@constants/query";
 import {AxiosError, AxiosInstance} from "axios";
 import {ApplicationError} from "@core/domain/ApplicationError";
+import {REACT_APP_METALS_API_TOKEN} from "react-native-dotenv";
 import {ServiceProviderTypes} from "@core/serviceProviderTypes";
 import {
   ProductDetails,
-  CreateProductRequest,
+  MetalsApiErrorCode,
+  MetalsApiErrorMessage,
+  UpsertProductRequest,
   PaginationQueryParams,
   FilterProductsResponse,
   FilterProductQueryParams,
   GetSavedProductsReponse,
+  GetSellerProductsReponse,
+  GetProductEditInfoResponse,
   GetSaleOrArchivedProductsReponse,
   GetProductMetalsLivePriceResponse,
   GetProductMetalsLivePriceRequest,
@@ -30,13 +35,36 @@ export const productApi = api.injectEndpoints({
       FilterProductsResponse,
       FilterProductQueryParams | undefined
     >({
-      query: params => ({
-        params,
-        url: "filter-product",
-      }),
+      query: queryParams => {
+        let params: Record<string, any> = {};
+
+        if (queryParams) {
+          const {attributes, ...rest} = queryParams;
+          params = {
+            ...(rest ?? {}),
+          };
+
+          if (attributes) {
+            Object.entries(attributes).forEach(([attrId, termId]) => {
+              params[`attributes[${attrId}]`] = termId;
+            });
+          }
+        }
+
+        return {
+          params,
+          url: "filter-product",
+        };
+      },
       providesTags: (result, error) =>
         result
-          ? [{type: QUERY_KEYS.PRODUCT, id: "FILTER-LIST"}]
+          ? [
+              {type: QUERY_KEYS.PRODUCT, id: "FILTER-LIST"},
+              ...result.products.data.map(prod => ({
+                type: QUERY_KEYS.PRODUCT,
+                id: prod.id,
+              })),
+            ]
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
@@ -44,11 +72,27 @@ export const productApi = api.injectEndpoints({
     getProductDetails: builder.query<
       ProductDetails,
       {
-        id: string | number;
+        id: number;
+        latitude?: number;
+        longitude?: number;
       }
     >({
-      query({id}) {
+      query({id, ...providedParams}) {
+        const params: {
+          latitude?: number;
+          longitude?: number;
+        } = {};
+
+        if (providedParams.latitude) {
+          params.latitude = providedParams.latitude;
+        }
+
+        if (providedParams.longitude) {
+          params.longitude = providedParams.longitude;
+        }
+
         return {
+          params,
           url: `product/${id}/anything`,
         };
       },
@@ -59,11 +103,20 @@ export const productApi = api.injectEndpoints({
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
-    createProduct: builder.mutation<
+    getProducEditInfo: builder.query<GetProductEditInfoResponse, number>({
+      query(productId) {
+        return {
+          url: `products/${productId}/edit`,
+        };
+      },
+    }),
+    upsertProduct: builder.mutation<
       {success: string} | {error: string},
-      CreateProductRequest & {onUploadProgress?: (event: ProgressEvent) => void}
+      UpsertProductRequest & {onUploadProgress?: (event: ProgressEvent) => void}
     >({
       queryFn({onUploadProgress, ...body}) {
+        console.log("body data is", body.attributes);
+
         const formData = new FormData();
 
         formData.append("title", body.title);
@@ -94,7 +147,7 @@ export const productApi = api.injectEndpoints({
           });
         }
 
-        Object.entries(body.attributes).forEach((attrId, termId) => {
+        Object.entries(body.attributes).forEach(([attrId, termId]) => {
           formData.append(`attributes[${attrId}]`, termId);
         });
 
@@ -115,8 +168,12 @@ export const productApi = api.injectEndpoints({
           });
         });
 
+        const endpoint = !!body.product_id
+          ? `products/${body.product_id}`
+          : "products";
+
         return apiClient
-          .postForm<{success: string}>("products", formData, {
+          .postForm<{success: string}>(endpoint, formData, {
             onUploadProgress,
           })
           .then(res => {
@@ -127,6 +184,7 @@ export const productApi = api.injectEndpoints({
             };
           })
           .catch((error: ApplicationError) => {
+            console.log("error khaisee", error);
             return {
               error: {
                 status: error.status,
@@ -171,7 +229,38 @@ export const productApi = api.injectEndpoints({
       },
       providesTags: (result, error) =>
         result
-          ? [{type: QUERY_KEYS.PRODUCT, id: "FAVOURITE-LIST"}]
+          ? [
+              {type: QUERY_KEYS.PRODUCT, id: "FAVOURITE-LIST"},
+              ...result.items.data.map(prod => ({
+                type: QUERY_KEYS.PRODUCT,
+                id: prod.id,
+              })),
+            ]
+          : error?.status === 401
+          ? [QUERY_KEYS.UNAUTHORIZED]
+          : [QUERY_KEYS.UNKNOWN_ERROR],
+    }),
+    getSellerProducts: builder.query<
+      GetSellerProductsReponse,
+      PaginationQueryParams & {
+        user_id: number;
+      }
+    >({
+      query(params) {
+        return {
+          params,
+          url: `seller-product`,
+        };
+      },
+      providesTags: (result, error) =>
+        result
+          ? [
+              {type: QUERY_KEYS.PRODUCT, id: "SELLER-LIST"},
+              ...result.products.data.map(prod => ({
+                type: QUERY_KEYS.PRODUCT,
+                id: prod.id,
+              })),
+            ]
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
@@ -188,7 +277,13 @@ export const productApi = api.injectEndpoints({
       },
       providesTags: (result, error) =>
         result
-          ? [{type: QUERY_KEYS.PRODUCT, id: "SALE-LIST"}]
+          ? [
+              {type: QUERY_KEYS.PRODUCT, id: "SALE-LIST"},
+              ...result.products.data.map(prod => ({
+                type: QUERY_KEYS.PRODUCT,
+                id: prod.id,
+              })),
+            ]
           : error?.status === 401
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
@@ -220,14 +315,11 @@ export const productApi = api.injectEndpoints({
             "https://metals-api.com/api/fluctuation",
             {
               params: {
-                access_key:
-                  "lism66o45m1yy7598jgr16763m9sr5si26cn3ywyx7iqvnlhaquggcpnxp26",
+                access_key: REACT_APP_METALS_API_TOKEN,
                 ...data,
                 symbols: data.symbols.join(","),
               },
-              headers: {
-                signal,
-              },
+              signal,
             },
           )
           .then(response => {
@@ -256,11 +348,18 @@ export const productApi = api.injectEndpoints({
               };
             }
           })
-          .catch(error => {
+          .catch(err => {
+            const error: AxiosError<{
+              success: false;
+              error: {
+                code: MetalsApiErrorCode;
+                info: MetalsApiErrorMessage;
+              };
+            }> = err;
             console.log("error is", error);
             return {
               error: {
-                status: error.status,
+                status: error.response?.data.error.code ?? error.status,
                 data: {
                   non_field_error:
                     error.response?.data.error.info ?? error.message,
@@ -286,6 +385,42 @@ export const productApi = api.injectEndpoints({
           : [QUERY_KEYS.UNKNOWN_ERROR];
       },
     }),
+    deleteProduct: builder.mutation<
+      {success: string} | {error: string},
+      number
+    >({
+      query(productId) {
+        return {
+          method: "DELETE",
+          url: `products/${productId}`,
+        };
+      },
+      invalidatesTags: (result, _error, id) =>
+        result
+          ? [
+              {type: QUERY_KEYS.PRODUCT, id},
+              {type: QUERY_KEYS.PRODUCT, id: "SELLER-LIST"},
+            ]
+          : [],
+    }),
+    deleteProductFile: builder.mutation<
+      {success: string} | {error: string},
+      {
+        product_id: number;
+        file: string;
+      }
+    >({
+      query(body) {
+        return {
+          body,
+          method: "POST",
+          url: `delete-file`,
+        };
+      },
+      invalidatesTags: (_result, _error, body) => [
+        {type: QUERY_KEYS.PRODUCT, id: body.product_id},
+      ],
+    }),
   }),
 });
 
@@ -295,11 +430,16 @@ export const {
   useGetSaleProductsQuery,
   useGetSavedProductsQuery,
   useGetFilterProductsQuery,
-  useCreateProductMutation,
+  useUpsertProductMutation,
+  useGetSellerProductsQuery,
+  useDeleteProductMutation,
   useGetProductDetailsQuery,
   useLazyGetSaleProductsQuery,
   useGetArchiveProductsQuery,
+  useDeleteProductFileMutation,
+  useLazyGetSellerProductsQuery,
   useLazyGetSavedProductsQuery,
+  useLazyGetProducEditInfoQuery,
   useLazyGetFilterProductsQuery,
   useLazyGetArchiveProductsQuery,
   useToggleProductFavoriteMutation,

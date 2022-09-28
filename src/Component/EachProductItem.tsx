@@ -1,10 +1,11 @@
 import React from "react";
 import truncate from "lodash.truncate";
-import {FilterProduct} from "@src/types";
 import {RootStackRoutes} from "@constants/routes";
 import {useNavigation} from "@react-navigation/native";
+import {FilterProduct, RootStackParamList} from "@src/types";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {View, Text, Image, Dimensions, Pressable} from "react-native";
+import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 
 const {width} = Dimensions.get("window");
 const itemWidth = width / 3;
@@ -12,12 +13,14 @@ const itemWidth = width / 3;
 const MARGIN_RIGHT = 10;
 const BORDER_WIDTH = 6;
 
+type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
+
 const EachProductItem = ({
   item,
 }: {
   item: (FilterProduct & {type: "data"}) | {id: number; type: "skeleton"};
 }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProps>();
 
   if (item.type === "skeleton") {
     return (
@@ -41,13 +44,12 @@ const EachProductItem = ({
         width: itemWidth - MARGIN_RIGHT - BORDER_WIDTH,
       }}
       onPress={() =>
-        navigation.navigate(RootStackRoutes.PRODUCT_DETAILS, {
+        navigation.push(RootStackRoutes.PRODUCT_DETAILS, {
           productId: item.id,
         })
       }>
       <Image
-        resizeMode={"center"}
-        source={{uri: item.image}}
+        source={{uri: item.images.small}}
         style={{
           height: 130,
           width: "100%",

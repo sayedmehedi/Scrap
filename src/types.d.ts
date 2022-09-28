@@ -11,10 +11,14 @@ import {
   RootStackRoutes,
   ProfileStackRoutes,
   PostItemStackRoutes,
+  ProductActionsStackRoutes,
+  LocationStackRoutes,
+  ChatStackRoutes,
+  SaleStackRoutes,
 } from "@constants/routes";
+import {Asset} from "react-native-image-picker";
 import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {Asset} from "react-native-image-picker";
 
 export type HomeStackParamList = {
   [HomeStackRoutes.HOME]: undefined;
@@ -22,8 +26,9 @@ export type HomeStackParamList = {
   [HomeStackRoutes.LOCAL_PICKUP]: undefined;
   [HomeStackRoutes.ALL_CATEGORIES]: undefined;
   [HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA]: {
-    categoryTitle?: string;
-    categoryId?: string | number;
+    screenTitle?: string;
+    categoryId?: number;
+    subcategoryId?: number;
     location?: string;
     distance?: number;
     maxPrice?: number;
@@ -31,9 +36,69 @@ export type HomeStackParamList = {
     isLocale?: boolean;
     isShipping?: boolean;
     condition?: Condition;
-    attributeId?: string | number;
     hideFilterActions?: boolean;
+    attributes?: Record<number, number>;
   };
+};
+
+export type LocationStackParamList = {
+  [LocationStackRoutes.LOCATION_PROMPT]: {
+    nextScreen?: {
+      name: string;
+      params: Record<string, any>;
+    };
+  };
+  [LocationStackRoutes.CHOOSE_LOCATION]: {
+    nextScreen?: {
+      name: string;
+      params: Record<string, any>;
+    };
+  };
+};
+
+export type ProductActionsStackParamList = {
+  [ProductActionsStackRoutes.MAKE_OFFER]: {
+    buyPrice: number;
+    productId: number;
+    totalOffers: number;
+    productName: string;
+    shippingCost: number;
+    productImage?: string;
+
+    isInitial: boolean;
+  };
+  [ProductActionsStackRoutes.PLACE_BID]: {
+    totalBids: number;
+    productName: string;
+    timeLeftToBid: string;
+    productImage?: string;
+    bidStartingPrice: number;
+    productId: number;
+
+    isInitial: boolean;
+  };
+  [ProductActionsStackRoutes.REVIEW_OFFER]: {
+    offerPrice: number;
+    shippingCost: number;
+    productId: number;
+
+    isInitial: boolean;
+  };
+  [ProductActionsStackRoutes.ASK_QUESTION]: {
+    sellerId: number;
+    sellerName: string;
+    sellerImage: string;
+
+    productId: number;
+    productName: string;
+    productImage: string;
+    productPrice: number;
+
+    isInitial: boolean;
+  };
+
+  [ProductActionsStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+  [ProductActionsStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
 };
 
 export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
@@ -43,35 +108,72 @@ export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
   >;
 
 export type ProfileStackParamList = {
+  [ProfileStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+  [ProfileStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+
   [ProfileStackRoutes.CONTACT]: undefined;
   [ProfileStackRoutes.PURCHASES]: undefined;
   [ProfileStackRoutes.TRANSACTION]: undefined;
   [ProfileStackRoutes.OFFER_N_BID]: undefined;
   [ProfileStackRoutes.SAVE_PRODUCT]: undefined;
   [ProfileStackRoutes.PROFILE_SCREEN]: undefined;
-  [ProfileStackRoutes.PUBLIC_PROFILE]: undefined;
+  [ProfileStackRoutes.PUBLIC_PROFILE]: {
+    userId: number;
+  };
   [ProfileStackRoutes.ACCOUNT_SETTING]: undefined;
 };
-export type ChatStackParamList = {};
+
+export type ChatStackParamList = {
+  [ChatStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+  [ChatStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+
+  [ChatStackRoutes.CONVERSATION_LIST]: undefined;
+  [ChatStackRoutes.SINGLE_CONVERSATION]: {
+    userId: number;
+    userName: string;
+    productId: number;
+    userImage: string;
+    productPrice: number;
+    productImage: string;
+  };
+};
+
+export type SaleOrArchiveStackParamList = {
+  [SaleStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+  [SaleStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+
+  [SaleStackRoutes.SALE_OR_ARCHIVE]: undefined;
+};
+
 export type PostItemStackParamList = {
+  [PostItemStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+  [PostItemStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+
   [PostItemStackRoutes.SUCCESS]: undefined;
   [PostItemStackRoutes.ADD_PRICE]: {
+    productEditInfo?: ProductEditInfo;
     categoryId: number;
     conditionId: number;
     description: string;
     subCategoryId: number;
-    attributes: Record<number, string | number>;
     productTitle: string;
-    productCoverImage: Asset;
+    productCoverImage?: Asset;
     productGalleryImages: Asset[];
+    attributes: Record<number, string | number>;
   };
   [PostItemStackRoutes.ADD_DETAILS]: {
     productTitle: string;
-    productCoverImage: Asset;
+    productCoverImage?: Asset;
     productGalleryImages: Asset[];
+    productEditInfo?: ProductEditInfo;
   };
-  [PostItemStackRoutes.UPLOAD_PHOTO]: undefined;
+  [PostItemStackRoutes.UPLOAD_PHOTO]:
+    | {
+        productEditInfo?: ProductEditInfo;
+      }
+    | undefined;
   [PostItemStackRoutes.ADD_DELIVERY_METHOD]: {
+    productEditInfo?: ProductEditInfo;
     duration?: number;
     metals: number[];
     quantity: number;
@@ -84,7 +186,7 @@ export type PostItemStackParamList = {
     buynowprice: number;
     subCategoryId: number;
     showMetalPrice: boolean;
-    productCoverImage: Asset;
+    productCoverImage?: Asset;
     expectedDateForList: string;
     productGalleryImages: Asset[];
     attributes: Record<number, string | number>;
@@ -92,11 +194,12 @@ export type PostItemStackParamList = {
 };
 
 export type HomeTabParamList = {
-  [HomeTabRoutes.SELLING]: undefined;
+  [HomeTabRoutes.SALE]: NavigatorScreenParams<SaleOrArchiveStackParamList>;
   [HomeTabRoutes.HOME]: NavigatorScreenParams<HomeStackParamList>;
   [HomeTabRoutes.CHAT]: NavigatorScreenParams<ChatStackParamList>;
   [HomeTabRoutes.PROFILE]: NavigatorScreenParams<ProfileStackParamList>;
   [HomeTabRoutes.POST_ITEM]: NavigatorScreenParams<PostItemStackParamList>;
+  [HomeTabRoutes.EDIT_ITEM]: NavigatorScreenParams<PostItemStackParamList>;
 };
 
 export type HomeTabScreenProps<T extends keyof HomeTabParamList> =
@@ -108,12 +211,19 @@ export type AuthStackParamList = {
       name: string;
       params: Record<string, any>;
     };
+    backScreen?: {
+      name: string;
+      params: Record<string, any>;
+    };
   };
   [AuthStackRoutes.REGISTRATION]: undefined;
   [AuthStackRoutes.RESET_PASSWORD]: {
     email: string;
   };
   [AuthStackRoutes.FORGOT_PASSWORD]: undefined;
+  [AuthStackRoutes.OTP]: {
+    email: string;
+  };
 };
 
 export type AuthStackScreenProps<T extends keyof AuthStackParamList> =
@@ -123,46 +233,25 @@ export type AuthStackScreenProps<T extends keyof AuthStackParamList> =
   >;
 
 export type RootStackParamList = {
-  [RootStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
-  [RootStackRoutes.HOME]: NavigatorScreenParams<HomeTabParamList>;
-  [RootStackRoutes.MAKE_OFFER]: {
-    buyPrice: number;
-    totalOffers: number;
-    productName: string;
-    shippingCost: number;
-    productImage?: string;
-    productId: string | number;
-  };
-  [RootStackRoutes.PLACE_BID]: {
-    totalBids: number;
-    productName: string;
-    timeLeftToBid: string;
-    productImage?: string;
-    bidStartingPrice: number;
-    productId: string | number;
-  };
-  [RootStackRoutes.REVIEW_OFFER]: {
-    offerPrice: number;
-    shippingCost: number;
-    productId: string | number;
-  };
-  [RootStackRoutes.ASK_QUESTION]: {
-    sellerId: number | string;
-    sellerName: string;
-    sellerImage: string;
+  [SaleStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+  [ProductActionsStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
 
-    productId: number | string;
-    productImage: string;
-    productName: string;
-  };
+  [RootStackRoutes.PRODUCT_ACTIONS]: NavigatorScreenParams<ProductActionsStackParamList>;
+  [RootStackRoutes.HOME]: NavigatorScreenParams<HomeTabParamList>;
+
   [RootStackRoutes.NOTIFICATIONS]: undefined;
   [RootStackRoutes.SEARCH_PRODUCT]: undefined;
   [RootStackRoutes.SELLER_REVIEW]: {
-    sellerId: string | number;
+    sellerId: number;
   };
+
+  [RootStackRoutes.SELLER_PUBLIC_PROFILE]: {
+    userId: number;
+  };
+
   [RootStackRoutes.PRODUCT_FILTER]: {
     categoryTitle?: string;
-    categoryId?: string | number;
+    categoryId?: number;
     location?: string;
     distance?: number;
     maxPrice?: number;
@@ -170,34 +259,11 @@ export type RootStackParamList = {
     condition?: Condition;
   };
   [RootStackRoutes.PRODUCT_DETAILS]: {
-    productId: number | string;
+    productId: number;
   };
-  [RootStackRoutes.SINGLE_CONVERSATION]: {
-    conversationId: number;
-    userName: string;
-    userImage: string;
-    userLocation: string;
-    productPrice: number;
-    productImage: string;
-  };
-  [RootStackRoutes.CONFIRM_PURCHASE]: {
-    productName: string;
-    productImage: string;
-    productId: string | number;
-    productBuyNowPrice: number;
-  };
-  [RootStackRoutes.LOCATION_PROMPT]: {
-    nextScreen?: {
-      name: string;
-      params: Record<string, any>;
-    };
-  };
-  [RootStackRoutes.CHOOSE_LOCATION]: {
-    nextScreen?: {
-      name: string;
-      params: Record<string, any>;
-    };
-  };
+
+  [RootStackRoutes.CONFIRM_PURCHASE]: undefined;
+
   [RootStackRoutes.ADD_SHIPPING_ADDRESS]: undefined;
 };
 
@@ -318,14 +384,18 @@ export interface HomeCategory {
 }
 
 export type HomeCategoryResponse = {
-  categories: HomeCategory[];
+  categories: SimplePaginatedResponse<HomeCategory>;
 };
 
 export interface FilterProduct {
   id: number;
   title: string;
   slug: string;
-  image: string;
+  images: {
+    small: string;
+    medium: string;
+    large: string;
+  };
   location: string;
   price: string;
   is_locale: boolean;
@@ -336,21 +406,22 @@ export interface FilterProduct {
 }
 
 export type FilterProductQueryParams = Partial<{
+  page: number;
+  title: string;
+  user_id: number;
+  location: string;
+  paginate: number;
+  distance: number;
+  max_price: number;
+  min_price: number;
+  category_id: number;
+  attribute_id: number;
+  condition_id: number;
   is_locale: "1" | "0";
   is_shipping: "1" | "0";
-  category_id: string | number;
-  attribute_id: string | number;
-  sub_category_id: string | number;
-  user_id: string | number;
-  title: string;
-  location: string;
-  condition_id: string | number;
-  min_price: number;
-  max_price: number;
-  distance: number;
-  sort_by: "random" | "oldest" | "low_price" | "high_price";
-  paginate: number;
-  page: number;
+  sub_category_id: number;
+  attributes: Record<number, number>;
+  sort_by: "random" | "oldest" | "low_price" | "high_price" | "newest";
 }>;
 
 export type FilterProductsResponse = {
@@ -391,12 +462,16 @@ export interface Attribute {
   id: number;
   title: string;
   category: string;
+  terms: {
+    id: number;
+    title: string;
+  }[];
 }
 
 export type FullTextSearchResponse = {
-  categories: MinimalCategory[];
   conditions: Condition[];
   attributes: Attribute[];
+  categories: MinimalCategory[];
   sub_categories: MinimalCategory[];
 };
 
@@ -424,7 +499,11 @@ export interface ProductDetails {
   id: number;
   distance: string;
   title: string;
-  images: string[];
+  images: {
+    small: string[];
+    medium: string[];
+    large: string[];
+  };
   is_locale: boolean;
   is_shipping: boolean;
   starting_price: string;
@@ -497,16 +576,18 @@ export interface CreateCartResponse {
 export interface CartItem {
   id: number;
   product: number;
+  product_title: string;
+  product_image: string;
   quantity: number;
   sub_total: string;
 }
 
 export interface Calculations {
-  sub_total: string;
-  shipping_cost: string;
-  discount: string;
-  vat: string;
-  total: string;
+  sub_total: number;
+  shipping_cost: number;
+  discount: number;
+  vat: number;
+  total: number;
 }
 
 export interface GetCartsResponse {
@@ -515,17 +596,64 @@ export interface GetCartsResponse {
   success: string;
 }
 
-export interface Order {
+export interface ICommonOrder {
   id: number;
   price: string;
-  product_id: number;
-  product_image: string;
-  product_title: string;
-  delivery_status: string;
-  product_condition: string;
-  product_category: string;
-  product_sub_category: string;
+  product: {
+    id: number;
+    image: string;
+    title: string;
+    condition: string;
+    category: string;
+    sub_category: string;
+  };
+  seller: {
+    id: number;
+    name: string;
+    image: string;
+  };
+  user: {
+    id: number;
+    name: string;
+    image: string;
+  };
 }
+
+export interface IOrderWithStatusPaidDeliveryStatusPlaced extends ICommonOrder {
+  status: "Paid";
+  delivery_status: "Placed";
+}
+
+export interface IOrderWithStatusPaymentCompletedDeliveryStatusPlaced
+  extends ICommonOrder {
+  status: "Payment Completed";
+  delivery_status: "Placed";
+}
+
+export interface IOrderWithStatusPaynowDeliveryStatusPlaced
+  extends ICommonOrder {
+  status: "Pay Now";
+  delivery_status: "Placed";
+}
+
+export interface IOrderWithStatusWaitingForPaymentDeliveryStatusPlaced
+  extends ICommonOrder {
+  status: "Waiting For Payment";
+  delivery_status: "Placed";
+}
+
+export interface IOrderWithStatusPaymentCompletedDeliveryStatusShipped
+  extends ICommonOrder {
+  status: "Payment Completed";
+  delivery_status: "Shipped";
+}
+
+export type Order =
+  | IOrderWithStatusPaidDeliveryStatusPlaced
+  | IOrderWithStatusPaymentCompletedDeliveryStatusPlaced
+  | IOrderWithStatusPaynowDeliveryStatusPlaced
+  | IOrderWithStatusWaitingForPaymentDeliveryStatusPlaced
+  | IOrderWithStatusPaymentCompletedDeliveryStatusShipped;
 
 export type GetPurchaseHistoryResponse = {
   success: string;
@@ -536,23 +664,29 @@ export interface ConfirmOrderRequest {
   postal_code: number;
   delivery_status: 0 | 1;
   payment_method: string;
-  city_id: number | string;
-  state_id: number | string;
-  country_id: number | string;
+  city_id: number;
+  state_id: number;
+  country_id: number;
+  address: string;
+  email: string;
+  name: string;
+  phone: string;
+  product_id: number;
 }
 
 export interface UserProfile {
   id: number;
   name: string;
-  phone?: any;
+  phone?: number;
   email: string;
-  location?: any;
-  latitude?: any;
-  longitude?: any;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
   status: number;
   profile_image: string;
   has_product: boolean;
   is_fb_connected: boolean;
+  is_phone_verfied: boolean;
   country: {
     id: number;
     name: string;
@@ -586,7 +720,7 @@ export interface OfferOrBid {
   user_name: string;
   user_image: string;
   type: "Bid" | "offer";
-  product_id: string | number;
+  product_id: number;
   product_title: string;
   product_price: string;
   product_image: string;
@@ -613,19 +747,24 @@ export type GetSaleOrArchivedProductsReponse = {
   products: SimplePaginatedResponse<FilterProduct>;
 };
 
+export type GetSellerProductsReponse = {
+  products: SimplePaginatedResponse<FilterProduct>;
+  user: UserProfile;
+};
+
 export interface Conversation {
   id: number;
+  date: string;
+  user_id: number;
+  has_msg: boolean;
   user_name: string;
   user_image: string;
-  has_offer: boolean;
-  has_msg: boolean;
-  product:
-    | ""
-    | {
-        title: string;
-        image: string;
-        price: string;
-      };
+  product: {
+    title: string;
+    image: string;
+    price: number;
+    product_id: number;
+  };
   message: {
     title: string;
     created_at: string;
@@ -634,12 +773,15 @@ export interface Conversation {
 
 export type GetConversationsResponse = {
   messages: SimplePaginatedResponse<Conversation>;
+  total_unseen_messages: number;
 };
 
 export interface ConversationMessage {
   id: number;
   title: string;
   created_at: string;
+  product_id: number;
+  receiver_id: number;
   sender_name: string;
   sender_image: string;
   receiver_name: string;
@@ -648,11 +790,35 @@ export interface ConversationMessage {
 
 export type GetConversationDetailsResponse = {
   messages: SimplePaginatedResponse<ConversationMessage>;
+  user: {
+    id: number;
+    name: string;
+    image: string;
+    location?: string;
+  };
+  seller: {
+    id: number;
+    name: string;
+    image: string;
+    rating: number;
+    reviews: number;
+    location: string;
+  };
+  product: {
+    id: number;
+    title: string;
+    price: number;
+    image: string;
+    package_id: number;
+    package_name: string;
+    package_price: number;
+  };
 };
 
 export type SendMessageRequest = {
-  receiver_id: number;
   message: string;
+  product_id: number;
+  receiver_id: number;
 };
 
 export interface AppNotification {
@@ -660,6 +826,7 @@ export interface AppNotification {
   id: number;
   title: string;
   message: string;
+  style: "success" | "danger";
 }
 
 export type GetNotificationsResponse = {
@@ -671,6 +838,9 @@ export interface Transaction {
   amount: string;
   payment_method: string;
   date: string;
+  product_name: string;
+  product_id: number;
+  status: number;
 }
 
 export type GetTransactionsResponse = {
@@ -790,9 +960,9 @@ export type GetProductMetalsLivePriceResponse =
   | {
       success: false;
       error: {
-        code: number;
+        code: MetalsApiErrorCode;
         type: string;
-        info: string;
+        info: MetalsApiErrorMessage;
       };
     };
 
@@ -850,7 +1020,8 @@ export type GetPackagesResponse = {
   items: SimplePaginatedResponse<Package>;
 };
 
-export type CreateProductRequest = {
+export type UpsertProductRequest = {
+  product_id?: number;
   title: string;
   category_id: number;
   sub_category_id: number;
@@ -903,3 +1074,110 @@ export type ContactUsRequest = {
   subject: string;
   description: string;
 };
+
+export type SocialLoginRequest = {
+  email: string;
+  name: string;
+  firebase_auth_id: string;
+  provider: "google" | "facebook";
+};
+
+export type SocialLoginResponse = {
+  email: string;
+  name: string;
+  firebase_auth_id: string;
+  provider: "google" | "facebook";
+};
+
+export type VerifyEmailRequest = {
+  email: string;
+  otp: number;
+};
+
+export interface ProductEditInfoImage {
+  id: number;
+  name: string;
+  url: string;
+}
+
+export interface ProductEditInfo {
+  id: number;
+  user_id: number;
+  title: string;
+  quantity: number;
+  category: {
+    id: number;
+    title: string;
+  };
+  condition: {
+    id: number;
+    title: string;
+  };
+  sub_category: {
+    id: number;
+    title: string;
+  };
+  details: string;
+  status: number;
+  attributes: Record<number, {id: number; title: string} | string>;
+  starting_price: number;
+  buy_price: number;
+  duration?: {id: number; title: string};
+  is_list_now: boolean;
+  expected_date_for_list?: string;
+  show_metal_price: boolean;
+  selected_metals?: Metal[];
+  location: string;
+  latitude: number;
+  longitude: number;
+  package_id: {
+    id: number;
+    name: string;
+    size: string;
+  };
+  is_locale: boolean;
+  is_shipping: boolean;
+  files?: ProductEditInfoImage[];
+}
+
+export type GetProductEditInfoResponse = {
+  item: ProductEditInfo;
+};
+
+export type MetalsApiErrorCode =
+  | 404
+  | 101
+  | 103
+  | 104
+  | 105
+  | 106
+  | 102
+  | 201
+  | 202
+  | 301
+  | 302
+  | 403
+  | 501
+  | 502
+  | 503
+  | 504
+  | 505;
+
+export type MetalsApiErrorMessage =
+  | "The requested resource does not exist."
+  | "No API Key was specified or an invalid API Key was specified."
+  | "The requested API endpoint does not exist."
+  | "The maximum allowed amount of monthly API requests has been reached."
+  | "The current subscription plan does not support this API endpoint."
+  | "The current request did not return any results."
+  | "The account this API request is coming from is inactive."
+  | "An invalid base currency has been entered."
+  | "One or more invalid symbols have been specified."
+  | "No date has been specified. [historical]"
+  | "An invalid date has been specified. [historical, convert]"
+  | "No or an invalid amount has been specified. [convert]"
+  | "No or an invalid timeframe has been specified. [timeseries]"
+  | "No or an invalid 'start_date' has been specified. [timeseries, fluctuation]"
+  | "No or an invalid 'end_date' has been specified. [timeseries, fluctuation]"
+  | "An invalid timeframe has been specified. [timeseries, fluctuation]"
+  | "The specified timeframe is too long, exceeding 365 days. [timeseries, fluctuation]";

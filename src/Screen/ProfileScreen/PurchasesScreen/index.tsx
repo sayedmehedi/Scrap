@@ -1,19 +1,22 @@
 import React from "react";
 import EachPurchases from "./EachPurchases";
 import {View, FlatList} from "react-native";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {GetPurchaseHistoryResponse, PaginationQueryParams} from "@src/types";
 import {
   useGetPurchaseHistoryQuery,
   useLazyGetPurchaseHistoryQuery,
 } from "@data/laravel/services/order";
+import {Text} from "react-native-paper";
 
 const PurchasesScreen = () => {
   const [getPurchaseHistory, {isFetching: isFetchingNextPage}] =
     useLazyGetPurchaseHistoryQuery();
   const {
-    data: purchaseHistoryResponse,
+    refetch,
     isLoading,
+    data: purchaseHistoryResponse,
     isFetching: isFetchingInitial,
   } = useGetPurchaseHistoryQuery({});
   const [purchaseHistoryPages, setPurchaseHistoryPages] = React.useState<
@@ -22,6 +25,8 @@ const PurchasesScreen = () => {
   const actionCreaterRef = React.useRef<ReturnType<
     typeof getPurchaseHistory
   > | null>(null);
+
+  useRefreshOnFocus(refetch);
 
   React.useEffect(() => {
     if (!isLoading && !!purchaseHistoryResponse) {
@@ -98,9 +103,19 @@ const PurchasesScreen = () => {
     <>
       <View>
         <FlatList<typeof purchaseHistories[0]>
+          onRefresh={refetch}
           data={purchaseHistories}
+          refreshing={isFetchingInitial}
           onEndReached={getNextPurchaseHistory}
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            padding: 15,
+          }}
+          ListEmptyComponent={() => (
+            <View style={{padding: 15}}>
+              <Text style={{textAlign: "center"}}>No data</Text>
+            </View>
+          )}
           renderItem={({item}) => {
             if (item.type === "skeleton") {
               return (

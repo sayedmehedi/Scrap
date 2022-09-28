@@ -2,24 +2,29 @@ import React from "react";
 import {View, Text, FlatList} from "react-native";
 import SaleOrArchiveItem from "./SaleOrArchiveItem";
 import {
-  PaginationQueryParams,
   GetSaleOrArchivedProductsReponse,
+  PaginationQueryParams,
 } from "@src/types";
 import {
-  useGetArchiveProductsQuery,
-  useLazyGetArchiveProductsQuery,
+  useGetSaleProductsQuery,
+  useLazyGetSaleProductsQuery,
 } from "@data/laravel/services/product";
-import {ActivityIndicator} from "react-native-paper";
 import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
+import {ActivityIndicator} from "react-native-paper";
 
-export default function ArchiveProductList() {
+export default function SaleProductList({
+  ListEmptyComponent,
+}: {
+  ListEmptyComponent: React.ComponentType;
+}) {
   const [fetchProducts, {isFetching: isFetchingNextPage}] =
-    useLazyGetArchiveProductsQuery();
+    useLazyGetSaleProductsQuery();
   const {
-    data: archivedProductsResponse,
+    refetch,
     isLoading,
+    data: saleProductsResponse,
     isFetching: isFetchingInitial,
-  } = useGetArchiveProductsQuery({});
+  } = useGetSaleProductsQuery({});
 
   const [productPages, setProductPages] = React.useState<
     Array<GetSaleOrArchivedProductsReponse["products"]>
@@ -29,10 +34,10 @@ export default function ArchiveProductList() {
   > | null>(null);
 
   React.useEffect(() => {
-    if (!isLoading && !!archivedProductsResponse) {
-      setProductPages([archivedProductsResponse.products]);
+    if (!isLoading && !!saleProductsResponse) {
+      setProductPages([saleProductsResponse.products]);
     }
-  }, [archivedProductsResponse, isLoading]);
+  }, [saleProductsResponse, isLoading]);
 
   const getNextProducts = async () => {
     if (isFetchingNextPage || isFetchingInitial) {
@@ -100,32 +105,31 @@ export default function ArchiveProductList() {
 
   return (
     <React.Fragment>
+      <FlatList<typeof products[0]>
+        numColumns={2}
+        data={products}
+        onRefresh={refetch}
+        refreshing={isFetchingInitial}
+        onEndReached={getNextProducts}
+        columnWrapperStyle={{
+          paddingBottom: 20,
+        }}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={ListEmptyComponent}
+        renderItem={({item}) => <SaleOrArchiveItem item={item} />}
+      />
+
       {isFetchingNextPage ? (
         <View
           style={{
             padding: 10,
+            marginBottom: 130,
             alignItems: "center",
             justifyContent: "center",
           }}>
           <ActivityIndicator size={"small"} />
         </View>
       ) : null}
-
-      <FlatList<typeof products[0]>
-        numColumns={3}
-        data={products}
-        onEndReached={getNextProducts}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingLeft: SCREEN_PADDING_HORIZONTAL,
-        }}
-        ListEmptyComponent={() => (
-          <View>
-            <Text style={{textAlign: "center"}}>No data</Text>
-          </View>
-        )}
-        renderItem={({item}) => <SaleOrArchiveItem item={item} />}
-      />
     </React.Fragment>
   );
 }

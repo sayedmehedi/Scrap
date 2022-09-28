@@ -1,14 +1,22 @@
 import React from "react";
 import {View, Text} from "react-native";
-import {useAppSelector} from "@hooks/store";
+import {logout} from "@store/slices/authSlice";
+import useAppSnackbar from "@hooks/useAppSnackbar";
 import Feather from "react-native-vector-icons/Feather";
 import Fontisto from "react-native-vector-icons/Fontisto";
+import {useAppDispatch, useAppSelector} from "@hooks/store";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import ChangePasswordItem from "./modals/ChangePasswordItem";
 import AccountSettingsItem from "./modals/AccountSettingsItem";
+import ChangeLocationItem from "./modals/ChangeLocationItem";
+import {useLogoutMutation} from "@data/laravel/services/auth";
+import FacebookSettingsItem from "./modals/FacebookSettingsItem";
+import EmailSettingsItem from "./modals/EmailSettingsItem";
 
 const AccountSettingScreen = () => {
+  const dispatch = useAppDispatch();
+  const {enqueueInfoSnackbar} = useAppSnackbar();
   const profile = useAppSelector(state => state.auth.profile);
 
   return (
@@ -18,7 +26,7 @@ const AccountSettingScreen = () => {
           modalInputs={[
             {
               name: "name",
-              value: profile?.name,
+              defaultValue: profile?.name,
             },
           ]}
           text={profile?.name ?? ""}
@@ -30,53 +38,37 @@ const AccountSettingScreen = () => {
           modalInputs={[
             {
               name: "phone",
-              value: profile?.phone,
+              keyboardType: "number-pad",
               placeholder: "Add Your Mobile Number",
+              defaultValue: profile?.phone?.toString(),
             },
           ]}
           modalTitle={"Phone Verification"}
-          text={profile?.phone ?? "No Phone number provided"}
           icon={<Feather name="phone" size={20} color={"#707070"} />}
+          text={profile?.phone?.toString() ?? "No Phone number provided"}
           modalSubtitle={
             "Add a phone number to secure your account. We'll text you a code."
           }
         />
 
-        <AccountSettingsItem
-          modalInputs={[
-            {
-              name: "email",
-              value: profile?.email,
-            },
-          ]}
-          text={profile?.email ?? ""}
-          modalTitle={"Update Email Address"}
-          icon={<Fontisto name="email" size={20} color={"#707070"} />}
-        />
+        <EmailSettingsItem />
 
-        <AccountSettingsItem
-          modalInputs={[
-            {
-              name: "facebook-account",
-              value: "softiconic@gmail.com",
-            },
-          ]}
-          text={"Connect Facebook"}
-          modalTitle={"Update Facebook Profile"}
-          icon={<Feather name="facebook" size={20} color={"#707070"} />}
-        />
+        <FacebookSettingsItem />
 
         <ChangePasswordItem
           modalInputs={[
             {
               name: "old_password",
+              secureTextEntry: true,
               placeholder: "Old Password",
             },
             {
               name: "password",
+              secureTextEntry: true,
               placeholder: "New Password",
             },
             {
+              secureTextEntry: true,
               name: "password_confirmation",
               placeholder: "Confirm Password",
             },
@@ -86,18 +78,7 @@ const AccountSettingScreen = () => {
           icon={<EvilIcons name="lock" size={26} color={"#707070"} />}
         />
 
-        <AccountSettingsItem
-          modalInputs={[
-            {
-              name: "location",
-              placeholder: "Location",
-              value: profile?.location,
-            },
-          ]}
-          modalTitle={"Update Location"}
-          text={profile?.location ?? "No location data"}
-          icon={<Feather name="map-pin" size={20} color={"#707070"} />}
-        />
+        <ChangeLocationItem />
       </View>
     </>
   );

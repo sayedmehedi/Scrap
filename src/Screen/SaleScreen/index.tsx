@@ -12,7 +12,7 @@ import {View, Text, SafeAreaView, TouchableOpacity} from "react-native";
 
 type HometabNavigation = BottomTabNavigationProp<HomeTabParamList>;
 
-const SellingScreen = () => {
+const SaleScreen = () => {
   const hometabNavigation = useNavigation<HometabNavigation>();
   const [productType, setProductType] = React.useState<"sale" | "archived">(
     "sale",
@@ -113,4 +113,4 @@ const SellingScreen = () => {
   );
 };
 
-export default SellingScreen;
+export default SaleScreen;

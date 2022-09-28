@@ -7,19 +7,30 @@ import {useTimer} from "react-timer-hook";
 import Colors from "../../constants/Colors";
 import {metalNameToCode} from "@utils/metal";
 import {Rating} from "react-native-elements";
+import {useAppSelector} from "@hooks/store";
 import {RootStackParamList} from "@src/types";
 import useAppConfig from "@hooks/useAppConfig";
 import useAppSnackbar from "@hooks/useAppSnackbar";
+import {useFocusEffect} from "@react-navigation/native";
 import Feather from "react-native-vector-icons/Feather";
-import {RootStackRoutes} from "../../constants/routes";
 import Octicons from "react-native-vector-icons/Octicons";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import EachProductItem from "../../Component/EachProductItem";
 import AppPrimaryButton from "@src/Component/AppPrimaryButton";
+import {selectIsAuthenticated} from "@store/slices/authSlice";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MapView, {PROVIDER_GOOGLE, Marker} from "react-native-maps";
 import {useCreateCartMutation} from "@data/laravel/services/order";
-import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {
+  NativeStackScreenProps,
+  NativeStackNavigationProp,
+} from "@react-navigation/native-stack";
+import {
+  AuthStackRoutes,
+  ProductActionsStackRoutes,
+  RootStackRoutes,
+} from "../../constants/routes";
 import {ActivityIndicator, Button, useTheme} from "react-native-paper";
 import {Table, TableWrapper, Row, Cell} from "react-native-table-component";
 import {
@@ -48,6 +59,8 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   const config = useAppConfig();
   const [image, setImage] = React.useState("");
   const {enqueueSuccessSnackbar} = useAppSnackbar();
+  const profile = useAppSelector(state => state.auth.profile);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [expiryTimestamp] = React.useState(() => dayjs().toDate());
   const [metalsLivePrices, setMetalsLivePrices] = React.useState<
     Array<[string, string, [number, number]]>
@@ -57,13 +70,34 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
     {isLoading: isLoadingProductMetalsLivePrice},
   ] = useLazyGetProductMetalsLivePriceQuery();
 
+  const scrollviewRef = React.useRef<ScrollView>(null!);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        scrollviewRef.current?.scrollTo({
+          y: 0,
+          animated: true,
+        });
+      };
+    }, []),
+  );
+
   const {days, hours, minutes, seconds, restart} = useTimer({
     expiryTimestamp,
   });
 
-  const {data: productDetails, isLoading} = useGetProductDetailsQuery({
+  const {
+    refetch,
+    isLoading,
+    data: productDetails,
+  } = useGetProductDetailsQuery({
     id: route.params.productId,
+    latitude: profile?.latitude,
+    longitude: profile?.longitude,
   });
+
+  useRefreshOnFocus(refetch);
 
   const [toggleFavorite] = useToggleProductFavoriteMutation();
   const [createCart, {isLoading: isCreatingCart}] = useCreateCartMutation();
@@ -138,7 +172,13 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                   onPress={() => {
                     toggleFavorite({
                       id: productDetails.id,
-                    });
+                    })
+                      .unwrap()
+                      .then(res => {
+                        enqueueSuccessSnackbar({
+                          text1: res.success,
+                        });
+                      });
                   }}>
                   <AntDesign
                     name={productDetails.is_favourite ? "heart" : "hearto"}
@@ -155,8 +195,8 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   }, [navigation, isLoading, productDetails, toggleFavorite]);
 
   React.useEffect(() => {
-    if (productDetails && productDetails.images.length !== 0) {
-      setImage(productDetails.images[0]);
+    if (productDetails && productDetails.images.small.length !== 0) {
+      setImage(productDetails.images.medium[0]);
     }
   }, [productDetails]);
 
@@ -180,7 +220,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
     if (productDetails) {
       const [days, hours, mins, seconds] = productDetails.time_left
         .split(" ")
-        .filter(segment => segment.match(/\d+/)) as [
+        .filter((segment: string) => segment.match(/\d+/)) as [
         string,
         string,
         string,
@@ -211,33 +251,55 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
   const handlePlaceBid = () => {
     if (productDetails) {
-      navigation.navigate(RootStackRoutes.PLACE_BID, {
-        productId: productDetails.id,
-        productName: productDetails.title,
-        totalBids: productDetails.total_bids,
-        timeLeftToBid: productDetails.time_left,
-        productImage: productDetails.images[0] ?? undefined,
-        bidStartingPrice: !!productDetails.starting_price
-          ? +productDetails.starting_price
-          : 0,
+      navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+        screen: ProductActionsStackRoutes.PLACE_BID,
+        params: {
+          productId: productDetails.id,
+          productName: productDetails.title,
+          totalBids: productDetails.total_bids,
+          timeLeftToBid: productDetails.time_left,
+          productImage: productDetails.images.small[0] ?? undefined,
+          bidStartingPrice: !!productDetails.starting_price
+            ? +productDetails.starting_price
+            : 0,
+          isInitial: false,
+        },
       });
     }
   };
 
   const handleMakeOffer = () => {
     if (productDetails) {
-      navigation.navigate(RootStackRoutes.MAKE_OFFER, {
-        productId: productDetails.id,
-        productName: productDetails.title,
-        totalOffers: productDetails.total_offers,
-        shippingCost: +productDetails.shipping_cost,
-        productImage: productDetails.images[0] ?? undefined,
-        buyPrice: !!productDetails.buy_price ? +productDetails.buy_price : 0,
+      navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+        screen: ProductActionsStackRoutes.MAKE_OFFER,
+        params: {
+          productId: productDetails.id,
+          productName: productDetails.title,
+          totalOffers: productDetails.total_offers,
+          shippingCost: +productDetails.shipping_cost,
+          productImage: productDetails.images.small[0] ?? undefined,
+          buyPrice: !!productDetails.buy_price ? +productDetails.buy_price : 0,
+          isInitial: false,
+        },
       });
     }
   };
 
   const handleBuyProduct = () => {
+    if (!isAuthenticated) {
+      navigation.navigate(RootStackRoutes.AUTH, {
+        screen: AuthStackRoutes.LOGIN,
+        params: {
+          nextScreen: {
+            name: route.name,
+            params: route.params,
+          },
+        },
+      });
+
+      return;
+    }
+
     if (productDetails && !!productDetails.buy_price) {
       createCart({
         product_id: route.params.productId,
@@ -254,14 +316,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   };
 
   const handlePayment = () => {
-    if (productDetails) {
-      navigation.navigate(RootStackRoutes.CONFIRM_PURCHASE, {
-        productImage: image,
-        productId: productDetails.id,
-        productName: productDetails.title,
-        productBuyNowPrice: +productDetails.buy_price,
-      });
-    }
+    navigation.navigate(RootStackRoutes.CONFIRM_PURCHASE);
   };
 
   if (isLoading) {
@@ -278,7 +333,6 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
         style={{
           flex: 1,
           alignItems: "center",
-          backgroundColor: "#F7F7F7",
           justifyContent: "center",
         }}>
         <Text>Product not found</Text>
@@ -311,8 +365,8 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   // Bid scenarios: Bid placed, highest bidder, bid out, bid won
   return (
     <>
-      <View style={{flex: 1, backgroundColor: "#F7F7F7"}}>
-        <ScrollView>
+      <View style={{flex: 1}}>
+        <ScrollView ref={scrollviewRef}>
           {productDetails.has_bid && (
             <View>
               {/* Scenario: when won the bid show the congratulations text part
@@ -426,16 +480,23 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                       />
 
                       <Button
-                        onPress={() =>
-                          navigation.navigate(RootStackRoutes.ASK_QUESTION, {
-                            productImage: image,
-                            productId: productDetails.id,
-                            productName: productDetails.title,
-                            sellerId: productDetails.seller.id,
-                            sellerName: productDetails.seller.name,
-                            sellerImage: productDetails.seller.image,
-                          })
-                        }
+                        onPress={() => {
+                          navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+                            screen: ProductActionsStackRoutes.ASK_QUESTION,
+                            params: {
+                              productImage: image,
+                              productId: productDetails.id,
+                              productName: productDetails.title,
+                              sellerId: productDetails.seller.id,
+                              sellerName: productDetails.seller.name,
+                              sellerImage: productDetails.seller.image,
+                              productPrice: !!productDetails.buy_price
+                                ? +productDetails.buy_price
+                                : 0,
+                              isInitial: false,
+                            },
+                          });
+                        }}
                         color={theme.colors.accent}
                         style={{marginTop: 10}}
                         labelStyle={{
@@ -541,16 +602,23 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                       />
 
                       <Button
-                        onPress={() =>
-                          navigation.navigate(RootStackRoutes.ASK_QUESTION, {
-                            productImage: image,
-                            productId: productDetails.id,
-                            productName: productDetails.title,
-                            sellerId: productDetails.seller.id,
-                            sellerName: productDetails.seller.name,
-                            sellerImage: productDetails.seller.image,
-                          })
-                        }
+                        onPress={() => {
+                          navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+                            screen: ProductActionsStackRoutes.ASK_QUESTION,
+                            params: {
+                              productImage: image,
+                              productId: productDetails.id,
+                              productName: productDetails.title,
+                              sellerId: productDetails.seller.id,
+                              sellerName: productDetails.seller.name,
+                              sellerImage: productDetails.seller.image,
+                              productPrice: !!productDetails.buy_price
+                                ? +productDetails.buy_price
+                                : 0,
+                              isInitial: false,
+                            },
+                          });
+                        }}
                         color={theme.colors.accent}
                         style={{marginTop: 10}}
                         labelStyle={{
@@ -582,22 +650,27 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
           {!!image && (
             <Image
+              resizeMode={"contain"}
               source={{
                 uri: image,
               }}
               style={{
-                height: 240,
                 width: "100%",
+                minHeight: 240,
               }}
             />
           )}
 
           <View style={{padding: 10}}>
             <FlatList
-              data={productDetails?.images ?? []}
+              data={productDetails?.images.small ?? []}
               renderItem={({item, index}) => {
                 return (
-                  <TouchableOpacity onPress={() => setImage(item)} key={index}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      setImage(productDetails.images.medium[index])
+                    }
+                    key={index}>
                     <Image
                       source={{uri: item}}
                       style={{
@@ -659,7 +732,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                 }}>
                 <Feather name="map-pin" size={14} color={"#191F2B"} />
                 <Text style={{fontFamily: "Inter-Regular", color: "#667085"}}>
-                  {productDetails.location}: {productDetails.distance}
+                  {productDetails.location} - {productDetails.distance}
                 </Text>
               </View>
             </View>
@@ -812,32 +885,34 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
             </View>
 
             {/* if product has a starting price and the user did not place bid before then show the place bid button */}
-            {!!productDetails.starting_price && !productDetails.has_bid && (
-              <TouchableOpacity
-                onPress={handlePlaceBid}
-                style={styles.placeBidButton}>
-                <View></View>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: "white",
-                    fontFamily: "Inter-Regular",
-                  }}>
-                  Place Bid
-                </Text>
-                <View
-                  style={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 50,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "rgba(0,0,0,0.1)",
-                  }}>
-                  <Octicons name="arrow-right" color={"white"} size={26} />
-                </View>
-              </TouchableOpacity>
-            )}
+            {!!productDetails.starting_price &&
+              productDetails.time_left !== "" &&
+              !productDetails.has_bid && (
+                <TouchableOpacity
+                  onPress={handlePlaceBid}
+                  style={styles.placeBidButton}>
+                  <View></View>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      color: "white",
+                      fontFamily: "Inter-Regular",
+                    }}>
+                    Place Bid
+                  </Text>
+                  <View
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 50,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "rgba(0,0,0,0.1)",
+                    }}>
+                    <Octicons name="arrow-right" color={"white"} size={26} />
+                  </View>
+                </TouchableOpacity>
+              )}
 
             {/* if the user did not make offer before then show the make offer button */}
             {!productDetails.has_offer && (
@@ -1013,47 +1088,68 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
             </View>
 
             <Text>Condition: {productDetails.condition}</Text>
-            <Text>Category: {productDetails.category}</Text>
+            <Text>
+              Category: {productDetails.category} -{" "}
+              {productDetails.sub_category}
+            </Text>
 
             {!Array.isArray(productDetails.attributes) &&
               Object.entries(productDetails.attributes).map(([attr, val]) => (
                 <Text key={attr}>
-                  `${attr}: ${val}`
+                  {attr}: {val}
                 </Text>
               ))}
 
-            <View
-              style={{
-                marginVertical: 28,
-                alignItems: "center",
-                flexDirection: "row",
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate(RootStackRoutes.SELLER_PUBLIC_PROFILE, {
+                  userId: productDetails.seller.id,
+                });
               }}>
-              <Image
-                source={{uri: productDetails.seller.image}}
-                style={{height: 75, width: 75, borderRadius: 40}}
-              />
-              <View style={{marginLeft: 10}}>
-                <Text>{productDetails.seller.name}</Text>
+              <View
+                style={{
+                  marginVertical: 28,
+                  alignItems: "center",
+                  flexDirection: "row",
+                }}>
+                <Image
+                  source={{uri: productDetails.seller.image}}
+                  style={{height: 75, width: 75, borderRadius: 40}}
+                />
+                <View style={{marginLeft: 10}}>
+                  <Text>{productDetails.seller.name}</Text>
 
-                <View
-                  style={{
-                    marginVertical: 10,
-                    alignItems: "center",
-                    flexDirection: "row",
-                  }}>
-                  <Rating
-                    lock={true}
-                    imageSize={15}
-                    readonly={true}
-                    showRating={false}
-                    startingValue={productDetails.seller.rating}
-                  />
-                  <Text>({productDetails.seller.rating} rating)</Text>
+                  <View
+                    style={{
+                      marginVertical: 10,
+                      alignItems: "center",
+                      flexDirection: "row",
+                    }}>
+                    <Rating
+                      lock={true}
+                      imageSize={15}
+                      readonly={true}
+                      showRating={false}
+                      startingValue={productDetails.seller.rating}
+                    />
+                    <Text>({productDetails.seller.rating} rating)</Text>
+                  </View>
+
+                  <Text>Member Since {productDetails.seller.join_date}</Text>
                 </View>
-
-                <Text>Member Since {productDetails.seller.join_date}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
+
+            {/* View review button */}
+
+            <Button
+              onPress={() => {
+                navigation.navigate(RootStackRoutes.SELLER_REVIEW, {
+                  sellerId: productDetails.seller.id,
+                });
+              }}>
+              View Review
+            </Button>
 
             <Text
               style={{
@@ -1142,30 +1238,38 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
               />
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.askButton}
-            onPress={() =>
-              navigation.navigate(RootStackRoutes.ASK_QUESTION, {
+        </ScrollView>
+
+        <TouchableOpacity
+          style={styles.askButton}
+          onPress={() => {
+            navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+              screen: ProductActionsStackRoutes.ASK_QUESTION,
+              params: {
                 productImage: image,
                 productId: productDetails.id,
                 productName: productDetails.title,
                 sellerId: productDetails.seller.id,
                 sellerName: productDetails.seller.name,
                 sellerImage: productDetails.seller.image,
-              })
-            }>
-            <AntDesign name="questioncircleo" size={25} color={"#FFFFFF"} />
-            <Text
-              style={{
-                fontSize: 16,
-                marginLeft: 10,
-                color: "#FFFFFF",
-                fontFamily: "Inter-Medium",
-              }}>
-              Ask Question
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
+                productPrice: !!productDetails.buy_price
+                  ? +productDetails.buy_price
+                  : 0,
+                isInitial: false,
+              },
+            });
+          }}>
+          <AntDesign name="questioncircleo" size={25} color={"#FFFFFF"} />
+          <Text
+            style={{
+              fontSize: 16,
+              marginLeft: 10,
+              color: "#FFFFFF",
+              fontFamily: "Inter-Medium",
+            }}>
+            Ask Question
+          </Text>
+        </TouchableOpacity>
       </View>
     </>
   );

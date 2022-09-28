@@ -1,20 +1,22 @@
 import React from "react";
 import useAppSnackbar from "@hooks/useAppSnackbar";
-import {useTheme, Text} from "react-native-paper";
 import {useForm, Controller} from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
 import {ErrorMessage} from "@hookform/error-message";
 import {useNavigation} from "@react-navigation/native";
+import {useAppSelector, useAppStore} from "@hooks/store";
+import GoogleSignInBtn from "@src/Component/GoogleSignInBtn";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import FacebookSignInBtn from "@src/Component/FacebookSignInBtn";
 import {AuthStackParamList, RootStackParamList} from "@src/types";
-import {AuthStackRoutes, RootStackRoutes} from "../../constants/routes";
-import {useAppDispatch, useAppSelector, useAppStore} from "@hooks/store";
-import {addServerErrors, isJoteyQueryError} from "@utils/error-handling";
+import {useTheme, Text, ActivityIndicator} from "react-native-paper";
 import {
-  selectIsAuthenticated,
-  setFirstTimeLoginFalse,
-} from "@store/slices/authSlice";
+  AuthStackRoutes,
+  LocationStackRoutes,
+  RootStackRoutes,
+} from "../../constants/routes";
+import {addServerErrors, isJoteyQueryError} from "@utils/error-handling";
 import {
   useLoginMutation,
   useLazyGetProfileQuery,
@@ -36,13 +38,12 @@ import {
   setGlobalStyles,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
-import GoogleSignInBtn from "@src/Component/GoogleSignInBtn";
 
 setGlobalStyles.containerStyles = {
   height: 58,
   borderRadius: 6,
   paddingHorizontal: 10,
-  backgroundColor: "#fff",
+  backgroundColor: "#F7F7F7",
 };
 
 setGlobalStyles.customLabelStyles = {
@@ -75,14 +76,17 @@ type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 const LoginScreen = ({navigation, route}: Props) => {
   const theme = useTheme();
   const store = useAppStore();
-  const dispatch = useAppDispatch();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const rootNavigation = useNavigation<RootStackNavigationProp>();
   const [togglePassword, setTogglePassword] = React.useState(false);
   const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
+  const socialLoginState = useAppSelector(
+    state => state.authLoading.socialLoginState,
+  );
 
-  const [login, {isLoading, isError, error, isSuccess, data}] =
-    useLoginMutation();
+  const [
+    login,
+    {isLoading, isError, error, isSuccess: isLoginSuccess, data: loginData},
+  ] = useLoginMutation();
 
   const [getProfile, {isSuccess: isGettingProfileSuccess, data: profileData}] =
     useLazyGetProfileQuery();
@@ -101,55 +105,65 @@ const LoginScreen = ({navigation, route}: Props) => {
   });
 
   React.useEffect(() => {
+    if (
+      isLoginSuccess &&
+      !!loginData &&
+      "success" in loginData &&
+      isGettingProfileSuccess &&
+      !!profileData &&
+      "success" in profileData
+    ) {
+      if (route.params?.nextScreen) {
+        if (store.getState().auth.firstTimeLogin) {
+          rootNavigation.replace(RootStackRoutes.LOCATION, {
+            screen: LocationStackRoutes.LOCATION_PROMPT,
+            params: {
+              nextScreen: route.params.nextScreen,
+            },
+          });
+        } else {
+          rootNavigation.replace(
+            // @ts-ignore
+            route.params.nextScreen?.name,
+            route.params.nextScreen?.params,
+          );
+        }
+      }
+    }
+  }, [
+    store,
+    profileData,
+    route.params,
+    isLoginSuccess,
+    rootNavigation,
+    isGettingProfileSuccess,
+  ]);
+
+  React.useEffect(() => {
     if (isError && isJoteyQueryError(error)) {
       addServerErrors(error.data.field_errors, setError);
     }
   }, [setError, isError, error]);
 
   React.useEffect(() => {
-    if (isSuccess && !!data && "success" in data) {
+    if (isLoginSuccess && !!loginData && "success" in loginData) {
       reset();
       enqueueSuccessSnackbar({
-        text1: data.success,
+        text1: loginData.success,
       });
     }
 
-    if (isSuccess && !!data && "error" in data) {
+    if (isLoginSuccess && !!loginData && "error" in loginData) {
       enqueueErrorSnackbar({
-        text1: data.error,
+        text1: loginData.error,
       });
-    }
-  }, [enqueueSuccessSnackbar, isSuccess, data, reset, enqueueErrorSnackbar]);
-
-  React.useEffect(() => {
-    if (isAuthenticated && isGettingProfileSuccess && !!profileData) {
-      const {firstTimeLogin} = store.getState().auth;
-      if (firstTimeLogin) {
-        rootNavigation.replace(RootStackRoutes.LOCATION_PROMPT, {
-          nextScreen: route.params.nextScreen,
-        });
-        dispatch(setFirstTimeLoginFalse());
-      } else if (route.params?.nextScreen) {
-        // @ts-ignore
-        navigation.replace(
-          // @ts-ignore
-          route.params?.nextScreen.name,
-          // @ts-ignore
-          route.params?.nextScreen.params,
-        );
-      } else {
-        // @ts-ignore
-        navigation.replace(RootStackRoutes.HOME);
-      }
     }
   }, [
-    store,
-    route,
-    dispatch,
-    navigation,
-    profileData,
-    isAuthenticated,
-    isGettingProfileSuccess,
+    enqueueSuccessSnackbar,
+    isLoginSuccess,
+    loginData,
+    reset,
+    enqueueErrorSnackbar,
   ]);
 
   const handleLogin = handleSubmit(values => {
@@ -159,6 +173,14 @@ const LoginScreen = ({navigation, route}: Props) => {
         getProfile(undefined, false);
       });
   });
+
+  if (isLoading || socialLoginState === "pending") {
+    return (
+      <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+        <ActivityIndicator size={"large"} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaProvider>
@@ -380,16 +402,9 @@ const LoginScreen = ({navigation, route}: Props) => {
                 <GoogleSignInBtn />
               </View>
 
-              <TouchableOpacity
-                style={{
-                  width: 60,
-                  height: 60,
-                  alignItems: "center",
-                  backgroundColor: "white",
-                  justifyContent: "center",
-                }}>
-                <Image source={require("../../assets/Images/facebook.png")} />
-              </TouchableOpacity>
+              <View>
+                <FacebookSignInBtn />
+              </View>
             </View>
           </View>
         </View>

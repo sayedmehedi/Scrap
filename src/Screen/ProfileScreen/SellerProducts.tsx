@@ -1,7 +1,10 @@
 import React from "react";
 import {View, Text, FlatList} from "react-native";
 import EachSellerProduct from "./EachSellerProduct";
-import {useLazyGetSaleProductsQuery} from "@data/laravel/services/product";
+import {
+  useGetSellerProductsQuery,
+  useLazyGetSellerProductsQuery,
+} from "@data/laravel/services/product";
 import {
   FilterProduct,
   GetSaleOrArchivedProductsReponse,
@@ -9,13 +12,32 @@ import {
 } from "@src/types";
 import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
 import {ActivityIndicator} from "react-native-paper";
+import {useAppSelector} from "@hooks/store";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 
 export default function SellerProducts({
   onSelect: handleProductSelect,
 }: {
   onSelect: (p: FilterProduct) => void;
 }) {
-  const [getProducts, {isFetching, isLoading}] = useLazyGetSaleProductsQuery();
+  const profile = useAppSelector(state => state.auth.profile);
+  const {
+    refetch,
+    data: sellerProductsResponse,
+    isFetching: isFetchingInitial,
+  } = useGetSellerProductsQuery(
+    {
+      user_id: profile?.id ?? 0,
+    },
+    {
+      skip: !profile,
+    },
+  );
+
+  useRefreshOnFocus(refetch);
+
+  const [getProducts, {isFetching: isFetchingNext}] =
+    useLazyGetSellerProductsQuery();
   const [productPages, setProductPages] = React.useState<
     Array<GetSaleOrArchivedProductsReponse["products"]>
   >([]);
@@ -23,8 +45,14 @@ export default function SellerProducts({
     null,
   );
 
+  React.useEffect(() => {
+    if (!!sellerProductsResponse) {
+      setProductPages([sellerProductsResponse.products]);
+    }
+  }, [sellerProductsResponse]);
+
   const getNextProducts = async () => {
-    if (isFetching) {
+    if (isFetchingNext) {
       return;
     }
 
@@ -36,7 +64,11 @@ export default function SellerProducts({
       return;
     }
 
-    const params: PaginationQueryParams = {};
+    const params: PaginationQueryParams & {
+      user_id: number;
+    } = {
+      user_id: profile?.id ?? 0,
+    };
 
     params.page = lastProductPage.current_page + 1;
 
@@ -53,25 +85,6 @@ export default function SellerProducts({
   };
 
   React.useEffect(() => {
-    const actionCreator: ReturnType<typeof getProducts> = getProducts({}, true);
-
-    (async () => {
-      try {
-        const productResponse = await actionCreator.unwrap();
-
-        setProductPages(() => {
-          return [productResponse.products];
-        });
-      } finally {
-      }
-    })();
-
-    return () => {
-      actionCreator.abort();
-    };
-  }, [getProducts]);
-
-  React.useEffect(() => {
     return () => {
       if (actionCreaterRef.current) {
         actionCreaterRef.current.abort();
@@ -80,7 +93,7 @@ export default function SellerProducts({
   }, []);
 
   const products = React.useMemo(() => {
-    if (isLoading) {
+    if (isFetchingInitial) {
       return [
         {
           id: 1,
@@ -103,30 +116,22 @@ export default function SellerProducts({
         ...product,
       })),
     );
-  }, [isLoading, productPages]);
+  }, [isFetchingInitial, productPages]);
 
   return (
-    <React.Fragment>
-      {isFetching ? (
-        <View
-          style={{
-            padding: 10,
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-          <ActivityIndicator size={"small"} />
-        </View>
-      ) : null}
-
+    <View style={{}}>
       <FlatList<typeof products[0]>
         numColumns={3}
         data={products}
+        onRefresh={refetch}
+        refreshing={isFetchingInitial}
         onEndReached={getNextProducts}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingLeft: SCREEN_PADDING_HORIZONTAL,
         }}
         columnWrapperStyle={{
+          paddingBottom: 90,
           marginBottom: 20,
         }}
         ListEmptyComponent={() => (
@@ -138,6 +143,18 @@ export default function SellerProducts({
           <EachSellerProduct item={item} onSelect={handleProductSelect} />
         )}
       />
-    </React.Fragment>
+
+      {isFetchingNext ? (
+        <View
+          style={{
+            padding: 10,
+
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+          <ActivityIndicator size={"small"} />
+        </View>
+      ) : null}
+    </View>
   );
 }

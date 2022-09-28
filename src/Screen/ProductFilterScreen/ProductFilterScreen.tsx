@@ -10,13 +10,18 @@ import {TouchableOpacity, View, FlatList} from "react-native";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {HomeStackRoutes, RootStackRoutes} from "@constants/routes";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
-import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
 import {useLazyGetConditionsQuery} from "@data/laravel/services/condition";
 import {ListItem, Divider, CheckBox, Button} from "react-native-elements";
 import {combinedDefaultTheme} from "../../Providers/PreferencesProvider/theme";
+import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {
   Condition,
   ConditionResponse,
+  HomeStackParamList,
   PaginationQueryParams,
   RootStackParamList,
 } from "@src/types";
@@ -62,8 +67,10 @@ type Props = NativeStackScreenProps<
   typeof RootStackRoutes.PRODUCT_FILTER
 >;
 
+type HomeStackNavigationProps = NativeStackNavigationProp<HomeStackParamList>;
+
 const ProductFilterScreen = ({route}: Props) => {
-  const navigation = useNavigation();
+  const homestackNavigation = useNavigation<HomeStackNavigationProps>();
 
   const theme = useTheme();
   const [openCategoryModal, setOpenCategoryModal] = React.useState(false);
@@ -75,9 +82,7 @@ const ProductFilterScreen = ({route}: Props) => {
   const [minPrice, setMinPrice] = React.useState<number | null>(null);
   const [condition, setCondition] = React.useState<Condition | null>(null);
   const [categoryTitle, setCategoryTitle] = React.useState<string | null>(null);
-  const [categoryId, setCategoryId] = React.useState<string | number | null>(
-    null,
-  );
+  const [categoryId, setCategoryId] = React.useState<number | null>(null);
 
   const [fetchConditions, {isFetching, isLoading}] =
     useLazyGetConditionsQuery();
@@ -344,16 +349,16 @@ const ProductFilterScreen = ({route}: Props) => {
           containerStyle={{marginTop: 10}}
           text={"Apply Filter"}
           onPress={() => {
-            navigation.navigate(
-              HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA as any,
+            homestackNavigation.navigate(
+              HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA,
               {
-                categoryTitle,
-                categoryId,
-                location,
-                distance,
-                maxPrice,
-                minPrice,
-                condition,
+                location: location ?? undefined,
+                maxPrice: maxPrice ?? undefined,
+                minPrice: minPrice ?? undefined,
+                distance: distance ?? undefined,
+                condition: condition ?? undefined,
+                categoryId: categoryId ?? undefined,
+                screenTitle: categoryTitle ?? undefined,
               },
             );
           }}

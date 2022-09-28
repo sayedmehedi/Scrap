@@ -4,11 +4,12 @@ import {View} from "react-native";
 import {Provider} from "react-redux";
 import Notifier from "@src/Component/Notifier";
 import Toast from "react-native-toast-message";
-import {ActivityIndicator} from "react-native-paper";
 import SplashScreen from "react-native-splash-screen";
 import {persistor, store} from "@store/configureStore";
 import {enableLatestRenderer} from "react-native-maps";
 import AuthProvider from "@src/Providers/AuthProvider";
+import {useNetInfo} from "@react-native-community/netinfo";
+import {ActivityIndicator, Text} from "react-native-paper";
 import {PersistGate} from "redux-persist/integration/react";
 import {useNavigationContainerRef} from "@react-navigation/native";
 import RootStackNavigator from "./src/Navigator/RootStackNavigator";
@@ -24,11 +25,13 @@ enableLatestRenderer();
 
 GoogleSignin.configure({
   webClientId:
-    "1098035251669-j4gopt4e5ce00kc8jd16hh3ua6mlg75h.apps.googleusercontent.com",
+    "384287635095-cn6g90q9h2v4mlnvpjdh1uo1qt716585.apps.googleusercontent.com",
 });
 
 const App = () => {
+  const state = useNetInfo();
   const navigationRef = useNavigationContainerRef();
+  const [hasInternet, setHasInternet] = React.useState<boolean | null>(false);
 
   useFlipper(navigationRef);
   useReduxDevToolsExtension(navigationRef);
@@ -36,6 +39,26 @@ const App = () => {
   React.useEffect(() => {
     SplashScreen.hide();
   }, []);
+
+  React.useEffect(() => {
+    if (!state.isConnected) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Check your internet connection",
+      });
+    }
+
+    setHasInternet(state.isConnected);
+  }, [state]);
+
+  if (!hasInternet) {
+    return (
+      <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+        <Text>No Internet</Text>
+      </View>
+    );
+  }
 
   return (
     <Provider store={store}>

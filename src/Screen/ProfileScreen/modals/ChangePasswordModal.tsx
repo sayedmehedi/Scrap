@@ -108,23 +108,27 @@ export default function ChangePasswordModal({
             </Text>
           )}
 
-          {inputs.map((input, i) => (
-            <Controller
-              key={i}
-              control={control}
-              name={input.name}
-              render={({field}) => {
-                return (
-                  <TextInput
-                    value={field.value}
-                    style={styles.modalInput}
-                    onChangeText={field.onChange}
-                    placeholder={input.placeholder ?? ""}
-                  />
-                );
-              }}
-            />
-          ))}
+          {inputs.map((input, i) => {
+            const {name, error, onChangeText, ...textinputProps} = input;
+
+            return (
+              <Controller
+                key={i}
+                control={control}
+                name={name}
+                render={({field}) => {
+                  return (
+                    <TextInput
+                      value={field.value}
+                      style={styles.modalInput}
+                      onChangeText={field.onChange}
+                      {...textinputProps}
+                    />
+                  );
+                }}
+              />
+            );
+          })}
 
           <AppPrimaryButton
             disabled={isLoading}

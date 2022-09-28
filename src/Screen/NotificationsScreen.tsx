@@ -21,6 +21,7 @@ import {
   useGetNotificationsQuery,
   useLazyGetNotificationsQuery,
 } from "@data/laravel/services/auth";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
@@ -31,6 +32,9 @@ type Props = NativeStackScreenProps<
   typeof RootStackRoutes.NOTIFICATIONS
 >;
 
+const getNotificationColor = (item: AppNotification) =>
+  item.style === "danger" ? "#F04E26" : "#51B764";
+
 export default function NotificationsScreen({navigation, route}: Props) {
   const theme = useTheme();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -38,8 +42,9 @@ export default function NotificationsScreen({navigation, route}: Props) {
   const [getNotifications, {isFetching: isFetchingNextPage}] =
     useLazyGetNotificationsQuery({});
   const {
-    data: getNotificationsResponse,
+    refetch,
     isLoading,
+    data: getNotificationsResponse,
     isFetching: isFetchingInitial,
   } = useGetNotificationsQuery(
     {},
@@ -47,6 +52,9 @@ export default function NotificationsScreen({navigation, route}: Props) {
       skip: !isAuthenticated,
     },
   );
+
+  useRefreshOnFocus(refetch);
+
   const actionCreaterRef = React.useRef<ReturnType<
     typeof getNotifications
   > | null>(null);
@@ -199,15 +207,20 @@ export default function NotificationsScreen({navigation, route}: Props) {
   return isAuthenticated ? (
     <View style={{padding: 15}}>
       <SectionList<typeof notifications[0]["data"][0]>
+        onRefresh={refetch}
         sections={notifications}
+        refreshing={isFetchingInitial}
         keyExtractor={(item, index) => `${item.id + index}`}
         contentContainerStyle={{
           paddingBottom: 50,
         }}
+        showsVerticalScrollIndicator={false}
         onEndReached={getNextNotifications}
-        renderSectionHeader={({section: {title}}) => (
-          <Title style={{marginBottom: 15}}>{title}</Title>
-        )}
+        renderSectionHeader={({section: {title, data}}) =>
+          data.length > 0 ? (
+            <Title style={{marginBottom: 15}}>{title}</Title>
+          ) : null
+        }
         ListEmptyComponent={() => (
           <View>
             <Text style={{textAlign: "center"}}>No data</Text>
@@ -231,14 +244,12 @@ export default function NotificationsScreen({navigation, route}: Props) {
                 marginBottom: 15,
                 flexDirection: "row",
                 borderRadius: theme.roundness * 3,
-                // @ts-ingore
                 backgroundColor: theme.colors.white,
               }}>
               <View
                 style={{
                   width: 35,
                   height: 35,
-                  //   marginRight: 15,
                   borderRadius: 1000,
                   alignItems: "center",
                   justifyContent: "center",
@@ -262,8 +273,8 @@ export default function NotificationsScreen({navigation, route}: Props) {
                   <Text
                     style={{
                       fontSize: 16,
-                      color: "#F04E26",
                       fontWeight: "700",
+                      color: getNotificationColor(item),
                     }}>
                     {item.title}
                   </Text>

@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import React, {useState} from "react";
-import {Switch} from "react-native-paper";
+import {HelperText, Switch} from "react-native-paper";
 import {CheckBox} from "react-native-elements";
 import {
   Metal,
@@ -36,6 +36,8 @@ import {
   useGetDurationsQuery,
   useLazyGetDurationsQuery,
 } from "@data/laravel/services/duration";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
+import {ErrorMessage} from "@hookform/error-message";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -49,7 +51,7 @@ type FormValues = {
   buynowprice: string;
   startingPrice: string;
   showMetalPrice: boolean;
-  metals: {id: string; value: Metal}[];
+  metals: {id: number; value: Metal}[];
   beginHour: {id: number; value: number; label: string} | null;
   beginMinute: {id: number; value: number; label: string} | null;
   duration: {id: number; value: number; label: string} | null;
@@ -61,7 +63,13 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
   const {enqueueErrorSnackbar} = useAppSnackbar();
   const [modalType, setModalType] = React.useState("");
 
-  const {control, handleSubmit, watch} = useForm<FormValues>({
+  const {
+    watch,
+    control,
+    setValue,
+    handleSubmit,
+    formState: {errors},
+  } = useForm<FormValues>({
     defaultValues: {
       metals: [],
       quantity: 0,
@@ -70,24 +78,99 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
       buynowprice: "",
       startingPrice: "",
 
-      beginHour: null,
-      beginMinute: null,
+      beginHour: {
+        id: 0,
+        value: 1,
+        label: "1:00 hrs",
+      },
+      beginMinute: {
+        id: 0,
+        value: 10,
+        label: "00:10 min",
+      },
       beginDay: new Date(),
       showMetalPrice: false,
     },
   });
 
+  const isListNow = watch("isListNow");
   const startingPrice = watch("startingPrice");
   const showMetalPrice = watch("showMetalPrice");
 
   const {
-    fields: selectedMetals,
     append: appendMetal,
     remove: removeMetal,
+    fields: selectedMetals,
   } = useFieldArray({
     control,
     name: "metals",
   });
+
+  React.useEffect(() => {
+    if (route.params.productEditInfo) {
+      const {
+        quantity,
+        duration,
+        buy_price,
+        is_list_now,
+        starting_price,
+        selected_metals,
+        show_metal_price,
+        expected_date_for_list,
+      } = route.params.productEditInfo;
+
+      setValue("quantity", quantity);
+      setValue("buynowprice", buy_price.toString());
+      setValue("startingPrice", starting_price.toString());
+
+      if (!!expected_date_for_list) {
+        const listDate = dayjs(expected_date_for_list, "YYYY-MM-DD HH:mm:ss");
+
+        setValue("beginDay", listDate.toDate());
+
+        const hrs = listDate.hour();
+
+        setValue("beginHour", {
+          id: hrs,
+          value: hrs + 1,
+          label: `${hrs + 1}:00 hrs`,
+        });
+
+        const mins = listDate.minute();
+        const flooredMinute = Math.floor((mins + 1) / 10);
+        const minuteId = flooredMinute - 1;
+        const minuteValue = flooredMinute * 10;
+
+        setValue("beginMinute", {
+          id: minuteId,
+          value: minuteValue,
+          label: `00:${minuteValue} min`,
+        });
+      }
+
+      if (!!duration) {
+        setValue("duration", {
+          id: duration.id,
+          value: duration.id,
+          label: duration.title,
+        });
+      }
+
+      if (show_metal_price && !!selected_metals) {
+        setValue("showMetalPrice", show_metal_price);
+
+        setValue(
+          "metals",
+          selected_metals.map(mt => ({
+            id: mt.id,
+            value: mt,
+          })),
+        );
+      }
+
+      setValue("isListNow", is_list_now);
+    }
+  }, [route.params, setValue]);
 
   const handlePostItem = handleSubmit(values => {
     if (!values.startingPrice && !values.buynowprice) {
@@ -108,6 +191,15 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
       return;
     }
 
+    if (values.showMetalPrice && values.metals.length === 0) {
+      enqueueErrorSnackbar({
+        text1: "Error",
+        text2: "Please select at least one metal",
+      });
+
+      return;
+    }
+
     let expectedDateForList = "";
 
     if (values.beginDay) {
@@ -121,7 +213,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
         d = d.set("minutes", values.beginMinute.value);
       }
 
-      expectedDateForList = d.toString();
+      expectedDateForList = d.format("YYYY-MM-DD HH:mm:ss");
     }
 
     navigation.navigate(PostItemStackRoutes.ADD_DELIVERY_METHOD, {
@@ -170,7 +262,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
                     borderWidth: 1,
                     borderColor: "#C9C9C9",
                     borderRadius: theme.roundness * 4,
-                    backgroundColor: theme.colors.white,
+                    backgroundColor: "#F7F7F7",
                   }}
                 />
               </React.Fragment>
@@ -210,7 +302,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
                     borderWidth: 1,
                     borderColor: "#C9C9C9",
                     borderRadius: theme.roundness * 4,
-                    backgroundColor: theme.colors.white,
+                    backgroundColor: "#F7F7F7",
                   }}
                 />
               </React.Fragment>
@@ -248,7 +340,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
                   borderWidth: 1,
                   borderColor: "#C9C9C9",
                   borderRadius: theme.roundness * 4,
-                  backgroundColor: theme.colors.white,
+                  backgroundColor: "#F7F7F7",
                 }}
               />
             </React.Fragment>
@@ -259,270 +351,286 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
       <View style={{height: 15}} />
 
       {!!startingPrice && (
-        <Controller
-          control={control}
-          name={"duration"}
-          render={({field}) => {
-            return (
-              <React.Fragment>
-                <Pressable onPress={() => setModalType("duration")}>
-                  <View
-                    style={{
-                      padding: 15,
-                      borderRadius: 8,
-                      backgroundColor: theme.colors.white,
-                      elevation: 2,
-                    }}>
-                    <Text style={{color: "#222222", fontSize: 14}}>
-                      Select Duration
-                    </Text>
-                    <Text>{field.value?.label}</Text>
-                  </View>
-                </Pressable>
+        <React.Fragment>
+          <Controller
+            control={control}
+            name={"duration"}
+            shouldUnregister
+            rules={{
+              required: "This field is required",
+            }}
+            render={({field}) => {
+              return (
+                <React.Fragment>
+                  <Pressable onPress={() => setModalType("duration")}>
+                    <View
+                      style={{
+                        padding: 15,
+                        borderRadius: 8,
+                        backgroundColor: "#F7F7F7",
+                        elevation: 2,
+                      }}>
+                      <Text style={{color: "#222222", fontSize: 14}}>
+                        Select Duration
+                      </Text>
+                      <Text>{field.value?.label}</Text>
+                    </View>
+                  </Pressable>
 
-                <DurationSelectionModal
-                  onSave={field.onChange}
-                  initialValue={field.value}
-                  open={modalType === "duration"}
-                  onClose={() => setModalType("")}
-                />
-              </React.Fragment>
-            );
-          }}
-        />
+                  <ErrorMessage
+                    errors={errors}
+                    name={"duration"}
+                    render={({message}) => (
+                      <HelperText type={"error"}>{message}</HelperText>
+                    )}
+                  />
+
+                  <DurationSelectionModal
+                    onSave={field.onChange}
+                    initialValue={field.value}
+                    open={modalType === "duration"}
+                    onClose={() => setModalType("")}
+                  />
+                </React.Fragment>
+              );
+            }}
+          />
+
+          <View
+            style={{
+              marginTop: 20,
+              marginLeft: -10,
+              flexDirection: "row",
+              alignItems: "center",
+            }}>
+            <Controller
+              control={control}
+              name={"isListNow"}
+              render={({field}) => {
+                return (
+                  <CheckBox
+                    center
+                    checked={field.value}
+                    uncheckedIcon={"circle-o"}
+                    checkedIcon={"dot-circle-o"}
+                    containerStyle={{
+                      padding: 1,
+                      paddingLeft: 0,
+                    }}
+                    onPress={() => field.onChange(true)}
+                  />
+                );
+              }}
+            />
+
+            <Text>When I submit then, I'll start my listings</Text>
+          </View>
+
+          <View
+            style={{
+              marginTop: 5,
+              marginLeft: -10,
+              flexDirection: "row",
+              alignItems: "center",
+            }}>
+            <Controller
+              control={control}
+              name={"isListNow"}
+              render={({field}) => {
+                return (
+                  <CheckBox
+                    center
+                    checked={!field.value}
+                    uncheckedIcon={"circle-o"}
+                    checkedIcon={"dot-circle-o"}
+                    containerStyle={{
+                      padding: 1,
+                      paddingLeft: 0,
+                    }}
+                    onPress={() => field.onChange(false)}
+                  />
+                );
+              }}
+            />
+
+            <Text>Expected to begin on</Text>
+          </View>
+
+          {!isListNow && (
+            <View
+              style={{
+                marginTop: 12,
+                flexWrap: "wrap",
+                alignItems: "center",
+                flexDirection: "row",
+                justifyContent: "space-around",
+              }}>
+              <Controller
+                control={control}
+                name={"beginDay"}
+                render={({field}) => {
+                  return (
+                    <React.Fragment>
+                      <TouchableOpacity
+                        onPress={() => setOpen(true)}
+                        style={{
+                          flex: 1,
+                          padding: 10,
+                          borderRadius: 5,
+                          backgroundColor: "#F7F7F7",
+                        }}>
+                        <View
+                          style={{
+                            marginBottom: 10,
+                          }}>
+                          <Text style={{fontWeight: "700", textAlign: "left"}}>
+                            Day
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}>
+                          <Text style={{fontWeight: "600"}}>
+                            {field.value
+                              ? dayjs(field.value).format("ddd,MMM DD")
+                              : ""}
+                          </Text>
+
+                          <EvilIcons name="chevron-down" size={25} />
+                        </View>
+                      </TouchableOpacity>
+
+                      <DatePicker
+                        modal
+                        open={open}
+                        mode={"date"}
+                        date={field.value}
+                        onConfirm={date => {
+                          field.onChange(date);
+                          setOpen(false);
+                        }}
+                        onCancel={() => {
+                          setOpen(false);
+                        }}
+                      />
+                    </React.Fragment>
+                  );
+                }}
+              />
+
+              <Controller
+                control={control}
+                name={"beginHour"}
+                render={({field}) => {
+                  return (
+                    <React.Fragment>
+                      <TouchableOpacity
+                        onPress={() => setModalType("hours")}
+                        style={{
+                          flex: 1,
+                          padding: 10,
+                          borderRadius: 5,
+                          marginHorizontal: 10,
+                          backgroundColor: "#F7F7F7",
+                        }}>
+                        <View
+                          style={{
+                            marginBottom: 10,
+                          }}>
+                          <Text style={{fontWeight: "700", textAlign: "left"}}>
+                            Hours
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}>
+                          <Text style={{fontWeight: "600"}}>
+                            {field.value?.label}
+                          </Text>
+
+                          <EvilIcons name="chevron-down" size={25} />
+                        </View>
+                      </TouchableOpacity>
+
+                      <SelectionModal
+                        title={"Select Hour"}
+                        open={modalType === "hours"}
+                        onSave={item => field.onChange(item)}
+                        items={new Array(24).fill(0).map((_, id) => ({
+                          id,
+                          type: "data",
+                          value: id + 1,
+                          label: `${id + 1}:00 hrs`,
+                        }))}
+                        onClose={() => setModalType("")}
+                      />
+                    </React.Fragment>
+                  );
+                }}
+              />
+
+              <Controller
+                control={control}
+                name={"beginMinute"}
+                render={({field}) => {
+                  return (
+                    <React.Fragment>
+                      <TouchableOpacity
+                        onPress={() => setModalType("minutes")}
+                        style={{
+                          flex: 1,
+                          padding: 10,
+                          borderRadius: 5,
+                          backgroundColor: "#F7F7F7",
+                        }}>
+                        <View
+                          style={{
+                            marginBottom: 10,
+                          }}>
+                          <Text style={{fontWeight: "700", textAlign: "left"}}>
+                            Minutes
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}>
+                          <Text style={{fontWeight: "600"}}>
+                            {field.value?.label}
+                          </Text>
+
+                          <EvilIcons name="chevron-down" size={25} />
+                        </View>
+                      </TouchableOpacity>
+
+                      <SelectionModal
+                        title={"Select Minutes"}
+                        open={modalType === "minutes"}
+                        onSave={item => field.onChange(item)}
+                        items={new Array(6).fill(1).map((_, id) => {
+                          const minute = (id + 1) * 10;
+                          return {
+                            id,
+                            type: "data",
+                            value: minute,
+                            label: `00:${minute} min`,
+                          };
+                        })}
+                        onClose={() => setModalType("")}
+                      />
+                    </React.Fragment>
+                  );
+                }}
+              />
+            </View>
+          )}
+        </React.Fragment>
       )}
-
-      <View
-        style={{
-          marginTop: 20,
-          marginLeft: -10,
-          flexDirection: "row",
-          alignItems: "center",
-        }}>
-        <Controller
-          control={control}
-          name={"isListNow"}
-          render={({field}) => {
-            return (
-              <CheckBox
-                center
-                checked={field.value}
-                uncheckedIcon={"circle-o"}
-                checkedIcon={"dot-circle-o"}
-                containerStyle={{
-                  padding: 1,
-                  paddingLeft: 0,
-                }}
-                onPress={() => field.onChange(true)}
-              />
-            );
-          }}
-        />
-
-        <Text>When I submit then, I'll start my listings</Text>
-      </View>
-
-      <View
-        style={{
-          marginTop: 5,
-          marginLeft: -10,
-          flexDirection: "row",
-          alignItems: "center",
-        }}>
-        <Controller
-          control={control}
-          name={"isListNow"}
-          render={({field}) => {
-            return (
-              <CheckBox
-                center
-                checked={!field.value}
-                uncheckedIcon={"circle-o"}
-                checkedIcon={"dot-circle-o"}
-                containerStyle={{
-                  padding: 1,
-                  paddingLeft: 0,
-                }}
-                onPress={() => field.onChange(false)}
-              />
-            );
-          }}
-        />
-
-        <Text>Expected to begin on</Text>
-      </View>
-
-      <View
-        style={{
-          marginTop: 12,
-          flexWrap: "wrap",
-          alignItems: "center",
-          flexDirection: "row",
-          justifyContent: "space-around",
-        }}>
-        <Controller
-          control={control}
-          name={"beginDay"}
-          render={({field}) => {
-            return (
-              <React.Fragment>
-                <TouchableOpacity
-                  onPress={() => setOpen(true)}
-                  style={{
-                    flex: 1,
-                    padding: 10,
-                    borderRadius: 5,
-                    backgroundColor: "white",
-                  }}>
-                  <View
-                    style={{
-                      marginBottom: 10,
-                    }}>
-                    <Text style={{fontWeight: "700", textAlign: "left"}}>
-                      Day
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}>
-                    <Text style={{fontWeight: "600"}}>
-                      {field.value
-                        ? dayjs(field.value).format("ddd,MMM DD")
-                        : ""}
-                    </Text>
-
-                    <EvilIcons name="chevron-down" size={25} />
-                  </View>
-                </TouchableOpacity>
-
-                <DatePicker
-                  modal
-                  open={open}
-                  mode={"date"}
-                  date={field.value}
-                  onConfirm={date => {
-                    field.onChange(date);
-                    setOpen(false);
-                  }}
-                  onCancel={() => {
-                    setOpen(false);
-                  }}
-                />
-              </React.Fragment>
-            );
-          }}
-        />
-
-        <Controller
-          control={control}
-          name={"beginHour"}
-          render={({field}) => {
-            return (
-              <React.Fragment>
-                <TouchableOpacity
-                  onPress={() => setModalType("hours")}
-                  style={{
-                    flex: 1,
-                    padding: 10,
-                    borderRadius: 5,
-                    marginHorizontal: 10,
-                    backgroundColor: "white",
-                  }}>
-                  <View
-                    style={{
-                      marginBottom: 10,
-                    }}>
-                    <Text style={{fontWeight: "700", textAlign: "left"}}>
-                      Hours
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}>
-                    <Text style={{fontWeight: "600"}}>
-                      {field.value?.label}
-                    </Text>
-
-                    <EvilIcons name="chevron-down" size={25} />
-                  </View>
-                </TouchableOpacity>
-
-                <SelectionModal
-                  title={"Select Hour"}
-                  open={modalType === "hours"}
-                  onSave={item => field.onChange(item)}
-                  items={new Array(24).fill(0).map((_, id) => ({
-                    id,
-                    type: "data",
-                    value: id + 1,
-                    label: `${id + 1}:00 hrs`,
-                  }))}
-                  onClose={() => setModalType("")}
-                />
-              </React.Fragment>
-            );
-          }}
-        />
-
-        <Controller
-          control={control}
-          name={"beginMinute"}
-          render={({field}) => {
-            return (
-              <React.Fragment>
-                <TouchableOpacity
-                  onPress={() => setModalType("minutes")}
-                  style={{
-                    flex: 1,
-                    padding: 10,
-                    borderRadius: 5,
-                    backgroundColor: "white",
-                  }}>
-                  <View
-                    style={{
-                      marginBottom: 10,
-                    }}>
-                    <Text style={{fontWeight: "700", textAlign: "left"}}>
-                      Minutes
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}>
-                    <Text style={{fontWeight: "600"}}>
-                      {field.value?.label}
-                    </Text>
-
-                    <EvilIcons name="chevron-down" size={25} />
-                  </View>
-                </TouchableOpacity>
-
-                <SelectionModal
-                  title={"Select Minutes"}
-                  open={modalType === "minutes"}
-                  onSave={item => field.onChange(item)}
-                  items={new Array(6).fill(1).map((_, id) => {
-                    const minute = (id + 1) * 10;
-                    return {
-                      id,
-                      type: "data",
-                      value: minute,
-                      label: `00:${minute} min`,
-                    };
-                  })}
-                  onClose={() => setModalType("")}
-                />
-              </React.Fragment>
-            );
-          }}
-        />
-      </View>
 
       <Controller
         control={control}
@@ -534,6 +642,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
               style={{
                 marginTop: 40,
                 marginBottom: 20,
+                flexWrap: "wrap",
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
@@ -562,24 +671,23 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
 
   return (
     <View style={{padding: 15}}>
-      {showMetalPrice ? (
-        <MetalList
-          selectedMetals={selectedMetals}
-          ListHeaderComponent={() => ListHeaderComponent}
-          ListFooterComponent={() => ListFooterComponent}
-          onSelect={metal => {
-            appendMetal(metal);
-          }}
-          onRemove={index => {
-            removeMetal(index);
-          }}
-        />
-      ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {ListHeaderComponent}
-          {ListFooterComponent}
-        </ScrollView>
-      )}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {ListHeaderComponent}
+        {showMetalPrice && (
+          <MetalList
+            ListFooterComponent={ListFooterComponent}
+            ListHeaderComponent={ListHeaderComponent}
+            selectedMetals={selectedMetals}
+            onSelect={metal => {
+              appendMetal(metal);
+            }}
+            onRemove={index => {
+              removeMetal(index);
+            }}
+          />
+        )}
+        {ListFooterComponent}
+      </ScrollView>
     </View>
   );
 }
@@ -592,14 +700,15 @@ function MetalList({
   ListHeaderComponent,
 }: {
   onRemove: (index: number) => void;
-  selectedMetals: {id: string; value: Metal}[];
-  ListHeaderComponent: React.ComponentType<any>;
-  ListFooterComponent: React.ComponentType<any>;
-  onSelect: (item: {id: string; value: Metal}) => void;
+  selectedMetals: {id: number; value: Metal}[];
+  ListHeaderComponent: JSX.Element;
+  ListFooterComponent: JSX.Element;
+  onSelect: (item: {id: number; value: Metal}) => void;
 }) {
   const theme = useTheme();
   const [getMetals, {isFetching: isFetchingNextPage}] = useLazyGetMetalsQuery();
   const {
+    refetch,
     data: getMetalsResponse,
     isLoading: isLoadingCategories,
     isFetching: isFetchingInitial,
@@ -607,6 +716,8 @@ function MetalList({
   const actionCreaterRef = React.useRef<ReturnType<typeof getMetals> | null>(
     null,
   );
+
+  useRefreshOnFocus(refetch);
 
   const [metalsPages, setMetalPages] = React.useState<
     Array<GetMetalsResponse["items"]>
@@ -681,8 +792,6 @@ function MetalList({
       numColumns={3}
       onEndReached={getNextMetals}
       showsVerticalScrollIndicator={false}
-      ListHeaderComponent={ListHeaderComponent}
-      ListFooterComponent={ListFooterComponent}
       renderItem={({item}) => {
         if (item.type === "skeleton") {
           return (
@@ -711,7 +820,7 @@ function MetalList({
                 onRemove(index);
               } else {
                 onSelect({
-                  id: item.id.toString(),
+                  id: item.id,
                   value: {
                     id: item.id,
                     title: item.text,
@@ -759,12 +868,16 @@ function DurationSelectionModal({
   const [getDurations, {isFetching: isFetchingNextPage}] =
     useLazyGetDurationsQuery();
   const {
+    refetch,
     data: categoryListResponse,
     isLoading: isLoadingDuration,
     isFetching: isFetchingInitial,
   } = useGetDurationsQuery({
     limit: 15,
   });
+
+  useRefreshOnFocus(refetch);
+
   const categoryActionCreaterRef = React.useRef<ReturnType<
     typeof getDurations
   > | null>(null);

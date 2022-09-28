@@ -1,5 +1,5 @@
 import React from "react";
-import { useTheme } from "react-native-paper";
+import {useTheme} from "react-native-paper";
 import Octicons from "react-native-vector-icons/Octicons";
 import {
   View,
@@ -59,7 +59,6 @@ export default function AppPrimaryButton({
             {
               fontSize: 16,
               fontWeight: "600",
-              // @ts-ignore
               color: theme.colors.white,
             },
             textStyle,
@@ -87,7 +86,6 @@ export default function AppPrimaryButton({
         <Octicons
           size={26}
           name={"arrow-right"}
-          // @ts-ignore
           color={theme.colors.white}
           {...iconProps}
         />

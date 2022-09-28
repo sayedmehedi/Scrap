@@ -1,32 +1,66 @@
 import React from "react";
 import useAppSnackbar from "@hooks/useAppSnackbar";
-import {PostItemStackParamList} from "@src/types";
 import Entypo from "react-native-vector-icons/Entypo";
 import {PostItemStackRoutes} from "../../constants/routes";
+import {useFocusEffect} from "@react-navigation/native";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import {HelperText, Text, useTheme} from "react-native-paper";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
-import {TextInput, View, Alert, ScrollView, Image} from "react-native";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {TextInput, View, Alert, ScrollView, Image} from "react-native";
+import {ProductEditInfoImage, PostItemStackParamList} from "@src/types";
 import {
   Asset,
-  ImagePickerResponse,
   launchCamera,
   launchImageLibrary,
+  ImagePickerResponse,
 } from "react-native-image-picker";
+import {useDeleteProductFileMutation} from "@data/laravel/services/product";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
   typeof PostItemStackRoutes.UPLOAD_PHOTO
 >;
 
-export default function ProductImageUploadScreen({navigation}: Props) {
+const MAX_ALLOWED_NUM_IMAGE = 8;
+
+export default function ProductImageUploadScreen({navigation, route}: Props) {
   const theme = useTheme();
-  const {enqueueErrorSnackbar} = useAppSnackbar();
   const [productTitle, setProductTitle] = React.useState("");
+  const {enqueueErrorSnackbar, enqueueSuccessSnackbar} = useAppSnackbar();
   const [galleryImages, setGalleryImages] = React.useState<Asset[]>([]);
   const [coverImage, setCoverImage] = React.useState<Asset | null>(null);
+  const [deleteProductFile, {isLoading: isDeletingProductFile}] =
+    useDeleteProductFileMutation();
+  const [editInfoImages, setEditInfoImages] = React.useState<
+    ProductEditInfoImage[]
+  >([]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("edit info", route.params);
+      // Do something when the screen is focused
+
+      return () => {
+        navigation.setParams({
+          productEditInfo: undefined,
+        });
+      };
+    }, [navigation]),
+  );
+
+  React.useEffect(() => {
+    if (route.params?.productEditInfo) {
+      if (route.params?.productEditInfo.files) {
+        setEditInfoImages(route.params?.productEditInfo.files);
+      }
+
+      if (route.params?.productEditInfo.title) {
+        setProductTitle(route.params?.productEditInfo.title);
+      }
+    }
+  }, [route.params]);
 
   const handleImageResult = (result: ImagePickerResponse) => {
     if (result.errorCode) {
@@ -49,7 +83,12 @@ export default function ProductImageUploadScreen({navigation}: Props) {
       if (!coverImage) {
         setCoverImage(result.assets?.[0] ?? null);
       } else {
-        if (galleryImages.length + (result.assets?.length ?? 0) > 8) {
+        if (
+          galleryImages.length +
+            (result.assets?.length ?? 0) +
+            editInfoImages.length >
+          MAX_ALLOWED_NUM_IMAGE
+        ) {
           Alert.alert("Error", "Image limit reached");
           return;
         }
@@ -67,7 +106,7 @@ export default function ProductImageUploadScreen({navigation}: Props) {
       // You can also use as a promise without 'callback':
       const result = await launchImageLibrary({
         mediaType: "photo",
-        selectionLimit: !!coverImage ? 0 : 8,
+        selectionLimit: !!coverImage ? 0 : MAX_ALLOWED_NUM_IMAGE,
       });
 
       handleImageResult(result);
@@ -98,14 +137,14 @@ export default function ProductImageUploadScreen({navigation}: Props) {
   };
 
   const handleNextScreen = () => {
-    if (!coverImage) {
+    if (!coverImage && editInfoImages.length === 0) {
       enqueueErrorSnackbar({
         text1: "Please add a cover image",
       });
       return;
     }
 
-    if (galleryImages.length === 0) {
+    if (galleryImages.length === 0 && editInfoImages.length === 0) {
       enqueueErrorSnackbar({
         text1: "Please add at least one gallery image",
       });
@@ -121,8 +160,9 @@ export default function ProductImageUploadScreen({navigation}: Props) {
 
     navigation.navigate(PostItemStackRoutes.ADD_DETAILS, {
       productTitle,
-      productCoverImage: coverImage,
       productGalleryImages: galleryImages,
+      productCoverImage: coverImage ?? undefined,
+      productEditInfo: route.params?.productEditInfo,
     });
   };
 
@@ -166,7 +206,7 @@ export default function ProductImageUploadScreen({navigation}: Props) {
       </View>
 
       {!coverImage ? (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleSelectImage}>
           <Text
             style={{
               fontSize: 16,
@@ -217,7 +257,7 @@ export default function ProductImageUploadScreen({navigation}: Props) {
         </View>
       )}
 
-      {galleryImages.length > 0 && (
+      {(galleryImages.length > 0 || editInfoImages.length > 0) && (
         <View style={{flexDirection: "row", flexWrap: "wrap"}}>
           {galleryImages.map((image, i) => (
             <View
@@ -236,6 +276,7 @@ export default function ProductImageUploadScreen({navigation}: Props) {
                   position: "absolute",
                 }}>
                 <TouchableOpacity
+                  disabled={isDeletingProductFile}
                   style={{
                     width: 20,
                     height: 20,
@@ -253,6 +294,77 @@ export default function ProductImageUploadScreen({navigation}: Props) {
                 <Image
                   source={{
                     uri: image.uri,
+                  }}
+                  style={{
+                    zIndex: 0,
+                    height: 50,
+                    borderRadius: theme.roundness * 3,
+                  }}
+                />
+              </View>
+            </View>
+          ))}
+
+          {editInfoImages.map((file, i) => (
+            <View
+              key={file.name + i.toString()}
+              style={{
+                width: "25%",
+                marginBottom: 15,
+                position: "relative",
+                paddingLeft: (galleryImages.length + i) % 4 === 0 ? 0 : 15,
+              }}>
+              <View
+                style={{
+                  top: 5,
+                  right: 5,
+                  zIndex: 3,
+                  position: "absolute",
+                }}>
+                <TouchableOpacity
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: 1000,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: theme.colors.white,
+                  }}
+                  onPress={() => {
+                    if (!!route.params?.productEditInfo?.id) {
+                      deleteProductFile({
+                        file: file.url,
+                        product_id: route.params.productEditInfo.id,
+                      })
+                        .unwrap()
+                        .then(data => {
+                          if ("success" in data) {
+                            enqueueSuccessSnackbar({
+                              text1: "Success",
+                              text2: data.success,
+                            });
+                            setEditInfoImages(prevImages => {
+                              return prevImages.filter(
+                                eachFile => eachFile.url !== file.url,
+                              );
+                            });
+                          } else {
+                            enqueueErrorSnackbar({
+                              text1: "Error",
+                              text2: data.error,
+                            });
+                          }
+                        });
+                    }
+                  }}>
+                  <EvilIcons name={"close"} size={20} />
+                </TouchableOpacity>
+              </View>
+
+              <View>
+                <Image
+                  source={{
+                    uri: file.url,
                   }}
                   style={{
                     zIndex: 0,
@@ -284,7 +396,10 @@ export default function ProductImageUploadScreen({navigation}: Props) {
           </View>
 
           <View style={{flexGrow: 1, width: "100%", marginBottom: 40}}>
-            <Text>Using {galleryImages.length}/8 images</Text>
+            <Text>
+              Using {galleryImages.length + editInfoImages.length}/
+              {MAX_ALLOWED_NUM_IMAGE} images
+            </Text>
           </View>
         </View>
       )}

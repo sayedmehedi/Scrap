@@ -107,7 +107,7 @@ setupListeners(
         });
 
         focusSubscription = AppState.addEventListener(
-          "focus",
+          "change",
           handleVisibilityChange,
         );
         initialized = true;

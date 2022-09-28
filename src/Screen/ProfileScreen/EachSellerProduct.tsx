@@ -51,7 +51,7 @@ const EachSellerProduct = ({
           backgroundColor: "#FFFFFF",
         }}>
         <Image
-          source={{uri: item.image}}
+          source={{uri: item.images.small}}
           style={{
             height: 130,
             width: "100%",
@@ -107,7 +107,7 @@ const EachSellerProduct = ({
         })}
       </Text>
       <Text style={{fontSize: 11, fontFamily: "Inter-Bold", color: "#023047"}}>
-        {item.price}
+        ${item.price}
       </Text>
     </Pressable>
   );

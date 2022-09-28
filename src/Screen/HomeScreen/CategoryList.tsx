@@ -1,46 +1,51 @@
-import React from 'react'
-import { FlatList, View, Text } from 'react-native'
-import EachCateriesItem from '@src/Component/EachCateriesItem'
-import { SCREEN_PADDING_HORIZONTAL } from '@constants/spacing'
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder'
-import { useGetHomeScreenCategoriesQuery } from '@data/laravel/services/category'
+import React from "react";
+import {FlatList, View, Text} from "react-native";
+import EachCateriesItem from "@src/Component/EachCateriesItem";
+import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import {useGetHomeScreenCategoriesQuery} from "@data/laravel/services/category";
 
 const CategoryList = () => {
-    const { data: homeCategoriesResponse, isLoading: isHomeCategoriesLoading } = useGetHomeScreenCategoriesQuery()
+  const {data: homeCategoriesResponse, isLoading: isHomeCategoriesLoading} =
+    useGetHomeScreenCategoriesQuery();
 
-    const categories = React.useMemo(() => {
-        return homeCategoriesResponse?.categories ?? []
-    }, [homeCategoriesResponse])
+  const categories = React.useMemo(() => {
+    return homeCategoriesResponse?.categories.data ?? [];
+  }, [homeCategoriesResponse]);
 
-    if (isHomeCategoriesLoading) {
-        return (
-            <SkeletonPlaceholder>
-                <SkeletonPlaceholder.Item paddingHorizontal={15} flexDirection="row" alignItems="center" justifyContent='space-between'>
-                    <SkeletonPlaceholder.Item width={80} height={80} borderRadius={40} />
-                    <SkeletonPlaceholder.Item width={80} height={80} borderRadius={40} />
-                    <SkeletonPlaceholder.Item width={80} height={80} borderRadius={40} />
-                    <SkeletonPlaceholder.Item width={80} height={80} borderRadius={40} />
-                </SkeletonPlaceholder.Item>
-            </SkeletonPlaceholder>
-        )
-    }
-
+  if (isHomeCategoriesLoading) {
     return (
-        <FlatList
-            horizontal
-            data={categories}
-            contentContainerStyle={{
-                paddingHorizontal: SCREEN_PADDING_HORIZONTAL,
-            }}
-            ListEmptyComponent={() => (
-                <View>
-                    <Text>No data</Text>
-                </View>
-            )}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => <EachCateriesItem item={item} />}
-        />
-    )
-}
+      <SkeletonPlaceholder>
+        <SkeletonPlaceholder.Item
+          paddingHorizontal={15}
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between">
+          <SkeletonPlaceholder.Item width={80} height={80} borderRadius={40} />
+          <SkeletonPlaceholder.Item width={80} height={80} borderRadius={40} />
+          <SkeletonPlaceholder.Item width={80} height={80} borderRadius={40} />
+          <SkeletonPlaceholder.Item width={80} height={80} borderRadius={40} />
+        </SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
+    );
+  }
 
-export default CategoryList
+  return (
+    <FlatList
+      horizontal
+      data={categories}
+      contentContainerStyle={{
+        paddingHorizontal: SCREEN_PADDING_HORIZONTAL,
+      }}
+      ListEmptyComponent={() => (
+        <View>
+          <Text>No data</Text>
+        </View>
+      )}
+      showsHorizontalScrollIndicator={false}
+      renderItem={({item}) => <EachCateriesItem item={item} />}
+    />
+  );
+};
+
+export default CategoryList;

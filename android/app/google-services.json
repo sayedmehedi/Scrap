@@ -1,33 +1,41 @@
 {
   "project_info": {
-    "project_number": "1098035251669",
-    "project_id": "scrapapp-4a486",
-    "storage_bucket": "scrapapp-4a486.appspot.com"
+    "project_number": "384287635095",
+    "project_id": "scrapapp-8405b",
+    "storage_bucket": "scrapapp-8405b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1098035251669:android:0d91c9444e3ae13f61155c",
+        "mobilesdk_app_id": "1:384287635095:android:8bd6e53befa5b3309edbd2",
         "android_client_info": {
           "package_name": "com.scrapapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1098035251669-j4gopt4e5ce00kc8jd16hh3ua6mlg75h.apps.googleusercontent.com",
+          "client_id": "384287635095-jhqegbtmalvin21q99bpfcatm7jd3jip.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.scrapapp",
+            "certificate_hash": "17feabcf77ba142019d61a3f1aea67e04a4abdf2"
+          }
+        },
+        {
+          "client_id": "384287635095-cn6g90q9h2v4mlnvpjdh1uo1qt716585.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB2_ohxVMAQUqFNUBpbgtgAMswC3fbRCg8"
+          "current_key": "AIzaSyBwtCOYcfzEe51G-SssR3cE9PcFb6Dj-5U"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1098035251669-j4gopt4e5ce00kc8jd16hh3ua6mlg75h.apps.googleusercontent.com",
+              "client_id": "384287635095-cn6g90q9h2v4mlnvpjdh1uo1qt716585.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

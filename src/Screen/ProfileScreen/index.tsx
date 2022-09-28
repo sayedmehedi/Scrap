@@ -1,24 +1,18 @@
 import React from "react";
 import styles from "./styles";
 import {Rating} from "react-native-elements";
-import {useAppSelector} from "@hooks/store";
+import auth from "@react-native-firebase/auth";
+import {api} from "@data/laravel/services/api";
+import {ProfileStackParamList} from "@src/types";
 import Entypo from "react-native-vector-icons/Entypo";
 import {useNavigation} from "@react-navigation/native";
 import ProfileImageUploader from "./ProfileImageUploader";
+import {useAppDispatch, useAppSelector} from "@hooks/store";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import {useLogoutMutation} from "@data/laravel/services/auth";
-import {selectIsAuthenticated} from "@store/slices/authSlice";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import {AuthStackParamList, ProfileStackParamList} from "@src/types";
-import {
-  AuthStackRoutes,
-  ProfileStackRoutes,
-  RootStackRoutes,
-} from "@constants/routes";
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
+import {ProfileStackRoutes, RootStackRoutes} from "@constants/routes";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {
   View,
   Text,
@@ -33,12 +27,10 @@ type Props = NativeStackScreenProps<
   typeof ProfileStackRoutes.PROFILE_SCREEN
 >;
 
-type AuthNavigationProps = NativeStackNavigationProp<AuthStackParamList>;
-
 const ProfileScreen = ({navigation: profileNavigation}: Props) => {
-  const [logout] = useLogoutMutation();
+  const dispatch = useAppDispatch();
+  const [logout, {isLoading: isLoggingOut}] = useLogoutMutation();
   const rootNavigation = useNavigation();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const profile = useAppSelector(state => state.auth.profile);
 
   const signoutPress = () =>
@@ -48,18 +40,22 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
         onPress: () => console.log("Cancel Pressed"),
         style: "cancel",
       },
-      {text: "Logout", onPress: () => logout()},
+      {
+        text: "Logout",
+        onPress: async () => {
+          try {
+            await auth().signOut();
+          } catch (_error) {
+          } finally {
+            logout()
+              .unwrap()
+              .then(() => {
+                dispatch(api.util.resetApiState());
+              });
+          }
+        },
+      },
     ]);
-
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      // @ts-ignore
-      rootNavigation.replace(RootStackRoutes.AUTH, {
-        screen: AuthStackRoutes.LOGIN,
-        params: {},
-      });
-    }
-  }, [isAuthenticated, rootNavigation]);
 
   return (
     <ScrollView
@@ -69,50 +65,62 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
       }}>
       <View style={{alignSelf: "center", alignItems: "center"}}>
         <ProfileImageUploader />
-        <Text style={{fontFamily: "Inter-Bold", fontSize: 20}}>
-          {profile?.name}
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginVertical: 5,
+        <TouchableOpacity
+          style={{alignSelf: "center", alignItems: "center"}}
+          onPress={() => {
+            rootNavigation.navigate(RootStackRoutes.SELLER_REVIEW, {
+              sellerId: profile!.id,
+            });
           }}>
-          <Rating
-            readonly
-            imageSize={12}
-            showRating={false}
-            startingValue={profile?.rating ?? 0}
-          />
-          <Text style={{marginLeft: 8}}>
-            ({profile?.rating?.toFixed(2) ?? 0} rating)
+          <Text style={{fontFamily: "Inter-Bold", fontSize: 20}}>
+            {profile?.name}
           </Text>
-        </View>
-        <Text
-          style={{
-            fontFamily: "Inter-Regular",
-            fontSize: 12,
-            color: "#667085",
-            marginVertical: 5,
-          }}>
-          {profile?.location}
-        </Text>
-        <Text
-          style={{
-            fontFamily: "Inter-Regular",
-            fontSize: 12,
-            color: "#667085",
-            marginBottom: 5,
-          }}>
-          Joined {profile?.joined_date}
-        </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginVertical: 5,
+            }}>
+            <Rating
+              readonly
+              imageSize={12}
+              showRating={false}
+              startingValue={profile?.rating ?? 0}
+            />
+            <Text style={{marginLeft: 8}}>
+              ({profile?.rating?.toFixed(2) ?? 0} rating)
+            </Text>
+          </View>
+          <Text
+            style={{
+              fontFamily: "Inter-Regular",
+              fontSize: 12,
+              color: "#667085",
+              marginVertical: 5,
+            }}>
+            {profile?.location}
+          </Text>
+          <Text
+            style={{
+              fontFamily: "Inter-Regular",
+              fontSize: 12,
+              color: "#667085",
+              marginBottom: 5,
+            }}>
+            Joined {profile?.joined_date}
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <View style={{paddingHorizontal: 12}}>
         <TouchableOpacity
-          onPress={() =>
-            profileNavigation.navigate(ProfileStackRoutes.PUBLIC_PROFILE)
-          }
+          onPress={() => {
+            if (!!profile) {
+              profileNavigation.navigate(ProfileStackRoutes.PUBLIC_PROFILE, {
+                userId: profile.id,
+              });
+            }
+          }}
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <Image
@@ -214,7 +222,10 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
           <AntDesign name="right" size={12} />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={signoutPress} style={styles.buttonContainer}>
+        <TouchableOpacity
+          disabled={isLoggingOut}
+          onPress={signoutPress}
+          style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <Entypo name="login" size={12} color={"#707070"} />
             <Text style={{marginLeft: 10, color: "#707070"}}>Sign Out</Text>

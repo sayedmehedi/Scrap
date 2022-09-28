@@ -1,57 +1,37 @@
 import React from "react";
 import {View, Image} from "react-native";
 import {useTheme} from "react-native-paper";
-import {RootStackParamList} from "@src/types";
+import {useAppDispatch} from "@hooks/store";
+import {LocationStackParamList} from "@src/types";
 import useAppSnackbar from "@hooks/useAppSnackbar";
+import {LocationStackRoutes} from "@constants/routes";
 import Geolocation from "@react-native-community/geolocation";
 import AppPrimaryButton from "@src/Component/AppPrimaryButton";
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import {setFirstTimeLoginFalse} from "@store/slices/authSlice";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {useUpdateProfileMutation} from "@data/laravel/services/auth";
-import {
-  HomeStackRoutes,
-  HomeTabRoutes,
-  RootStackRoutes,
-} from "@constants/routes";
 
 type Props = NativeStackScreenProps<
-  RootStackParamList,
-  typeof RootStackRoutes.LOCATION_PROMPT
+  LocationStackParamList,
+  typeof LocationStackRoutes.LOCATION_PROMPT
 >;
 
 const LocationPropmtScreen = ({navigation, route}: Props) => {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
   const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
 
   const [updateProfile, {isLoading, isSuccess, data}] =
     useUpdateProfileMutation();
 
-  const redirectIntended = React.useCallback(() => {
-    if (route.params.nextScreen) {
-      navigation.navigate(
-        // @ts-ignore
-        route.params.nextScreen.name,
-        route.params.nextScreen.params,
-      );
-    } else {
-      navigation.navigate(RootStackRoutes.HOME, {
-        screen: HomeTabRoutes.HOME,
-        params: {
-          screen: HomeStackRoutes.HOME,
-        },
-      });
-    }
-  }, [route.params.nextScreen, navigation]);
-
   React.useEffect(() => {
-    if (isSuccess && !!data) {
+    if (isSuccess && !!data && "success" in data) {
       enqueueSuccessSnackbar({
         text1: data.success,
       });
-
-      redirectIntended();
     }
-  }, [enqueueSuccessSnackbar, isSuccess, data, redirectIntended]);
+  }, [enqueueSuccessSnackbar, isSuccess, data]);
 
   const handleCurrentLocation = async () => {
     Geolocation.requestAuthorization(
@@ -63,7 +43,11 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
             updateProfile({
               latitude: latitude.toString(),
               longitude: longitude.toString(),
-            });
+            })
+              .unwrap()
+              .then(() => {
+                dispatch(setFirstTimeLoginFalse());
+              });
           },
           error => {
             enqueueErrorSnackbar({
@@ -107,7 +91,7 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
               text={"User Current Location"}
               containerStyle={{
                 width: 275,
-                backgroundColor: theme.colors.white,
+                backgroundColor: "#F7F7F7",
               }}
               iconContainerStyle={{
                 backgroundColor: "#FCDFE6",
@@ -128,7 +112,7 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
               text={"Select it Manually"}
               containerStyle={{
                 width: 275,
-                backgroundColor: theme.colors.white,
+                backgroundColor: "#F7F7F7",
               }}
               iconContainerStyle={{
                 backgroundColor: "#FCDFE6",
@@ -141,7 +125,7 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
                 color: theme.colors.text,
               }}
               onPress={() => {
-                navigation.navigate(RootStackRoutes.CHOOSE_LOCATION, {
+                navigation.navigate(LocationStackRoutes.CHOOSE_LOCATION, {
                   nextScreen: route.params.nextScreen,
                 });
               }}
@@ -153,7 +137,7 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
             text={"Skip"}
             containerStyle={{
               width: 275,
-              backgroundColor: theme.colors.white,
+              backgroundColor: "#F7F7F7",
             }}
             iconContainerStyle={{
               backgroundColor: "#FCDFE6",
@@ -166,7 +150,7 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
               color: theme.colors.text,
             }}
             onPress={() => {
-              redirectIntended();
+              dispatch(setFirstTimeLoginFalse());
             }}
           />
         </View>

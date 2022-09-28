@@ -10,7 +10,7 @@ import {ListItem, Switch} from "react-native-elements";
 import {isJoteyQueryError} from "@utils/error-handling";
 import AppPrimaryButton from "../Component/AppPrimaryButton";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
-import {useCreateProductMutation} from "@data/laravel/services/product";
+import {useUpsertProductMutation} from "@data/laravel/services/product";
 import CircularProgress from "react-native-circular-progress-indicator";
 import {Divider, HelperText, Text, Title, useTheme} from "react-native-paper";
 import {
@@ -34,6 +34,8 @@ import {
   useGetPackagesQuery,
   useLazyGetPackagesQuery,
 } from "@data/laravel/services/package";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
+import {ErrorMessage} from "@hookform/error-message";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -62,38 +64,45 @@ export default function ProductAddDeliveryMethodScreen({
   const [getPackages, {isFetching: isFetchingNextPage}] =
     useLazyGetPackagesQuery();
   const {
+    refetch,
     data: getMetalsResponse,
     isLoading: isLoadingCategories,
     isFetching: isFetchingInitial,
   } = useGetPackagesQuery({});
+
+  useRefreshOnFocus(refetch);
   const actionCreaterRef = React.useRef<ReturnType<typeof getPackages> | null>(
     null,
   );
   const [
-    createProduct,
+    upsertProduct,
     {
-      error: createProductError,
-      data: createProductResponse,
-      isError: isCreateProductError,
-      isLoading: isCreatingProduct,
-      isSuccess: isProductCreateSuccess,
+      error: upsertProductError,
+      data: upsertProductResponse,
+      isError: isUpsertProductError,
+      isLoading: isUpsertingProduct,
+      isSuccess: isProductUpsertSuccess,
     },
-  ] = useCreateProductMutation();
-
-  React.useEffect(() => {
-    if (isCreateProductError && isJoteyQueryError(createProductError)) {
-      setShowFieldErrors(true);
-    }
-  }, [isCreateProductError, createProductError]);
+  ] = useUpsertProductMutation();
 
   React.useEffect(() => {
     if (
-      (!isCreatingProduct && isProductCreateSuccess) ||
-      isCreateProductError
+      isUpsertProductError &&
+      isJoteyQueryError(upsertProductError) &&
+      upsertProductError.status === 422
+    ) {
+      setShowFieldErrors(true);
+    }
+  }, [isUpsertProductError, upsertProductError]);
+
+  React.useEffect(() => {
+    if (
+      (!isUpsertingProduct && isProductUpsertSuccess) ||
+      isUpsertProductError
     ) {
       setUploadProgress(0);
     }
-  }, [isProductCreateSuccess, isCreatingProduct, isCreateProductError]);
+  }, [isProductUpsertSuccess, isUpsertingProduct, isUpsertProductError]);
 
   const [packagePages, setPackagePages] = React.useState<
     Array<GetPackagesResponse["items"]>
@@ -144,34 +153,40 @@ export default function ProductAddDeliveryMethodScreen({
 
   React.useEffect(() => {
     if (
-      isProductCreateSuccess &&
-      !!createProductResponse &&
-      "success" in createProductResponse
+      isProductUpsertSuccess &&
+      !!upsertProductResponse &&
+      "success" in upsertProductResponse
     ) {
       enqueueSuccessSnackbar({
-        text1: createProductResponse.success,
+        text1: upsertProductResponse.success,
       });
-      navigation.navigate(PostItemStackRoutes.SUCCESS);
+
+      navigation.reset({
+        index: 0,
+        routes: [{name: PostItemStackRoutes.SUCCESS}],
+      });
+
+      // navigation.navigate(PostItemStackRoutes.SUCCESS);
     }
 
     if (
-      isProductCreateSuccess &&
-      !!createProductResponse &&
-      "error" in createProductResponse
+      isProductUpsertSuccess &&
+      !!upsertProductResponse &&
+      "error" in upsertProductResponse
     ) {
       enqueueErrorSnackbar({
         text1: "Error",
-        text2: createProductResponse.error,
+        text2: upsertProductResponse.error,
       });
     }
   }, [
-    isProductCreateSuccess,
+    isProductUpsertSuccess,
     enqueueSuccessSnackbar,
-    createProductResponse,
+    upsertProductResponse,
     enqueueErrorSnackbar,
   ]);
 
-  const metals = React.useMemo(() => {
+  const packages = React.useMemo(() => {
     if (isLoadingCategories) {
       return new Array(10).fill(1).map((_, id) => ({
         id,
@@ -187,7 +202,14 @@ export default function ProductAddDeliveryMethodScreen({
     );
   }, [isLoadingCategories, packagePages]);
 
-  const {control, setValue, handleSubmit} = useForm<FormValues>({
+  const {
+    reset,
+    watch,
+    control,
+    setValue,
+    handleSubmit,
+    formState: {errors},
+  } = useForm<FormValues>({
     defaultValues: {
       location: "",
       package: null,
@@ -197,21 +219,56 @@ export default function ProductAddDeliveryMethodScreen({
   });
 
   React.useEffect(() => {
-    if (profile) {
+    return () => {
+      console.log("first");
+      reset();
+    };
+  }, [navigation, reset]);
+
+  React.useEffect(() => {
+    if (route.params.productEditInfo) {
+      const {is_locale, package_id, is_shipping} = route.params.productEditInfo;
+
+      setValue("package", {
+        price: 0,
+        weight: 0,
+        id: package_id.id,
+        name: package_id.name,
+        size: package_id.size,
+      });
+
+      setValue("isLocale", is_locale);
+      setValue("isShipping", is_shipping);
+    }
+  }, [setValue, route.params]);
+
+  const isShipping = watch("isShipping");
+
+  React.useEffect(() => {
+    if (route.params.productEditInfo?.location) {
+      setValue("location", route.params.productEditInfo?.location);
+    } else if (profile?.location) {
       setValue("location", profile.location);
     }
-  }, [profile, setValue]);
+  }, [profile, setValue, route.params]);
 
   const handlePostItem = handleSubmit(values => {
-    createProduct({
+    const images = [...route.params.productGalleryImages];
+
+    if (route.params.productCoverImage) {
+      images.push(route.params.productCoverImage);
+    }
+
+    upsertProduct({
+      images,
       location: values.location,
-      latitude: profile?.latitude,
-      longitude: profile?.longitude,
-      package_id: values.package!.id,
+      latitude: profile!.latitude!,
+      longitude: profile!.longitude!,
       duration: route.params.duration,
       quantity: route.params.quantity,
       title: route.params.productTitle,
       details: route.params.description,
+      package_id: values.package?.id ?? 0,
       buy_price: route.params.buynowprice,
       attributes: route.params.attributes,
       selected_metals: route.params.metals,
@@ -221,13 +278,10 @@ export default function ProductAddDeliveryMethodScreen({
       starting_price: route.params.startingPrice,
       is_shipping: values.isShipping ? "1" : "0",
       sub_category_id: route.params.subCategoryId,
+      product_id: route.params.productEditInfo?.id,
       is_list_now: route.params.isListNow ? "1" : "0",
       show_metal_price: route.params.showMetalPrice ? "1" : "0",
       expected_date_for_list: route.params.expectedDateForList,
-      images: [
-        route.params.productCoverImage,
-        ...route.params.productGalleryImages,
-      ],
       onUploadProgress(event) {
         const progress = Math.round(event.loaded / event.total) * 100;
         setUploadProgress(progress);
@@ -236,10 +290,10 @@ export default function ProductAddDeliveryMethodScreen({
   });
 
   return (
-    <View style={{padding: 15}}>
+    <ScrollView style={{padding: 15}}>
       <Overlay
         isVisible={
-          isCreatingProduct && !isProductCreateSuccess && !isCreateProductError
+          isUpsertingProduct && !isProductUpsertSuccess && !isUpsertProductError
         }
         overlayStyle={{
           width: "80%",
@@ -270,7 +324,7 @@ export default function ProductAddDeliveryMethodScreen({
         onRequestClose={() => {
           setShowFieldErrors(false);
         }}>
-        <Title style={{paddingBottom: 10}}>Invlaid Data</Title>
+        <Title style={{paddingBottom: 10}}>Invalid Data</Title>
         <Divider style={{height: 2}} />
 
         <ScrollView
@@ -278,8 +332,8 @@ export default function ProductAddDeliveryMethodScreen({
             alignItems: "center",
             justifyContent: "center",
           }}>
-          {isJoteyQueryError(createProductError) &&
-            Object.values(createProductError.data.field_errors).map(
+          {isJoteyQueryError(upsertProductError) &&
+            Object.values(upsertProductError.data.field_errors).map(
               (error, i) => {
                 return (
                   <View
@@ -296,246 +350,240 @@ export default function ProductAddDeliveryMethodScreen({
             )}
         </ScrollView>
       </Overlay>
+      <React.Fragment>
+        <Controller
+          name={"location"}
+          control={control}
+          render={({field}) => {
+            return (
+              <React.Fragment>
+                <ListItem
+                  hasTVPreferredFocus
+                  tvParallaxProperties={{}}
+                  Component={TouchableOpacity}
+                  containerStyle={{
+                    paddingHorizontal: 0,
+                    backgroundColor: "transparent",
+                  }}
+                  onPress={() => {
+                    rootNavigation.navigate(RootStackRoutes.CHOOSE_LOCATION, {
+                      nextScreen: {
+                        name: HomeTabRoutes.POST_ITEM,
+                        params: {
+                          screen: route.name,
+                          params: route.params,
+                        },
+                      },
+                    });
+                  }}>
+                  <ListItem.Content>
+                    <ListItem.Title>
+                      <Text style={{fontWeight: "700"}}> Location:</Text>{" "}
+                      {field.value}
+                    </ListItem.Title>
+                  </ListItem.Content>
 
-      <Controller
-        control={control}
-        name={"package"}
-        render={({field}) => {
-          return (
-            <React.Fragment>
-              <FlatList<typeof metals[0]>
-                data={metals}
-                showsVerticalScrollIndicator={false}
-                onEndReached={getNextPackages}
-                ListHeaderComponent={() => (
-                  <React.Fragment>
-                    <Controller
-                      name={"location"}
-                      control={control}
-                      render={({field}) => {
-                        return (
-                          <React.Fragment>
-                            <ListItem
-                              hasTVPreferredFocus
-                              tvParallaxProperties={{}}
-                              Component={TouchableOpacity}
-                              containerStyle={{
-                                paddingHorizontal: 0,
-                                backgroundColor: "transparent",
-                              }}
-                              onPress={() => {
-                                rootNavigation.navigate(
-                                  RootStackRoutes.CHOOSE_LOCATION,
-                                  {
-                                    nextScreen: {
-                                      name: HomeTabRoutes.POST_ITEM,
-                                      params: {
-                                        screen: route.name,
-                                        params: route.params,
-                                      },
-                                    },
-                                  },
-                                );
-                              }}>
-                              <ListItem.Content>
-                                <ListItem.Title>
-                                  <Text style={{fontWeight: "700"}}>
-                                    {" "}
-                                    Location:
-                                  </Text>{" "}
-                                  {field.value}
-                                </ListItem.Title>
-                              </ListItem.Content>
+                  <Entypo name={"edit"} size={15} />
+                </ListItem>
 
-                              <Entypo name={"edit"} size={15} />
-                            </ListItem>
+                <Divider style={{height: 2}} />
+              </React.Fragment>
+            );
+          }}
+        />
 
-                            <Divider style={{height: 2}} />
-                          </React.Fragment>
-                        );
-                      }}
-                    />
+        <View style={{height: 10}} />
 
-                    <View style={{height: 10}} />
+        <Controller
+          name={"isLocale"}
+          control={control}
+          render={({field}) => {
+            return (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}>
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 17,
+                      marginBottom: 10,
+                      color: "#222222",
+                      fontWeight: "700",
+                    }}>
+                    Local Pickup
+                  </Text>
+                </View>
 
-                    <Controller
-                      name={"isLocale"}
-                      control={control}
-                      render={({field}) => {
-                        return (
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                            }}>
-                            <View>
-                              <Text
-                                style={{
-                                  fontSize: 17,
-                                  marginBottom: 10,
-                                  color: "#222222",
-                                  fontWeight: "700",
-                                }}>
-                                Local Pickup
-                              </Text>
-                            </View>
+                <View>
+                  <Switch onValueChange={field.onChange} value={field.value} />
+                </View>
+              </View>
+            );
+          }}
+        />
 
-                            <View>
-                              <Switch
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              />
-                            </View>
-                          </View>
-                        );
-                      }}
-                    />
+        <View style={{height: 5}} />
 
-                    <View style={{height: 5}} />
+        <Divider style={{height: 2}} />
 
-                    <Divider style={{height: 2}} />
+        <View style={{height: 5}} />
 
-                    <View style={{height: 5}} />
+        <Controller
+          name={"isShipping"}
+          control={control}
+          render={({field}) => {
+            return (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}>
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 17,
+                      color: "#222222",
+                      marginBottom: 2,
+                      fontWeight: "700",
+                    }}>
+                    Sale & Shipping
+                  </Text>
+                </View>
 
-                    <Controller
-                      name={"isShipping"}
-                      control={control}
-                      render={({field}) => {
-                        return (
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                            }}>
-                            <View>
-                              <Text
-                                style={{
-                                  fontSize: 17,
-                                  color: "#222222",
-                                  marginBottom: 2,
-                                  fontWeight: "700",
-                                }}>
-                                International Shipping
-                              </Text>
+                <View>
+                  <Switch onValueChange={field.onChange} value={field.value} />
+                </View>
+              </View>
+            );
+          }}
+        />
 
-                              <Text style={{fontSize: 12}}>
-                                15% Services fee applies
-                              </Text>
-                            </View>
+        <View style={{height: 10}} />
 
-                            <View>
-                              <Switch
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              />
-                            </View>
-                          </View>
-                        );
-                      }}
-                    />
+        <Divider style={{height: 2}} />
+      </React.Fragment>
 
-                    <View style={{height: 10}} />
+      {isShipping && (
+        <Controller
+          control={control}
+          name={"package"}
+          shouldUnregister
+          rules={{
+            required: "This field is reuired",
+          }}
+          render={({field}) => {
+            return (
+              <React.Fragment>
+                <View style={{height: 10}} />
 
-                    <Divider style={{height: 2}} />
-
-                    <View style={{height: 10}} />
-
-                    <View
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}>
+                  <View>
+                    <Text
                       style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-between",
+                        fontSize: 17,
+                        color: "#222222",
+                        marginBottom: 2,
+                        fontWeight: "700",
                       }}>
-                      <View>
-                        <Text
-                          style={{
-                            fontSize: 17,
-                            color: "#222222",
-                            marginBottom: 2,
-                            fontWeight: "700",
-                          }}>
-                          What length package will you use?
-                        </Text>
+                      What length package will you use?
+                    </Text>
 
-                        <Text style={{fontSize: 12}}>
-                          Buyer can pay for delivery label
-                        </Text>
-                      </View>
-                    </View>
+                    <Text style={{fontSize: 12}}>
+                      Buyer can pay for delivery label
+                    </Text>
+                  </View>
+                </View>
 
-                    <View style={{height: 10}} />
-                  </React.Fragment>
-                )}
-                ListFooterComponent={() => (
-                  <AppPrimaryButton
-                    text={"Submit"}
-                    onPress={handlePostItem}
-                    disabled={isCreatingProduct}
-                    containerStyle={{marginVertical: 35}}
-                  />
-                )}
-                renderItem={({item}) => {
-                  if (item.type === "skeleton") {
+                <View style={{height: 10}} />
+
+                <FlatList<typeof packages[0]>
+                  data={packages}
+                  onEndReached={getNextPackages}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({item}) => {
+                    if (item.type === "skeleton") {
+                      return (
+                        <SkeletonPlaceholder>
+                          <SkeletonPlaceholder.Item paddingBottom={15}>
+                            <SkeletonPlaceholder.Item
+                              height={100}
+                              borderRadius={5}
+                            />
+                          </SkeletonPlaceholder.Item>
+                        </SkeletonPlaceholder>
+                      );
+                    }
+
                     return (
-                      <SkeletonPlaceholder>
-                        <SkeletonPlaceholder.Item paddingBottom={15}>
-                          <SkeletonPlaceholder.Item
-                            height={100}
-                            borderRadius={5}
-                          />
-                        </SkeletonPlaceholder.Item>
-                      </SkeletonPlaceholder>
-                    );
-                  }
-
-                  return (
-                    <ListItem
-                      hasTVPreferredFocus
-                      tvParallaxProperties={{}}
-                      Component={TouchableOpacity}
-                      onPress={() => field.onChange(item)}
-                      containerStyle={{
-                        paddingLeft: 0,
-                        paddingBottom: 0,
-                        alignItems: "flex-start",
-                        backgroundColor: "#F7F7F7F",
-                      }}>
-                      <ListItem.CheckBox
-                        iconType={"material"}
-                        checkedIcon={"radio-button-checked"}
+                      <ListItem
+                        hasTVPreferredFocus
+                        tvParallaxProperties={{}}
+                        Component={TouchableOpacity}
                         onPress={() => field.onChange(item)}
-                        checked={field.value?.id === item.id}
-                        uncheckedIcon={"radio-button-unchecked"}
-                      />
+                        containerStyle={{
+                          paddingLeft: 0,
+                          paddingBottom: 0,
+                          alignItems: "flex-start",
+                          backgroundColor: "#F7F7F7F",
+                        }}>
+                        <ListItem.CheckBox
+                          iconType={"material"}
+                          checkedIcon={"radio-button-checked"}
+                          onPress={() => field.onChange(item)}
+                          checked={field.value?.id === item.id}
+                          uncheckedIcon={"radio-button-unchecked"}
+                        />
 
-                      <ListItem.Content>
-                        <ListItem.Title
-                          style={{
-                            color:
-                              field.value?.id === item.id
-                                ? theme.colors.primary
-                                : theme.colors.text,
-                            fontWeight: "700",
-                          }}>
-                          {item.name}
-                        </ListItem.Title>
+                        <ListItem.Content>
+                          <ListItem.Title
+                            style={{
+                              color:
+                                field.value?.id === item.id
+                                  ? theme.colors.primary
+                                  : theme.colors.text,
+                              fontWeight: "700",
+                            }}>
+                            {item.name}
+                          </ListItem.Title>
 
-                        <View>
-                          <Text>Approx: {item.size}</Text>
-                          <Text>Weight: {item.weight}</Text>
-                          <Text>pounds. Buyer Pays ${item.price}</Text>
-                        </View>
-                      </ListItem.Content>
-                    </ListItem>
-                  );
-                }}
-              />
-            </React.Fragment>
-          );
-        }}
+                          <View>
+                            <Text>Approx: {item.size}</Text>
+                            <Text>Weight: {item.weight}</Text>
+                            <Text>pounds. Buyer Pays ${item.price}</Text>
+                          </View>
+                        </ListItem.Content>
+                      </ListItem>
+                    );
+                  }}
+                />
+
+                <ErrorMessage
+                  errors={errors}
+                  name={"package"}
+                  render={({message}) => (
+                    <HelperText type={"error"}>{message}</HelperText>
+                  )}
+                />
+              </React.Fragment>
+            );
+          }}
+        />
+      )}
+      <AppPrimaryButton
+        text={"Submit"}
+        onPress={handlePostItem}
+        disabled={isUpsertingProduct}
+        containerStyle={{marginVertical: 35}}
       />
-    </View>
+    </ScrollView>
   );
 }

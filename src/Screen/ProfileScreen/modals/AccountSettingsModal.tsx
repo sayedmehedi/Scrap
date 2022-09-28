@@ -21,43 +21,43 @@ export default function AccountSettingsModal({
   title,
   subtitle,
   onClose,
+  onSuccess,
   inputs = [],
 }: {
   open: boolean;
   title: string;
   subtitle?: string;
   onClose: () => void;
+  onSuccess?: () => void;
   inputs: Array<TextInputProps & {name: string; error?: string}>;
 }) {
   const theme = useTheme();
-  const {enqueueSuccessSnackbar} = useAppSnackbar();
-  const {setValue, control, handleSubmit, setError} = useForm();
+  const {control, handleSubmit} = useForm();
+  const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
   const [updateProfile, {isLoading, isSuccess, data}] =
     useUpdateProfileMutation();
 
   React.useEffect(() => {
-    inputs.forEach(input => {
-      if (input.value) {
-        setValue(input.name, input.value);
-      }
-
-      if (input.error) {
-        setError(input.name, {
-          type: "custom",
-          message: input.error,
-        });
-      }
-    });
-  }, [inputs]);
-
-  React.useEffect(() => {
-    if (isSuccess && !!data) {
+    if (isSuccess && !!data && "success" in data) {
       enqueueSuccessSnackbar({
         text1: data.success,
       });
+      onSuccess?.();
       onClose();
     }
-  }, [enqueueSuccessSnackbar, isSuccess, data]);
+
+    if (isSuccess && !!data && "error" in data) {
+      enqueueErrorSnackbar({
+        text1: data.error,
+      });
+    }
+  }, [
+    data,
+    onSuccess,
+    isSuccess,
+    enqueueErrorSnackbar,
+    enqueueSuccessSnackbar,
+  ]);
 
   const handleUpdate = handleSubmit(values => {
     updateProfile(values);
@@ -100,23 +100,28 @@ export default function AccountSettingsModal({
             </Text>
           )}
 
-          {inputs.map((input, i) => (
-            <Controller
-              key={i}
-              control={control}
-              name={input.name}
-              render={({field}) => {
-                return (
-                  <TextInput
-                    value={field.value}
-                    style={styles.modalInput}
-                    onChangeText={field.onChange}
-                    placeholder={input.placeholder ?? ""}
-                  />
-                );
-              }}
-            />
-          ))}
+          {inputs.map((input, i) => {
+            const {name, error, onChangeText, ...textinputProps} = input;
+
+            return (
+              <Controller
+                key={i}
+                name={name}
+                shouldUnregister
+                control={control}
+                render={({field}) => {
+                  return (
+                    <TextInput
+                      value={field.value}
+                      style={styles.modalInput}
+                      onChangeText={field.onChange}
+                      {...textinputProps}
+                    />
+                  );
+                }}
+              />
+            );
+          })}
 
           <AppPrimaryButton
             disabled={isLoading}

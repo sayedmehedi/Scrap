@@ -7,7 +7,7 @@ import {
 
 export class ApplicationError extends Error {
   constructor(private readonly data: AxiosError<ServerErrorType>) {
-    console.log("staaaaaatus", data.status);
+    console.log("error", data.response);
     super(data.message);
   }
 

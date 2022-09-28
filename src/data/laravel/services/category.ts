@@ -23,7 +23,7 @@ export const categoryApi = api.injectEndpoints({
         result
           ? [
               {type: QUERY_KEYS.CATEGORY, id: "HOME-SCREEN-LIST"},
-              ...result.categories.map(({id}) => ({
+              ...result.categories.data.map(({id}) => ({
                 type: QUERY_KEYS.CATEGORY as const,
                 id,
               })),

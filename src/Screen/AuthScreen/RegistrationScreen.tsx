@@ -1,7 +1,6 @@
 import React from "react";
 import {AuthStackParamList} from "@src/types";
 import useAppSnackbar from "@hooks/useAppSnackbar";
-import {useTheme, Text} from "react-native-paper";
 import {useForm, Controller} from "react-hook-form";
 import Entypo from "react-native-vector-icons/Entypo";
 import {ErrorMessage} from "@hookform/error-message";
@@ -10,6 +9,7 @@ import GoogleSignInBtn from "@src/Component/GoogleSignInBtn";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import {useRegisterMutation} from "@data/laravel/services/auth";
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import {useTheme, Text, ActivityIndicator} from "react-native-paper";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {addServerErrors, isJoteyQueryError} from "@utils/error-handling";
 import {
@@ -24,12 +24,13 @@ import {
   setGlobalStyles,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
+import {useAppSelector} from "@hooks/store";
 
 setGlobalStyles.containerStyles = {
   height: 58,
   borderRadius: 6,
   paddingHorizontal: 10,
-  backgroundColor: "#fff",
+  backgroundColor: "#F7F7F7",
 };
 
 setGlobalStyles.customLabelStyles = {
@@ -63,16 +64,18 @@ const RegistrationScreen = ({navigation}: Props) => {
   const [togglePassword, setTogglePassword] = React.useState(false);
   const [toggleConfirmPassword, setToggleConfirmPassword] =
     React.useState(false);
+  const socialLoginState = useAppSelector(
+    state => state.authLoading.socialLoginState,
+  );
 
-  const [register, {isLoading, isError, error, isSuccess, data}] =
-    useRegisterMutation();
+  const [register, {isLoading, isError, error}] = useRegisterMutation();
 
   const {
-    control,
-    handleSubmit,
-    setError,
-    formState: {errors},
     reset,
+    control,
+    setError,
+    handleSubmit,
+    formState: {errors},
   } = useForm({
     defaultValues: {
       name: "",
@@ -83,24 +86,36 @@ const RegistrationScreen = ({navigation}: Props) => {
   });
 
   React.useEffect(() => {
-    if (isSuccess && !!data) {
-      enqueueSuccessSnackbar({
-        text1: data.success,
-      });
-
-      reset();
-    }
-  }, [enqueueSuccessSnackbar, isSuccess, data, reset]);
-
-  React.useEffect(() => {
     if (isError && isJoteyQueryError(error)) {
       addServerErrors(error.data.field_errors, setError);
     }
   }, [setError, isError, error]);
 
   const handleRegistration = handleSubmit(values => {
-    register(values);
+    register(values)
+      .unwrap()
+      .then(data => {
+        const email = values.email;
+
+        enqueueSuccessSnackbar({
+          text1: data.success,
+        });
+
+        reset();
+
+        navigation.navigate(AuthStackRoutes.OTP, {
+          email,
+        });
+      });
   });
+
+  if (isLoading || socialLoginState === "pending") {
+    return (
+      <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+        <ActivityIndicator size={"large"} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaProvider>

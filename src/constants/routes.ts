@@ -1,32 +1,55 @@
 export const AuthStackRoutes = {
+  OTP: "otp",
   LOGIN: "login",
   REGISTRATION: "registration",
   RESET_PASSWORD: "resetPassword",
   FORGOT_PASSWORD: "forgotPassword",
 } as const;
 
-export const RootStackRoutes = {
-  AUTH: "auth",
-  HOME: "home",
-  PLACE_BID: "placeBid",
-  MAKE_OFFER: "makeOffer",
+export const LocationStackRoutes = {
   LOCATION_PROMPT: "locationPrompt",
-  ADD_SHIPPING_ADDRESS: "addShippingAddress",
-
-  REVIEW_OFFER: "reviewOffer",
-  ASK_QUESTION: "askQuestion",
-  NOTIFICATIONS: "notifications",
-  SINGLE_CONVERSATION: "message",
-  SEARCH_PRODUCT: "searchProduct",
-  PRODUCT_FILTER: "productFilter",
-  PRODUCT_DETAILS: "productDetails",
-  CONFIRM_PURCHASE: "confirmPurchase",
-  SELLER_REVIEW: "sellerReviewScreen",
-
   CHOOSE_LOCATION: "chooseLocation",
 } as const;
 
+export const ChatStackRoutes = {
+  AUTH: "auth",
+  LOCATION: "location",
+
+  CONVERSATION_LIST: "conversationList",
+  SINGLE_CONVERSATION: "singleConversation",
+} as const;
+
+export const ProductActionsStackRoutes = {
+  AUTH: "auth",
+  LOCATION: "location",
+
+  PLACE_BID: "placeBid",
+  MAKE_OFFER: "makeOffer",
+  REVIEW_OFFER: "reviewOffer",
+  ASK_QUESTION: "askQuestion",
+} as const;
+
+export const RootStackRoutes = {
+  AUTH: "auth",
+  LOCATION: "location",
+
+  HOME: "home",
+  ADD_SHIPPING_ADDRESS: "addShippingAddress",
+  SELLER_PUBLIC_PROFILE: "sellerPublicProfile",
+
+  NOTIFICATIONS: "notifications",
+  SEARCH_PRODUCT: "searchProduct",
+  PRODUCT_FILTER: "productFilter",
+  PRODUCT_ACTIONS: "productActions",
+  PRODUCT_DETAILS: "productDetails",
+  CONFIRM_PURCHASE: "confirmPurchase",
+  SELLER_REVIEW: "sellerReviewScreen",
+} as const;
+
 export const PostItemStackRoutes = {
+  AUTH: "auth",
+  LOCATION: "location",
+
   SUCCESS: "success",
   ADD_PRICE: "addPrice",
   ADD_DETAILS: "addDetails",
@@ -34,12 +57,20 @@ export const PostItemStackRoutes = {
   ADD_DELIVERY_METHOD: "addDeliveryMethod",
 } as const;
 
+export const SaleStackRoutes = {
+  AUTH: "auth",
+  LOCATION: "location",
+
+  SALE_OR_ARCHIVE: "saleOrArchive",
+} as const;
+
 export const HomeTabRoutes = {
   HOME: "Home",
   CHAT: "chat",
-  SELLING: "selling",
+  SALE: "sale",
   PROFILE: "profile",
   POST_ITEM: "postItem",
+  EDIT_ITEM: "editItem",
 } as const;
 
 export const HomeStackRoutes = {
@@ -51,12 +82,15 @@ export const HomeStackRoutes = {
 } as const;
 
 export const ProfileStackRoutes = {
-  PROFILE_SCREEN: "profileScreen",
-  TRANSACTION: "transactionScreen",
+  AUTH: "auth",
+  LOCATION: "location",
+
+  CONTACT: "contact",
+  PURCHASES: "purchases",
   OFFER_N_BID: "offerAndBid",
   SAVE_PRODUCT: "saveProduct",
+  PROFILE_SCREEN: "profileScreen",
+  TRANSACTION: "transactionScreen",
   PUBLIC_PROFILE: "publicProfile",
   ACCOUNT_SETTING: "accountSetting",
-  PURCHASES: "purchases",
-  CONTACT: "contact",
 } as const;

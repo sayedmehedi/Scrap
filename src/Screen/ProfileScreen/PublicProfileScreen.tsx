@@ -1,32 +1,52 @@
 import React from "react";
 import styles from "./styles";
 import {Rating} from "react-native-elements";
-import {useAppSelector} from "@hooks/store";
+import {ProfileStackRoutes} from "@constants/routes";
 import {FlatList, View, Text} from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import Fontisto from "react-native-vector-icons/Fontisto";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import ProfileImageUploader from "./ProfileImageUploader";
 import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
 import EachProductItem from "../../Component/EachProductItem";
+import {ActivityIndicator, useTheme} from "react-native-paper";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {
-  GetSaleOrArchivedProductsReponse,
   PaginationQueryParams,
+  GetSaleOrArchivedProductsReponse,
+  ProfileStackParamList,
 } from "@src/types";
 import {
-  useGetSaleProductsQuery,
-  useLazyGetSaleProductsQuery,
+  useGetSellerProductsQuery,
+  useLazyGetSellerProductsQuery,
 } from "@data/laravel/services/product";
-import {ActivityIndicator} from "react-native-paper";
+import {useAppSelector} from "@hooks/store";
 
-const PublicProfileScreen = () => {
+type Props = NativeStackScreenProps<
+  ProfileStackParamList,
+  typeof ProfileStackRoutes.PUBLIC_PROFILE
+>;
+
+const PublicProfileScreen = ({route}: Props) => {
   const profile = useAppSelector(state => state.auth.profile);
+
   const [fetchProducts, {isFetching: isFetchingNextPage}] =
-    useLazyGetSaleProductsQuery();
+    useLazyGetSellerProductsQuery();
   const {
-    data: saleProductsResponse,
+    refetch,
     isLoading,
+    data: sellerProductsResponse,
     isFetching: isFetchingInitial,
-  } = useGetSaleProductsQuery({});
+  } = useGetSellerProductsQuery(
+    {
+      user_id: profile?.id ?? 0,
+    },
+    {
+      skip: !profile,
+    },
+  );
+
+  useRefreshOnFocus(refetch);
 
   const [productPages, setProductPages] = React.useState<
     Array<GetSaleOrArchivedProductsReponse["products"]>
@@ -36,13 +56,13 @@ const PublicProfileScreen = () => {
   > | null>(null);
 
   React.useEffect(() => {
-    if (!isLoading && !!saleProductsResponse) {
-      setProductPages([saleProductsResponse.products]);
+    if (!isLoading && !!sellerProductsResponse) {
+      setProductPages([sellerProductsResponse.products]);
     }
-  }, [saleProductsResponse, isLoading]);
+  }, [sellerProductsResponse, isLoading]);
 
   const getNextProducts = async () => {
-    if (isFetchingNextPage || isFetchingInitial) {
+    if (isFetchingNextPage || isFetchingInitial || !profile) {
       return;
     }
 
@@ -55,7 +75,11 @@ const PublicProfileScreen = () => {
       return;
     }
 
-    const params: PaginationQueryParams = {};
+    const params: PaginationQueryParams & {
+      user_id: number;
+    } = {
+      user_id: profile.id,
+    };
 
     params.page = lastProductPage.current_page + 1;
 
@@ -139,12 +163,11 @@ const PublicProfileScreen = () => {
                 </Text>
                 <View
                   style={{
-                    flexDirection: "row",
-                    alignItems: "center",
                     marginVertical: 5,
+                    alignItems: "center",
+                    flexDirection: "row",
                   }}>
                   <Rating
-                    lock={true}
                     imageSize={15}
                     readonly={true}
                     showRating={false}
@@ -202,18 +225,52 @@ const PublicProfileScreen = () => {
                     borderTopColor: "#E2E2E2",
                     borderBottomColor: "#E2E2E2",
                   }}>
-                  <View style={styles.socialMediaContainer}>
-                    <Fontisto name="email" size={20} color={"#707070"} />
+                  <View
+                    style={[
+                      styles.socialMediaContainer,
+                      {
+                        backgroundColor: profile?.is_email_verified
+                          ? "red"
+                          : "#D0D0D0",
+                      },
+                    ]}>
+                    <Fontisto
+                      name="email"
+                      size={20}
+                      color={profile?.is_email_verified ? "white" : "#707070"}
+                    />
                   </View>
 
-                  <View style={styles.socialMediaContainer}>
-                    <Fontisto name="email" size={20} color={"#707070"} />
+                  <View
+                    style={[
+                      styles.socialMediaContainer,
+                      {
+                        backgroundColor: profile?.is_phone_verfied
+                          ? "red"
+                          : "#D0D0D0",
+                      },
+                    ]}>
+                    <Feather
+                      name="phone"
+                      size={20}
+                      color={profile?.is_phone_verfied ? "white" : "#707070"}
+                    />
                   </View>
-                  <View style={styles.socialMediaContainer}>
-                    <Feather name="phone" size={20} color={"#707070"} />
-                  </View>
-                  <View style={styles.socialMediaContainer}>
-                    <Feather name="facebook" size={20} color={"#707070"} />
+
+                  <View
+                    style={[
+                      styles.socialMediaContainer,
+                      {
+                        backgroundColor: profile?.is_fb_connected
+                          ? "red"
+                          : "#D0D0D0",
+                      },
+                    ]}>
+                    <Feather
+                      name="facebook"
+                      size={20}
+                      color={profile?.is_fb_connected ? "white" : "#707070"}
+                    />
                   </View>
                 </View>
 
@@ -224,7 +281,7 @@ const PublicProfileScreen = () => {
                     color: "#344054",
                     marginVertical: 10,
                   }}>
-                  This Seller Product
+                  Seller Products
                 </Text>
               </View>
             </React.Fragment>

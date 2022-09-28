@@ -1,25 +1,20 @@
 import React from "react";
-import BottomTab from "./BottomTab";
 import {forFade} from "@utils/misc";
 import {useTheme} from "react-native-paper";
 import {RootStackParamList} from "@src/types";
+import HomeTabNavigator from "./HomeTabNavigator";
 import {RootStackRoutes} from "../constants/routes";
-import AuthStackNavigator from "./AuthStackNavigator";
-import PlaceBidScreen from "../Screen/PlaceBidScreen";
-import MakeOfferScreen from "../Screen/MakeOfferScreen";
-import AskQuestionScreen from "../Screen/AskQuestionScreen";
-import ReviewOfferScreen from "../Screen/ReviewOfferScreen";
 import {createStackNavigator} from "@react-navigation/stack";
 import NotificationsScreen from "../Screen/NotificationsScreen";
-import ProductDetailsScreen from "../Screen/ProductDetailsScreen";
 import ProductSearchScreen from "../Screen/ProductSearchScreen";
-import ChooseCountryScreen from "@src/Screen/ChooseCountryScreen";
-import LocationPropmtScreen from "@src/Screen/LocationPromptScreen";
+import ProductDetailsScreen from "../Screen/ProductDetailsScreen";
 import ConfirmPurchaseScreen from "@src/Screen/ConfirmPurchaseScreen";
-import SingleConversationScreen from "../Screen/SingleConversationScreen";
+import ProductActionsStackNavigator from "./ProductActionsStackNavigator";
 import SellerReviewScreen from "@src/Screen/ReviewScreen/SellerReviewScreen";
 import AddShippingAddressScreen from "@src/Screen/AddShippingAddressScreen";
+import SellerPublicProfileScreen from "@src/Screen/SellerPublicProfileScreen";
 import ProductFilterScreen from "../Screen/ProductFilterScreen/ProductFilterScreen";
+import AuthStackNavigator from "./AuthStackNavigator";
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -41,27 +36,10 @@ const RootStackNavigator = () => {
         headerTintColor: theme.colors.white,
       }}>
       <RootStack.Screen
-        component={BottomTab}
+        component={HomeTabNavigator}
         name={RootStackRoutes.HOME}
         options={{
           headerShown: false,
-          cardStyleInterpolator: forFade,
-        }}
-      />
-
-      <RootStack.Screen
-        options={{
-          headerShown: false,
-        }}
-        name={RootStackRoutes.AUTH}
-        component={AuthStackNavigator}
-      />
-
-      <RootStack.Screen
-        component={SingleConversationScreen}
-        name={RootStackRoutes.SINGLE_CONVERSATION}
-        options={{
-          presentation: "modal",
           cardStyleInterpolator: forFade,
         }}
       />
@@ -75,27 +53,19 @@ const RootStackNavigator = () => {
       />
 
       <RootStack.Screen
-        component={PlaceBidScreen}
-        name={RootStackRoutes.PLACE_BID}
-        options={{title: "Place Bid", headerTitleAlign: "center"}}
+        options={{
+          headerShown: false,
+        }}
+        name={RootStackRoutes.AUTH}
+        component={AuthStackNavigator}
       />
 
       <RootStack.Screen
-        component={MakeOfferScreen}
-        name={RootStackRoutes.MAKE_OFFER}
-        options={{title: "Make an offer", headerTitleAlign: "center"}}
-      />
-
-      <RootStack.Screen
-        component={ReviewOfferScreen}
-        name={RootStackRoutes.REVIEW_OFFER}
-        options={{title: "Review Your Offer", headerTitleAlign: "center"}}
-      />
-
-      <RootStack.Screen
-        component={AskQuestionScreen}
-        options={{title: "Ask Question"}}
-        name={RootStackRoutes.ASK_QUESTION}
+        options={{
+          headerShown: false,
+        }}
+        name={RootStackRoutes.PRODUCT_ACTIONS}
+        component={ProductActionsStackNavigator}
       />
 
       <RootStack.Screen
@@ -139,26 +109,19 @@ const RootStackNavigator = () => {
 
       <RootStack.Screen
         options={{
-          title: "Locations",
-        }}
-        component={LocationPropmtScreen}
-        name={RootStackRoutes.LOCATION_PROMPT}
-      />
-
-      <RootStack.Screen
-        options={{
-          title: "Choose Location",
-        }}
-        component={ChooseCountryScreen}
-        name={RootStackRoutes.CHOOSE_LOCATION}
-      />
-
-      <RootStack.Screen
-        options={{
           title: "Add Shipping Address",
         }}
         component={AddShippingAddressScreen}
         name={RootStackRoutes.ADD_SHIPPING_ADDRESS}
+      />
+
+      <RootStack.Screen
+        options={{
+          title: "Public Profile",
+          headerTitleAlign: "center",
+        }}
+        component={SellerPublicProfileScreen}
+        name={RootStackRoutes.SELLER_PUBLIC_PROFILE}
       />
     </RootStack.Navigator>
   );

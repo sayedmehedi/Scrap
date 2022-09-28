@@ -1,20 +1,22 @@
 import React from "react";
 import EachConversation from "./EachConversation";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import {SafeAreaView, View, Text, FlatList} from "react-native";
 import {SafeAreaProvider} from "react-native-safe-area-context";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {GetConversationsResponse, PaginationQueryParams} from "@src/types";
 import {
   useGetConversationsQuery,
   useLazyGetConversationsQuery,
 } from "@data/laravel/services/message";
-import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
 const ConversationListScreen = () => {
   const [getConversations, {isFetching: isFetchingNextPage}] =
     useLazyGetConversationsQuery();
   const {
-    data: getConversationsResponse,
+    refetch,
     isLoading,
+    data: getConversationsResponse,
     isFetching: isFetchingInitial,
   } = useGetConversationsQuery({});
   const [converstaionPages, setConversationPages] = React.useState<
@@ -23,6 +25,8 @@ const ConversationListScreen = () => {
   const actionCreaterRef = React.useRef<ReturnType<
     typeof getConversations
   > | null>(null);
+
+  useRefreshOnFocus(refetch);
 
   React.useEffect(() => {
     if (!isLoading && !!getConversationsResponse) {
@@ -97,22 +101,36 @@ const ConversationListScreen = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{flex: 1, backgroundColor: "#F7F7F7"}}>
-        <View
-          style={{justifyContent: "center", alignItems: "center", padding: 10}}>
-          <Text
-            style={{
-              fontSize: 14,
-              color: "#51B764",
-              fontFamily: "Inter-Regular",
-            }}>
-            You have 2 new message
-          </Text>
-        </View>
+        {getConversationsResponse?.total_unseen_messages !== undefined &&
+          getConversationsResponse.total_unseen_messages > 0 && (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 10,
+              }}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: "#51B764",
+                  fontFamily: "Inter-Regular",
+                }}>
+                You have {getConversationsResponse?.total_unseen_messages} new
+                message
+              </Text>
+            </View>
+          )}
 
         <View>
           <FlatList<typeof conversations[0]>
+            onRefresh={refetch}
             data={conversations}
             onEndReached={getNextConversations}
+            contentContainerStyle={{
+              padding: 15,
+              paddingBottom: 90,
+            }}
+            refreshing={isFetchingInitial}
             ListEmptyComponent={() => (
               <View>
                 <Text style={{textAlign: "center"}}>No data</Text>

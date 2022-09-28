@@ -1,21 +1,28 @@
 import React from "react";
 import {Button} from "react-native-elements";
-import {RootStackParamList} from "@src/types";
 import useAppSnackbar from "@hooks/useAppSnackbar";
-import {RootStackRoutes} from "@constants/routes";
 import {TouchableOpacity, View} from "react-native";
+import {useNavigation} from "@react-navigation/native";
 import AppPrimaryButton from "../Component/AppPrimaryButton";
 import {Divider, Text, Title, useTheme} from "react-native-paper";
-import {NativeStackScreenProps} from "@react-navigation/native-stack";
+import {ProductActionsStackParamList, RootStackParamList} from "@src/types";
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
+import {ProductActionsStackRoutes, RootStackRoutes} from "@constants/routes";
 import {useUpsertBidOrOfferMutation} from "@data/laravel/services/offerNBids";
 
 type Props = NativeStackScreenProps<
-  RootStackParamList,
-  typeof RootStackRoutes.REVIEW_OFFER
+  ProductActionsStackParamList,
+  typeof ProductActionsStackRoutes.REVIEW_OFFER
 >;
 
-export default function ReviewOfferScreen({route, navigation}: Props) {
+type RootNavigationProps = NativeStackNavigationProp<RootStackParamList>;
+
+export default function ReviewOfferScreen({route}: Props) {
   const theme = useTheme();
+  const navigation = useNavigation<RootNavigationProps>();
   const {enqueueSuccessSnackbar} = useAppSnackbar();
 
   const [upsertOffer, {isSuccess, data}] = useUpsertBidOrOfferMutation();
@@ -62,7 +69,7 @@ export default function ReviewOfferScreen({route, navigation}: Props) {
           fontWeight: "700",
           textAlign: "center",
         }}>
-        Total: ${totalPrice}
+        Total: ${totalPrice.toFixed(2)}
       </Title>
 
       <Text
@@ -90,7 +97,6 @@ export default function ReviewOfferScreen({route, navigation}: Props) {
           textDecorationColor: "#000",
           textDecorationStyle: "solid",
           textDecorationLine: "underline",
-          // @ts-ignore
           color: theme.colors.black,
         }}
       />

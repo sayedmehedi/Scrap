@@ -1,13 +1,14 @@
 import React from "react";
 import truncate from "lodash.truncate";
-import {ActivityIndicator, useTheme} from "react-native-paper";
 import {CheckBox} from "react-native-elements";
+import {useAppSelector} from "@hooks/store";
 import Entypo from "react-native-vector-icons/Entypo";
-import Feather from "react-native-vector-icons/Feather";
 import {useNavigation} from "@react-navigation/native";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
 import EachProductItem from "../../Component/EachProductItem";
+import {ActivityIndicator, useTheme} from "react-native-paper";
 import {HomeStackRoutes, RootStackRoutes} from "@constants/routes";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {
@@ -42,14 +43,20 @@ type Props = NativeStackScreenProps<
 const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
   const theme = useTheme();
   const rootNavigation = useNavigation();
+  const profile = useAppSelector(state => state.auth.profile);
+  const [distance, setDistance] = React.useState<number>(30);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [location, setLocation] = React.useState<string | null>(null);
-  const [distance, setDistance] = React.useState<number | null>(null);
   const [maxPrice, setMaxPrice] = React.useState<number | null>(null);
   const [minPrice, setMinPrice] = React.useState<number | null>(null);
   const [hideFilterActions, setHideFilterActions] = React.useState(false);
   const [condition, setCondition] = React.useState<Condition | null>(null);
-  const [attributeId, setAttributeId] = React.useState<number | null>(null);
+  const [categoryId, setCategoryId] = React.useState<number | null>(null);
+  const [subcategoryId, setSubcategoryId] = React.useState<number | null>(null);
+  const [attributes, setAttributes] = React.useState<Record<
+    number,
+    number
+  > | null>(null);
   const [sortBy, setSortBy] =
     React.useState<FilterProductQueryParams["sort_by"]>("oldest");
   const [productType, setProductType] = React.useState<
@@ -74,7 +81,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
       },
       // @ts-ignore
       headerTintColor: theme.colors.white,
-      title: truncate(route.params.categoryTitle, {
+      title: truncate(route.params.screenTitle, {
         length: 20,
       }),
       headerRight: () => {
@@ -112,13 +119,13 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
               // @ts-ignore
               onPress={() =>
                 rootNavigation.navigate(RootStackRoutes.PRODUCT_FILTER, {
+                  distance,
                   location: location ?? undefined,
-                  distance: distance ?? undefined,
                   maxPrice: maxPrice ?? undefined,
                   minPrice: minPrice ?? undefined,
                   condition: condition ?? undefined,
                   categoryId: route.params.categoryId,
-                  categoryTitle: route.params.categoryTitle,
+                  categoryTitle: route.params.screenTitle,
                 })
               }
               style={{padding: 5}}>
@@ -136,6 +143,8 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
   React.useEffect(() => {
     if (route.params.location) {
       setLocation(route.params.location);
+    } else if (profile?.location) {
+      setLocation(profile.location);
     }
 
     if (route.params.distance) {
@@ -154,8 +163,8 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
       setCondition(route.params.condition);
     }
 
-    if (route.params.attributeId) {
-      setAttributeId(+route.params.attributeId);
+    if (route.params.attributes) {
+      setAttributes(route.params.attributes);
     }
 
     if (route.params.isShipping) {
@@ -166,16 +175,23 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
       setProductType("is_locale");
     }
 
+    if (route.params.categoryId) {
+      setCategoryId(route.params.categoryId);
+    }
+
+    if (route.params.subcategoryId) {
+      setSubcategoryId(route.params.subcategoryId);
+    }
+
     if (route.params.hideFilterActions) {
       setHideFilterActions(route.params.hideFilterActions);
     }
-  }, [route]);
+  }, [route, profile]);
 
   const queryParams = React.useMemo(() => {
     const data: FilterProductQueryParams = {};
 
     data.sort_by = sortBy;
-    data.category_id = route.params.categoryId;
 
     if (productType === "is_locale") {
       data.is_locale = "1";
@@ -187,6 +203,14 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
 
     if (!!location) {
       data.location = location;
+    }
+
+    if (!!subcategoryId) {
+      data.sub_category_id = subcategoryId;
+    }
+
+    if (!!categoryId) {
+      data.category_id = categoryId;
     }
 
     if (!!distance) {
@@ -205,21 +229,22 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
       data.condition_id = condition.id;
     }
 
-    if (!!attributeId) {
-      data.attribute_id = attributeId;
+    if (!!attributes) {
+      data.attributes = attributes;
     }
 
     return data;
   }, [
-    route.params.categoryId,
     sortBy,
     location,
     distance,
     maxPrice,
     minPrice,
     condition,
+    categoryId,
+    attributes,
     productType,
-    attributeId,
+    subcategoryId,
   ]);
 
   if (modalVisible) {
@@ -256,15 +281,32 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
                     checkedColor="gray"
                     uncheckedIcon="circle-o"
                     checkedIcon="dot-circle-o"
-                    checked={sortBy === "low_price"}
-                    onPress={() => setSortBy("low_price")}
+                    checked={sortBy === "newest"}
+                    onPress={() => setSortBy("newest")}
                     containerStyle={{
                       padding: 1,
                     }}
                   />
 
-                  <Text>Low Price</Text>
+                  <Text>Newest</Text>
                 </View>
+
+                <View style={{flexDirection: "row", alignItems: "center"}}>
+                  <CheckBox
+                    center
+                    checkedColor="gray"
+                    uncheckedIcon="circle-o"
+                    checkedIcon="dot-circle-o"
+                    checked={sortBy === "oldest"}
+                    onPress={() => setSortBy("oldest")}
+                    containerStyle={{
+                      padding: 1,
+                    }}
+                  />
+
+                  <Text>Oldest</Text>
+                </View>
+
                 <View style={{flexDirection: "row", alignItems: "center"}}>
                   <CheckBox
                     center
@@ -280,20 +322,21 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
 
                   <Text>High Price</Text>
                 </View>
+
                 <View style={{flexDirection: "row", alignItems: "center"}}>
                   <CheckBox
                     center
                     checkedColor="gray"
                     uncheckedIcon="circle-o"
                     checkedIcon="dot-circle-o"
-                    checked={sortBy === "oldest"}
-                    onPress={() => setSortBy("oldest")}
+                    checked={sortBy === "low_price"}
+                    onPress={() => setSortBy("low_price")}
                     containerStyle={{
                       padding: 1,
                     }}
                   />
 
-                  <Text>Oldest</Text>
+                  <Text>Low Price</Text>
                 </View>
 
                 <View style={{flexDirection: "row", alignItems: "center"}}>
@@ -411,7 +454,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
                 fontFamily: "Inter-Regular",
               }}>
               {!!location ? `${location}, ` : ""}
-              {distance ?? 0} Miles + Shipping
+              {distance} Miles + Shipping
             </Text>
           ) : productType === "is_locale" ? (
             <Text
@@ -422,7 +465,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
                 fontFamily: "Inter-Regular",
               }}>
               {!!location ? `${location}, ` : ""}
-              {distance ?? 0} Miles
+              {distance} Miles
             </Text>
           ) : (
             <Text
@@ -450,6 +493,7 @@ const ProductList = ({params = {}}: {params?: FilterProductQueryParams}) => {
     null,
   );
   const {
+    refetch,
     isLoading,
     data: filterProductsResponse,
     isFetching: isFetchingInitial,
@@ -457,6 +501,8 @@ const ProductList = ({params = {}}: {params?: FilterProductQueryParams}) => {
   const [productPages, setProductPages] = React.useState<
     Array<FilterProductsResponse["products"]>
   >([]);
+
+  useRefreshOnFocus(refetch);
 
   React.useEffect(() => {
     if (!isLoading && !!filterProductsResponse) {
@@ -485,13 +531,10 @@ const ProductList = ({params = {}}: {params?: FilterProductQueryParams}) => {
       page: lastProductPage.current_page + 1,
     };
 
-    console.log("lastProductPage", newParams.page);
-
     actionCreaterRef.current = trigger(newParams, true);
 
     try {
       const productResponse = await actionCreaterRef.current.unwrap();
-      console.log("got next page", newParams.page, productResponse.products);
       setProductPages(prevPages => {
         return prevPages.concat(productResponse.products);
       });
@@ -508,7 +551,7 @@ const ProductList = ({params = {}}: {params?: FilterProductQueryParams}) => {
   }, []);
 
   const products = React.useMemo(() => {
-    if (isLoading) {
+    if (isLoading || productPages.length === 0) {
       return [
         {
           id: 1,
@@ -535,17 +578,6 @@ const ProductList = ({params = {}}: {params?: FilterProductQueryParams}) => {
 
   return (
     <React.Fragment>
-      {isFetchingNextPage ? (
-        <View
-          style={{
-            padding: 10,
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-          <ActivityIndicator size={"small"} />
-        </View>
-      ) : null}
-
       <FlatList<typeof products[0]>
         numColumns={3}
         data={products}
@@ -564,6 +596,17 @@ const ProductList = ({params = {}}: {params?: FilterProductQueryParams}) => {
         )}
         renderItem={({item}) => <EachProductItem item={item} />}
       />
+
+      {isFetchingNextPage ? (
+        <View
+          style={{
+            padding: 50,
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+          <ActivityIndicator size={"small"} />
+        </View>
+      ) : null}
     </React.Fragment>
   );
 };

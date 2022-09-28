@@ -131,7 +131,7 @@ const paperLightTheme = {
     primary05: "rgba(230, 43, 86, 0.25)",
     accent: "#191F2B",
     accent05: "rgba(25, 31, 43, 0.25)",
-    background: "#F7F7F7",
+    background: "#FFFFFF",
     white: "#FFFFFF",
     success: "#51B764",
 
@@ -151,7 +151,7 @@ const paperDarkTheme = {
     primary05: "rgba(230, 43, 86, 0.25)",
     accent: "#191F2B",
     accent05: "rgba(25, 31, 43, 0.25)",
-    background: "#F7F7F7",
+    background: "#FFFFF",
     white: "#FFFFFF",
     success: "#51B764",
 
