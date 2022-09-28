@@ -123,12 +123,14 @@ const ConversationListScreen = () => {
 
         <View>
           <FlatList<typeof conversations[0]>
+            onRefresh={refetch}
             data={conversations}
             onEndReached={getNextConversations}
             contentContainerStyle={{
               padding: 15,
               paddingBottom: 90,
             }}
+            refreshing={isFetchingInitial}
             ListEmptyComponent={() => (
               <View>
                 <Text style={{textAlign: "center"}}>No data</Text>

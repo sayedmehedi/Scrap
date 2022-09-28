@@ -207,11 +207,14 @@ export default function NotificationsScreen({navigation, route}: Props) {
   return isAuthenticated ? (
     <View style={{padding: 15}}>
       <SectionList<typeof notifications[0]["data"][0]>
+        onRefresh={refetch}
         sections={notifications}
+        refreshing={isFetchingInitial}
         keyExtractor={(item, index) => `${item.id + index}`}
         contentContainerStyle={{
           paddingBottom: 50,
         }}
+        showsVerticalScrollIndicator={false}
         onEndReached={getNextNotifications}
         renderSectionHeader={({section: {title, data}}) =>
           data.length > 0 ? (

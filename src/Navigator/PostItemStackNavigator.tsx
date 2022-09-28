@@ -56,7 +56,7 @@ export default function PostItemStackNavigator({
         cardStyleInterpolator: forFade,
       }}>
       {(isAuthenticated && isFirstTimeLogin) ||
-      (!profile?.location && !profile?.latitude && !profile?.longitude) ? (
+      (isAuthenticated && !profile?.location) ? (
         <PostItemStack.Screen
           component={LocationStackNavigator}
           name={PostItemStackRoutes.LOCATION}
