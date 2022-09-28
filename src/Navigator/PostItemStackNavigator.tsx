@@ -103,6 +103,14 @@ export default function PostItemStackNavigator({
             component={ProductAddSuccessScreen}
             name={PostItemStackRoutes.SUCCESS}
           />
+
+          <PostItemStack.Screen
+            options={{
+              headerShown: false,
+            }}
+            component={LocationStackNavigator}
+            name={PostItemStackRoutes.LOCATION}
+          />
         </React.Fragment>
       ) : (
         <PostItemStack.Screen

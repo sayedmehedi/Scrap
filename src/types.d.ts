@@ -96,6 +96,24 @@ export type ProductActionsStackParamList = {
 
     isInitial: boolean;
   };
+  [ProductActionsStackRoutes.ASK_QUESTION]: {
+    sellerId: number;
+    sellerName: string;
+    sellerImage: string;
+
+    productId: number;
+    productName: string;
+    productImage: string;
+    productPrice: number;
+
+    isInitial: boolean;
+  };
+
+  [ProductActionsStackRoutes.BUY_PRODUCT]: {
+    productId: number;
+
+    isInitial: boolean;
+  };
 
   [ProductActionsStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
   [ProductActionsStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
@@ -127,6 +145,7 @@ export type ChatStackParamList = {
   [ChatStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
   [ChatStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
 
+  [ChatStackRoutes.NOTIFICATIONS]: undefined;
   [ChatStackRoutes.CONVERSATION_LIST]: undefined;
   [ChatStackRoutes.SINGLE_CONVERSATION]: {
     userId: number;
@@ -233,9 +252,6 @@ export type AuthStackScreenProps<T extends keyof AuthStackParamList> =
   >;
 
 export type RootStackParamList = {
-  [SaleStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
-  [ProductActionsStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
-
   [RootStackRoutes.PRODUCT_ACTIONS]: NavigatorScreenParams<ProductActionsStackParamList>;
   [RootStackRoutes.HOME]: NavigatorScreenParams<HomeTabParamList>;
 
@@ -822,7 +838,7 @@ export type SendMessageRequest = {
 };
 
 export interface AppNotification {
-  date: Date;
+  date: string;
   id: number;
   title: string;
   message: string;

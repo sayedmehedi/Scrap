@@ -15,6 +15,7 @@ export const ChatStackRoutes = {
   AUTH: "auth",
   LOCATION: "location",
 
+  NOTIFICATIONS: "notifications",
   CONVERSATION_LIST: "conversationList",
   SINGLE_CONVERSATION: "singleConversation",
 } as const;
@@ -27,17 +28,15 @@ export const ProductActionsStackRoutes = {
   MAKE_OFFER: "makeOffer",
   REVIEW_OFFER: "reviewOffer",
   ASK_QUESTION: "askQuestion",
+
+  BUY_PRODUCT: "buyProduct",
 } as const;
 
 export const RootStackRoutes = {
-  AUTH: "auth",
-  LOCATION: "location",
-
   HOME: "home",
   ADD_SHIPPING_ADDRESS: "addShippingAddress",
   SELLER_PUBLIC_PROFILE: "sellerPublicProfile",
 
-  NOTIFICATIONS: "notifications",
   SEARCH_PRODUCT: "searchProduct",
   PRODUCT_FILTER: "productFilter",
   PRODUCT_ACTIONS: "productActions",

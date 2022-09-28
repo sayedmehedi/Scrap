@@ -119,11 +119,9 @@ const AskQuestionScreen = ({route, navigation}: Props) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      // if (route.params.isInitial) {
-      //   navigation.goBack();
-      // }
-
-      console.log("first", route.params.isInitial);
+      if (route.params.isInitial) {
+        navigation.goBack();
+      }
     }, [route.params, navigation]),
   );
 
