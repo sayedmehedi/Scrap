@@ -35,9 +35,7 @@ const HomeScreen = ({navigation}: Props) => {
   const rootNavigation = useNavigation();
 
   const handleRedirectToNotificatoins = () => {
-    navigation.getParent()?.navigate(HomeTabRoutes.CHAT, {
-      screen: ChatStackRoutes.NOTIFICATIONS,
-    });
+    navigation.getParent()?.navigate(RootStackRoutes.NOTIFICATIONS);
   };
 
   return (

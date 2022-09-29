@@ -44,6 +44,7 @@ export default function NotificationsScreen({navigation, route}: Props) {
 
   const [getNotifications, {isFetching: isFetchingNextPage}] =
     useLazyGetNotificationsQuery({});
+
   const {
     refetch,
     isLoading,
@@ -211,7 +212,20 @@ export default function NotificationsScreen({navigation, route}: Props) {
     <View style={{padding: 15}}>
       <SectionList<typeof notifications[0]["data"][0]>
         onRefresh={refetch}
-        sections={notifications}
+        sections={
+          // @ts-ignore
+          notifications.every(
+            (notification: {
+              title: string;
+              data: {
+                id: number;
+                type: "skeleton";
+              }[];
+            }) => notification.data.length === 0,
+          )
+            ? []
+            : notifications
+        }
         refreshing={isFetchingInitial}
         keyExtractor={(item, index) => `${item.id + index}`}
         contentContainerStyle={{

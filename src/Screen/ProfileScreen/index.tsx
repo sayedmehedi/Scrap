@@ -59,6 +59,7 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
 
   return (
     <ScrollView
+      showsVerticalScrollIndicator={false}
       contentContainerStyle={{
         paddingTop: 15,
         backgroundColor: "white",

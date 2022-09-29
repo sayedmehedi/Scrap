@@ -48,15 +48,17 @@ function AppBar({
   return (
     <View style={styles.header}>
       <View style={{flexDirection: "row", alignItems: "center"}}>
-        {back && (
-          <TouchableOpacity style={{padding: 0}} onPress={navigation.goBack}>
-            <MaterialIcons
-              size={22}
-              color={"white"}
-              name="keyboard-backspace"
-            />
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          style={{padding: 0}}
+          onPress={() => {
+            if (back) {
+              navigation.goBack();
+            } else {
+              navigation.navigate(ChatStackRoutes.CONVERSATION_LIST);
+            }
+          }}>
+          <MaterialIcons size={22} color={"white"} name="keyboard-backspace" />
+        </TouchableOpacity>
 
         <View style={{marginHorizontal: 10}}>
           <Avatar

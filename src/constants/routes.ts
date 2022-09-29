@@ -34,6 +34,7 @@ export const ProductActionsStackRoutes = {
 
 export const RootStackRoutes = {
   HOME: "home",
+  NOTIFICATIONS: "notifications",
   ADD_SHIPPING_ADDRESS: "addShippingAddress",
   SELLER_PUBLIC_PROFILE: "sellerPublicProfile",
 
@@ -49,6 +50,8 @@ export const PostItemStackRoutes = {
   AUTH: "auth",
   LOCATION: "location",
 
+  LOCATION2: "location2",
+
   SUCCESS: "success",
   ADD_PRICE: "addPrice",
   ADD_DETAILS: "addDetails",
@@ -56,9 +59,17 @@ export const PostItemStackRoutes = {
   ADD_DELIVERY_METHOD: "addDeliveryMethod",
 } as const;
 
+export const NotificationStackRoutes = {
+  AUTH: "auth",
+  LOCATION: "location",
+
+  NOTIFICATIONS: "notifications",
+} as const;
+
 export const SaleStackRoutes = {
   AUTH: "auth",
   LOCATION: "location",
+  NOTIFICATIONS: "notifications",
 
   SALE_OR_ARCHIVE: "saleOrArchive",
 } as const;

@@ -15,6 +15,7 @@ import {
   LocationStackRoutes,
   ChatStackRoutes,
   SaleStackRoutes,
+  NotificationStackRoutes,
 } from "@constants/routes";
 import {Asset} from "react-native-image-picker";
 import {BottomTabScreenProps} from "@react-navigation/bottom-tabs";
@@ -162,11 +163,20 @@ export type SaleOrArchiveStackParamList = {
   [SaleStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
 
   [SaleStackRoutes.SALE_OR_ARCHIVE]: undefined;
+  [SaleStackRoutes.NOTIFICATIONS]: undefined;
+};
+
+export type NotificationStackParamList = {
+  [NotificationStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
+  [NotificationStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+
+  [SaleStackRoutes.NOTIFICATIONS]: undefined;
 };
 
 export type PostItemStackParamList = {
   [PostItemStackRoutes.AUTH]: NavigatorScreenParams<AuthStackParamList>;
   [PostItemStackRoutes.LOCATION]: NavigatorScreenParams<LocationStackParamList>;
+  [PostItemStackRoutes.LOCATION2]: NavigatorScreenParams<LocationStackParamList>;
 
   [PostItemStackRoutes.SUCCESS]: undefined;
   [PostItemStackRoutes.ADD_PRICE]: {

@@ -13,6 +13,7 @@ import SellerReviewScreen from "@src/Screen/ReviewScreen/SellerReviewScreen";
 import AddShippingAddressScreen from "@src/Screen/AddShippingAddressScreen";
 import SellerPublicProfileScreen from "@src/Screen/SellerPublicProfileScreen";
 import ProductFilterScreen from "../Screen/ProductFilterScreen/ProductFilterScreen";
+import NotificationStackNavigator from "./NotificationStackNavigator";
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -40,6 +41,14 @@ const RootStackNavigator = () => {
           headerShown: false,
           cardStyleInterpolator: forFade,
         }}
+      />
+
+      <RootStack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name={RootStackRoutes.NOTIFICATIONS}
+        component={NotificationStackNavigator}
       />
 
       <RootStack.Screen

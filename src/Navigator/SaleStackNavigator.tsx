@@ -8,10 +8,15 @@ import {defaultTabBarStyles} from "@constants/Colors";
 import {createStackNavigator} from "@react-navigation/stack";
 import {selectIsAuthenticated} from "@store/slices/authSlice";
 import LocationStackNavigator from "./LocationStackNavigator";
-import {SaleStackRoutes, RootStackRoutes} from "@constants/routes";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {HomeTabParamList, SaleOrArchiveStackParamList} from "@src/types";
+import {
+  SaleStackRoutes,
+  HomeTabRoutes,
+  ChatStackRoutes,
+} from "@constants/routes";
+import NotificationsScreen from "@src/Screen/NotificationsScreen";
 
 const SaleStack = createStackNavigator<SaleOrArchiveStackParamList>();
 
@@ -67,13 +72,19 @@ export default function SaleStackNavigator({navigation: tabNavigation}: Props) {
                       color={"white"}
                       name={"notifications-none"}
                       onPress={() => {
-                        navigation.navigate(RootStackRoutes.NOTIFICATIONS);
+                        navigation.navigate(SaleStackRoutes.NOTIFICATIONS);
                       }}
                     />
                   </View>
                 ),
               };
             }}
+          />
+
+          <SaleStack.Screen
+            component={NotificationsScreen}
+            options={{title: "Notifications"}}
+            name={ChatStackRoutes.NOTIFICATIONS}
           />
         </React.Fragment>
       ) : (

@@ -1,8 +1,8 @@
 import React from "react";
-import {View} from "react-native";
 import {forFade} from "@utils/misc";
 import {useAppSelector} from "@hooks/store";
-import {ChatStackRoutes} from "@constants/routes";
+import {useTheme} from "react-native-paper";
+import {View, Pressable} from "react-native";
 import AuthStackNavigator from "./AuthStackNavigator";
 import {defaultTabBarStyles} from "@constants/Colors";
 import {createStackNavigator} from "@react-navigation/stack";
@@ -10,11 +10,11 @@ import {selectIsAuthenticated} from "@store/slices/authSlice";
 import LocationStackNavigator from "./LocationStackNavigator";
 import {ChatStackParamList, HomeTabParamList} from "@src/types";
 import NotificationsScreen from "@src/Screen/NotificationsScreen";
+import {ChatStackRoutes, HomeStackRoutes} from "@constants/routes";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import ConversationListScreen from "@src/Screen/ConversationListScreen";
 import SingleConversationScreen from "@src/Screen/SingleConversationScreen";
-import {useTheme} from "react-native-paper";
 
 const ChatStack = createStackNavigator<ChatStackParamList>();
 
@@ -52,8 +52,8 @@ export default function ChatStackNavigator({navigation: tabNavigation}: Props) {
       }}>
       {isAuthenticated && isFirstTimeLogin ? (
         <ChatStack.Screen
-          component={LocationStackNavigator}
           name={ChatStackRoutes.LOCATION}
+          component={LocationStackNavigator}
         />
       ) : isAuthenticated ? (
         <React.Fragment>
@@ -80,16 +80,59 @@ export default function ChatStackNavigator({navigation: tabNavigation}: Props) {
           <ChatStack.Screen
             component={SingleConversationScreen}
             name={ChatStackRoutes.SINGLE_CONVERSATION}
-            options={{
-              headerShown: false,
-              presentation: "modal",
-              cardStyleInterpolator: forFade,
+            options={({navigation}) => {
+              return {
+                headerShown: false,
+                presentation: "modal",
+                cardStyleInterpolator: forFade,
+                headerLeft: ({onPress}) => (
+                  <Pressable
+                    onPress={() => {
+                      if (onPress) {
+                        onPress();
+                      } else {
+                        navigation.navigate(ChatStackRoutes.CONVERSATION_LIST);
+                      }
+                    }}>
+                    <View style={{paddingRight: 10}}>
+                      <MaterialIcons
+                        size={22}
+                        color={"white"}
+                        name={"notifications-none"}
+                      />
+                    </View>
+                  </Pressable>
+                ),
+              };
             }}
           />
 
           <ChatStack.Screen
             component={NotificationsScreen}
-            options={{title: "Notifications"}}
+            options={({navigation}) => {
+              return {
+                title: "Notifications",
+                headerLeft: ({onPress}) => (
+                  <Pressable
+                    onPress={() => {
+                      if (onPress) {
+                        onPress();
+                      } else {
+                        console.log("gonna call home");
+                        navigation.replace(HomeStackRoutes.HOME);
+                      }
+                    }}>
+                    <View style={{padding: 15}}>
+                      <MaterialIcons
+                        size={22}
+                        color={"white"}
+                        name={"arrow-back"}
+                      />
+                    </View>
+                  </Pressable>
+                ),
+              };
+            }}
             name={ChatStackRoutes.NOTIFICATIONS}
           />
         </React.Fragment>

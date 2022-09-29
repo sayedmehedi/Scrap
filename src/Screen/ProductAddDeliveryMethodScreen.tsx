@@ -362,7 +362,7 @@ export default function ProductAddDeliveryMethodScreen({
                     backgroundColor: "transparent",
                   }}
                   onPress={() => {
-                    navigation.navigate(PostItemStackRoutes.LOCATION, {
+                    navigation.navigate(PostItemStackRoutes.LOCATION2, {
                       screen: LocationStackRoutes.CHOOSE_LOCATION,
                       params: {
                         nextScreen: {
