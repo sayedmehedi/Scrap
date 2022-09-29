@@ -149,7 +149,7 @@ export default function SellerOfferNBids({
                   marginLeft: 10,
                 }}>
                 <Title>{product.title}</Title>
-                <Paragraph>$${product.price}</Paragraph>
+                <Paragraph>${product.price}</Paragraph>
               </View>
             </View>
 
@@ -178,7 +178,8 @@ export default function SellerOfferNBids({
               mode={"contained"}
               style={{
                 marginTop: 10,
-              }}>
+              }}
+              onPress={onBackPressed}>
               View products
             </Button>
           </View>

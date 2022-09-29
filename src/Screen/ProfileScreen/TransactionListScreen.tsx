@@ -180,7 +180,9 @@ export default function TransactionsScreen() {
   return (
     <View style={{backgroundColor: "white", flex: 1, padding: 10}}>
       <SectionList<typeof transactions[0]["data"][0]>
-        sections={transactions}
+        sections={
+          transactions.every(tran => tran.data.length === 0) ? [] : transactions
+        }
         showsVerticalScrollIndicator={false}
         keyExtractor={(item, index) => `${item.id + index}`}
         contentContainerStyle={{

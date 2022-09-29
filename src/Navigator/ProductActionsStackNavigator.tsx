@@ -12,6 +12,7 @@ import {createStackNavigator} from "@react-navigation/stack";
 import {ProductActionsStackRoutes} from "@constants/routes";
 import {selectIsAuthenticated} from "@store/slices/authSlice";
 import LocationStackNavigator from "./LocationStackNavigator";
+import BuyProductScreen from "@src/Screen/BuyProductScreen";
 
 const ProductActionsStack =
   createStackNavigator<ProductActionsStackParamList>();
@@ -106,6 +107,16 @@ export default function ProductActionsStackNavigator() {
             component={AskQuestionScreen}
             options={{title: "Ask Question"}}
             name={ProductActionsStackRoutes.ASK_QUESTION}
+          />
+
+          <ProductActionsStack.Screen
+            initialParams={{
+              productId: 0,
+              isInitial: true,
+            }}
+            component={BuyProductScreen}
+            options={{headerShown: false}}
+            name={ProductActionsStackRoutes.BUY_PRODUCT}
           />
         </React.Fragment>
       ) : (

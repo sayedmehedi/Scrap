@@ -31,7 +31,7 @@ GoogleSignin.configure({
 const App = () => {
   const state = useNetInfo();
   const navigationRef = useNavigationContainerRef();
-  const [hasInternet, setHasInternet] = React.useState<boolean | null>(false);
+  const [hasInternet, setHasInternet] = React.useState<boolean | null>(true);
 
   useFlipper(navigationRef);
   useReduxDevToolsExtension(navigationRef);

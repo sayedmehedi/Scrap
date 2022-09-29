@@ -9,27 +9,30 @@ import {Title, Text, useTheme} from "react-native-paper";
 import {selectIsAuthenticated} from "@store/slices/authSlice";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
-import {AuthStackRoutes, RootStackRoutes} from "@constants/routes";
+import {ChatStackRoutes} from "@constants/routes";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {
   GetNotificationsResponse,
   AppNotification,
   PaginationQueryParams,
   RootStackParamList,
+  ChatStackParamList,
 } from "@src/types";
 import {
   useGetNotificationsQuery,
   useLazyGetNotificationsQuery,
 } from "@data/laravel/services/auth";
 import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
+import {useFocusEffect} from "@react-navigation/native";
+import {defaultTabBarStyles} from "@constants/Colors";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
 dayjs.extend(relativeTime);
 
 type Props = NativeStackScreenProps<
-  RootStackParamList,
-  typeof RootStackRoutes.NOTIFICATIONS
+  ChatStackParamList,
+  typeof ChatStackRoutes.NOTIFICATIONS
 >;
 
 const getNotificationColor = (item: AppNotification) =>
@@ -41,6 +44,7 @@ export default function NotificationsScreen({navigation, route}: Props) {
 
   const [getNotifications, {isFetching: isFetchingNextPage}] =
     useLazyGetNotificationsQuery({});
+
   const {
     refetch,
     isLoading,
@@ -53,6 +57,20 @@ export default function NotificationsScreen({navigation, route}: Props) {
     },
   );
 
+  useFocusEffect(
+    React.useCallback(() => {
+      navigation.getParent()?.setOptions({
+        tabBarStyle: {display: "none"},
+      });
+
+      return () => {
+        navigation.getParent()?.setOptions({
+          tabBarStyle: defaultTabBarStyles,
+        });
+      };
+    }, [navigation]),
+  );
+
   useRefreshOnFocus(refetch);
 
   const actionCreaterRef = React.useRef<ReturnType<
@@ -61,20 +79,6 @@ export default function NotificationsScreen({navigation, route}: Props) {
   const [notificationPages, setNotificationPages] = React.useState<
     Array<GetNotificationsResponse["notifications"]>
   >([]);
-
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      navigation.replace(RootStackRoutes.AUTH, {
-        screen: AuthStackRoutes.LOGIN,
-        params: {
-          nextScreen: {
-            name: route.name,
-            params: route.params ?? {},
-          },
-        },
-      });
-    }
-  }, [isAuthenticated]);
 
   React.useEffect(() => {
     if (!isLoading && !!getNotificationsResponse) {
@@ -208,7 +212,20 @@ export default function NotificationsScreen({navigation, route}: Props) {
     <View style={{padding: 15}}>
       <SectionList<typeof notifications[0]["data"][0]>
         onRefresh={refetch}
-        sections={notifications}
+        sections={
+          // @ts-ignore
+          notifications.every(
+            (notification: {
+              title: string;
+              data: {
+                id: number;
+                type: "skeleton";
+              }[];
+            }) => notification.data.length === 0,
+          )
+            ? []
+            : notifications
+        }
         refreshing={isFetchingInitial}
         keyExtractor={(item, index) => `${item.id + index}`}
         contentContainerStyle={{
@@ -280,9 +297,9 @@ export default function NotificationsScreen({navigation, route}: Props) {
                   </Text>
 
                   <Text>
-                    {dayjs(item.date).isToday()
-                      ? dayjs(item.date).fromNow()
-                      : dayjs(item.date).format("HH:mm A")}
+                    {dayjs(item.date, "DD MMM YYYY").isToday()
+                      ? dayjs(item.date, "DD MMM YYYY").fromNow()
+                      : dayjs(item.date, "DD MMM YYYY").format("HH:mm A")}
                   </Text>
                 </View>
 

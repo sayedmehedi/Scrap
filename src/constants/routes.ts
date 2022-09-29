@@ -15,6 +15,7 @@ export const ChatStackRoutes = {
   AUTH: "auth",
   LOCATION: "location",
 
+  NOTIFICATIONS: "notifications",
   CONVERSATION_LIST: "conversationList",
   SINGLE_CONVERSATION: "singleConversation",
 } as const;
@@ -27,17 +28,16 @@ export const ProductActionsStackRoutes = {
   MAKE_OFFER: "makeOffer",
   REVIEW_OFFER: "reviewOffer",
   ASK_QUESTION: "askQuestion",
+
+  BUY_PRODUCT: "buyProduct",
 } as const;
 
 export const RootStackRoutes = {
-  AUTH: "auth",
-  LOCATION: "location",
-
   HOME: "home",
+  NOTIFICATIONS: "notifications",
   ADD_SHIPPING_ADDRESS: "addShippingAddress",
   SELLER_PUBLIC_PROFILE: "sellerPublicProfile",
 
-  NOTIFICATIONS: "notifications",
   SEARCH_PRODUCT: "searchProduct",
   PRODUCT_FILTER: "productFilter",
   PRODUCT_ACTIONS: "productActions",
@@ -50,6 +50,8 @@ export const PostItemStackRoutes = {
   AUTH: "auth",
   LOCATION: "location",
 
+  LOCATION2: "location2",
+
   SUCCESS: "success",
   ADD_PRICE: "addPrice",
   ADD_DETAILS: "addDetails",
@@ -57,9 +59,17 @@ export const PostItemStackRoutes = {
   ADD_DELIVERY_METHOD: "addDeliveryMethod",
 } as const;
 
+export const NotificationStackRoutes = {
+  AUTH: "auth",
+  LOCATION: "location",
+
+  NOTIFICATIONS: "notifications",
+} as const;
+
 export const SaleStackRoutes = {
   AUTH: "auth",
   LOCATION: "location",
+  NOTIFICATIONS: "notifications",
 
   SALE_OR_ARCHIVE: "saleOrArchive",
 } as const;

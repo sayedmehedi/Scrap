@@ -1,7 +1,7 @@
 import React from "react";
 import {View, Image} from "react-native";
-import {useTheme} from "react-native-paper";
 import {useAppDispatch} from "@hooks/store";
+import {Text, useTheme} from "react-native-paper";
 import {LocationStackParamList} from "@src/types";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {LocationStackRoutes} from "@constants/routes";
@@ -9,8 +9,8 @@ import Geolocation from "@react-native-community/geolocation";
 import AppPrimaryButton from "@src/Component/AppPrimaryButton";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {setFirstTimeLoginFalse} from "@store/slices/authSlice";
-import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {useUpdateProfileMutation} from "@data/laravel/services/auth";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
 
 type Props = NativeStackScreenProps<
   LocationStackParamList,
@@ -21,8 +21,9 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
-
-  const [updateProfile, {isLoading, isSuccess, data}] =
+  const [isUsingCurrentLocation, setIsUsingCurrentLocation] =
+    React.useState(false);
+  const [updateProfile, {isLoading: isUpdatingProfile, isSuccess, data}] =
     useUpdateProfileMutation();
 
   React.useEffect(() => {
@@ -34,22 +35,29 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
   }, [enqueueSuccessSnackbar, isSuccess, data]);
 
   const handleCurrentLocation = async () => {
+    setIsUsingCurrentLocation(true);
     Geolocation.requestAuthorization(
       () => {
         Geolocation.getCurrentPosition(
           info => {
             const {latitude, longitude} = info.coords;
 
-            updateProfile({
-              latitude: latitude.toString(),
-              longitude: longitude.toString(),
-            })
-              .unwrap()
-              .then(() => {
-                dispatch(setFirstTimeLoginFalse());
-              });
+            console.log("current location", info);
+
+            // updateProfile({
+            //   location: "",
+            //   latitude: latitude.toString(),
+            //   longitude: longitude.toString(),
+            // })
+            //   .unwrap()
+            //   .then(() => {
+            //     dispatch(setFirstTimeLoginFalse());
+            //     setIsUsingCurrentLocation(false);
+            //   });
           },
           error => {
+            setIsUsingCurrentLocation(false);
+
             enqueueErrorSnackbar({
               text2: error.message,
             });
@@ -57,6 +65,8 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
         );
       },
       error => {
+        setIsUsingCurrentLocation(false);
+
         enqueueErrorSnackbar({
           text2: error.message,
         });
@@ -66,6 +76,8 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
 
   return (
     <SafeAreaProvider>
+      {isUsingCurrentLocation && <Text>Updating...</Text>}
+
       <View style={{justifyContent: "space-around", flex: 1}}>
         <View
           style={{
@@ -87,7 +99,7 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
         <View>
           <View style={{marginBottom: 15}}>
             <AppPrimaryButton
-              disabled={isLoading}
+              disabled={isUpdatingProfile}
               text={"User Current Location"}
               containerStyle={{
                 width: 275,
@@ -126,14 +138,14 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
               }}
               onPress={() => {
                 navigation.navigate(LocationStackRoutes.CHOOSE_LOCATION, {
-                  nextScreen: route.params.nextScreen,
+                  nextScreen: route.params?.nextScreen,
                 });
               }}
             />
           </View>
 
           <AppPrimaryButton
-            disabled={isLoading}
+            disabled={isUpdatingProfile}
             text={"Skip"}
             containerStyle={{
               width: 275,

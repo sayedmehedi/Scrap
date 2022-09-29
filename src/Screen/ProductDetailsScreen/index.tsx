@@ -286,32 +286,14 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   };
 
   const handleBuyProduct = () => {
-    if (!isAuthenticated) {
-      navigation.navigate(RootStackRoutes.AUTH, {
-        screen: AuthStackRoutes.LOGIN,
+    if (productDetails && !!productDetails.buy_price) {
+      navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+        screen: ProductActionsStackRoutes.BUY_PRODUCT,
         params: {
-          nextScreen: {
-            name: route.name,
-            params: route.params,
-          },
+          isInitial: false,
+          productId: route.params.productId,
         },
       });
-
-      return;
-    }
-
-    if (productDetails && !!productDetails.buy_price) {
-      createCart({
-        product_id: route.params.productId,
-      })
-        .unwrap()
-        .then(res => {
-          enqueueSuccessSnackbar({
-            text1: res.success,
-          });
-
-          handlePayment();
-        });
     }
   };
 
@@ -588,9 +570,11 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                     productDetails.offer.price}
                 </Text>
               )}
-              <Text style={{textAlign: "center", fontSize: 14, marginTop: 5}}>
-                Offer Expire: {productDetails.time_left}
-              </Text>
+              {productDetails.time_left !== "" && (
+                <Text style={{textAlign: "center", fontSize: 14, marginTop: 5}}>
+                  Offer Expire: {productDetails.time_left}
+                </Text>
+              )}
 
               <View style={{marginVertical: 30}}>
                 {typeof productDetails.offer === "object" &&
@@ -784,105 +768,107 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                 </View>
               </View>
             )}
-            <View
-              style={{
-                marginBottom: 10,
-                paddingVertical: 5,
-                alignItems: "center",
-                borderBottomWidth: 1,
-                flexDirection: "row",
-                borderBottomColor: "#CBCBCB",
-              }}>
-              <Text style={{fontFamily: "Inter-Regular", color: "#667085"}}>
-                Time Left:
-              </Text>
-              <View style={{alignItems: "center", margin: 5}}>
-                <View style={styles.timeContainer}>
+            {productDetails.time_left !== "" && (
+              <View
+                style={{
+                  marginBottom: 10,
+                  paddingVertical: 5,
+                  alignItems: "center",
+                  borderBottomWidth: 1,
+                  flexDirection: "row",
+                  borderBottomColor: "#CBCBCB",
+                }}>
+                <Text style={{fontFamily: "Inter-Regular", color: "#667085"}}>
+                  Time Left:
+                </Text>
+                <View style={{alignItems: "center", margin: 5}}>
+                  <View style={styles.timeContainer}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: "#023047",
+                        fontFamily: "Inter-Medium",
+                      }}>
+                      {days}
+                    </Text>
+                  </View>
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontSize: 10,
                       color: "#023047",
-                      fontFamily: "Inter-Medium",
+                      fontFamily: "Inter-Regular",
                     }}>
-                    {days}
+                    Days
                   </Text>
                 </View>
-                <Text
-                  style={{
-                    fontSize: 10,
-                    color: "#023047",
-                    fontFamily: "Inter-Regular",
-                  }}>
-                  Days
-                </Text>
-              </View>
-              <Text>:</Text>
+                <Text>:</Text>
 
-              <View style={{alignItems: "center", margin: 5}}>
-                <View style={styles.timeContainer}>
+                <View style={{alignItems: "center", margin: 5}}>
+                  <View style={styles.timeContainer}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: "#023047",
+                        fontFamily: "Inter-Medium",
+                      }}>
+                      {hours}
+                    </Text>
+                  </View>
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontSize: 10,
                       color: "#023047",
-                      fontFamily: "Inter-Medium",
+                      fontFamily: "Inter-Regular",
                     }}>
-                    {hours}
+                    Hours
                   </Text>
                 </View>
-                <Text
-                  style={{
-                    fontSize: 10,
-                    color: "#023047",
-                    fontFamily: "Inter-Regular",
-                  }}>
-                  Hours
-                </Text>
-              </View>
-              <Text>:</Text>
+                <Text>:</Text>
 
-              <View style={{alignItems: "center", margin: 5}}>
-                <View style={styles.timeContainer}>
+                <View style={{alignItems: "center", margin: 5}}>
+                  <View style={styles.timeContainer}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: "#023047",
+                        fontFamily: "Inter-Medium",
+                      }}>
+                      {minutes}
+                    </Text>
+                  </View>
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontSize: 10,
                       color: "#023047",
-                      fontFamily: "Inter-Medium",
+                      fontFamily: "Inter-Regular",
                     }}>
-                    {minutes}
+                    Minutes
                   </Text>
                 </View>
-                <Text
-                  style={{
-                    fontSize: 10,
-                    color: "#023047",
-                    fontFamily: "Inter-Regular",
-                  }}>
-                  Minutes
-                </Text>
-              </View>
-              <Text>:</Text>
+                <Text>:</Text>
 
-              <View style={{alignItems: "center", margin: 5}}>
-                <View style={styles.timeContainer}>
+                <View style={{alignItems: "center", margin: 5}}>
+                  <View style={styles.timeContainer}>
+                    <Text
+                      style={{
+                        color: "#023047",
+                        fontSize: 16,
+                        fontFamily: "Inter-Medium",
+                      }}>
+                      {seconds}
+                    </Text>
+                  </View>
                   <Text
                     style={{
+                      fontSize: 10,
                       color: "#023047",
-                      fontSize: 16,
-                      fontFamily: "Inter-Medium",
+                      fontFamily: "Inter-Regular",
                     }}>
-                    {seconds}
+                    Seconds
                   </Text>
                 </View>
-                <Text
-                  style={{
-                    fontSize: 10,
-                    color: "#023047",
-                    fontFamily: "Inter-Regular",
-                  }}>
-                  Seconds
-                </Text>
               </View>
-            </View>
+            )}
 
             {/* if product has a starting price and the user did not place bid before then show the place bid button */}
             {!!productDetails.starting_price &&
@@ -1132,7 +1118,9 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                       showRating={false}
                       startingValue={productDetails.seller.rating}
                     />
-                    <Text>({productDetails.seller.rating} rating)</Text>
+                    <Text>
+                      ({productDetails.seller.rating.toFixed(2)} rating)
+                    </Text>
                   </View>
 
                   <Text>Member Since {productDetails.seller.join_date}</Text>

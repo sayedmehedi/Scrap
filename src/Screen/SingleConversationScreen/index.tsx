@@ -2,19 +2,23 @@ import React from "react";
 import styles from "./styles";
 import {FlatList} from "react-native";
 import {useAppSelector} from "@hooks/store";
-import {RootStackRoutes} from "@constants/routes";
+import {
+  ChatStackRoutes,
+  RootStackRoutes,
+  ProductActionsStackRoutes,
+} from "@constants/routes";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {Avatar, Rating} from "react-native-elements";
 import {useNavigation} from "@react-navigation/native";
-import {ActivityIndicator, Text, Title, useTheme} from "react-native-paper";
 import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {View, Image, TextInput, TouchableOpacity} from "react-native";
 import {useGetProductDetailsQuery} from "@data/laravel/services/product";
+import {ActivityIndicator, Text, Title, useTheme} from "react-native-paper";
 import {
   ProductDetails,
-  RootStackParamList,
+  ChatStackParamList,
   GetConversationDetailsResponse,
 } from "@src/types";
 import {
@@ -44,15 +48,17 @@ function AppBar({
   return (
     <View style={styles.header}>
       <View style={{flexDirection: "row", alignItems: "center"}}>
-        {back && (
-          <TouchableOpacity style={{padding: 0}} onPress={navigation.goBack}>
-            <MaterialIcons
-              size={22}
-              color={"white"}
-              name="keyboard-backspace"
-            />
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          style={{padding: 0}}
+          onPress={() => {
+            if (back) {
+              navigation.goBack();
+            } else {
+              navigation.navigate(ChatStackRoutes.CONVERSATION_LIST);
+            }
+          }}>
+          <MaterialIcons size={22} color={"white"} name="keyboard-backspace" />
+        </TouchableOpacity>
 
         <View style={{marginHorizontal: 10}}>
           <Avatar
@@ -156,15 +162,19 @@ function UserAction({product}: {product: ProductDetails}) {
   const actionBtn = product.has_bid ? (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate(RootStackRoutes.PLACE_BID, {
-          productId: product.id,
-          productName: product.title,
-          totalBids: product.total_bids,
-          timeLeftToBid: product.time_left,
-          productImage: product.images.small[0] ?? undefined,
-          bidStartingPrice: !!product.starting_price
-            ? +product.starting_price
-            : 0,
+        navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+          screen: ProductActionsStackRoutes.PLACE_BID,
+          params: {
+            productId: product.id,
+            productName: product.title,
+            totalBids: product.total_bids,
+            timeLeftToBid: product.time_left,
+            productImage: product.images.small[0] ?? undefined,
+            bidStartingPrice: !!product.starting_price
+              ? +product.starting_price
+              : 0,
+            isInitial: false,
+          },
         });
       }}
       style={{
@@ -187,13 +197,17 @@ function UserAction({product}: {product: ProductDetails}) {
   ) : product.has_offer ? (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate(RootStackRoutes.MAKE_OFFER, {
-          productId: product.id,
-          productName: product.title,
-          totalOffers: product.total_offers,
-          shippingCost: +product.shipping_cost,
-          productImage: product.images.small[0] ?? undefined,
-          buyPrice: !!product.buy_price ? +product.buy_price : 0,
+        navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+          screen: ProductActionsStackRoutes.MAKE_OFFER,
+          params: {
+            productId: product.id,
+            productName: product.title,
+            totalOffers: product.total_offers,
+            shippingCost: +product.shipping_cost,
+            productImage: product.images.small[0] ?? undefined,
+            buyPrice: !!product.buy_price ? +product.buy_price : 0,
+            isInitial: false,
+          },
         });
       }}
       style={{
@@ -216,15 +230,19 @@ function UserAction({product}: {product: ProductDetails}) {
   ) : product.time_left !== "" ? (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate(RootStackRoutes.PLACE_BID, {
-          productId: product.id,
-          productName: product.title,
-          totalBids: product.total_bids,
-          timeLeftToBid: product.time_left,
-          productImage: product.images.small[0] ?? undefined,
-          bidStartingPrice: !!product.starting_price
-            ? +product.starting_price
-            : 0,
+        navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+          screen: ProductActionsStackRoutes.PLACE_BID,
+          params: {
+            productId: product.id,
+            productName: product.title,
+            totalBids: product.total_bids,
+            timeLeftToBid: product.time_left,
+            productImage: product.images.small[0] ?? undefined,
+            bidStartingPrice: !!product.starting_price
+              ? +product.starting_price
+              : 0,
+            isInitial: false,
+          },
         });
       }}
       style={{
@@ -247,13 +265,17 @@ function UserAction({product}: {product: ProductDetails}) {
   ) : (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate(RootStackRoutes.MAKE_OFFER, {
-          productId: product.id,
-          productName: product.title,
-          totalOffers: product.total_offers,
-          shippingCost: +product.shipping_cost,
-          productImage: product.images.small[0] ?? undefined,
-          buyPrice: !!product.buy_price ? +product.buy_price : 0,
+        navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
+          screen: ProductActionsStackRoutes.MAKE_OFFER,
+          params: {
+            productId: product.id,
+            productName: product.title,
+            totalOffers: product.total_offers,
+            shippingCost: +product.shipping_cost,
+            productImage: product.images.small[0] ?? undefined,
+            buyPrice: !!product.buy_price ? +product.buy_price : 0,
+            isInitial: false,
+          },
         });
       }}
       style={{
@@ -442,8 +464,8 @@ function SellerAction({product}: {product: ProductDetails}) {
 }
 
 type Props = NativeStackScreenProps<
-  RootStackParamList,
-  typeof RootStackRoutes.SINGLE_CONVERSATION
+  ChatStackParamList,
+  typeof ChatStackRoutes.SINGLE_CONVERSATION
 >;
 
 const SingleConversationScreen = ({navigation, route}: Props) => {

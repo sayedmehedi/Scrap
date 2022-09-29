@@ -5,7 +5,6 @@ import {RootStackParamList} from "@src/types";
 import HomeTabNavigator from "./HomeTabNavigator";
 import {RootStackRoutes} from "../constants/routes";
 import {createStackNavigator} from "@react-navigation/stack";
-import NotificationsScreen from "../Screen/NotificationsScreen";
 import ProductSearchScreen from "../Screen/ProductSearchScreen";
 import ProductDetailsScreen from "../Screen/ProductDetailsScreen";
 import ConfirmPurchaseScreen from "@src/Screen/ConfirmPurchaseScreen";
@@ -14,7 +13,7 @@ import SellerReviewScreen from "@src/Screen/ReviewScreen/SellerReviewScreen";
 import AddShippingAddressScreen from "@src/Screen/AddShippingAddressScreen";
 import SellerPublicProfileScreen from "@src/Screen/SellerPublicProfileScreen";
 import ProductFilterScreen from "../Screen/ProductFilterScreen/ProductFilterScreen";
-import AuthStackNavigator from "./AuthStackNavigator";
+import NotificationStackNavigator from "./NotificationStackNavigator";
 
 const RootStack = createStackNavigator<RootStackParamList>();
 
@@ -46,6 +45,14 @@ const RootStackNavigator = () => {
 
       <RootStack.Screen
         options={{
+          headerShown: false,
+        }}
+        name={RootStackRoutes.NOTIFICATIONS}
+        component={NotificationStackNavigator}
+      />
+
+      <RootStack.Screen
+        options={{
           title: "",
         }}
         component={ProductDetailsScreen}
@@ -56,22 +63,8 @@ const RootStackNavigator = () => {
         options={{
           headerShown: false,
         }}
-        name={RootStackRoutes.AUTH}
-        component={AuthStackNavigator}
-      />
-
-      <RootStack.Screen
-        options={{
-          headerShown: false,
-        }}
         name={RootStackRoutes.PRODUCT_ACTIONS}
         component={ProductActionsStackNavigator}
-      />
-
-      <RootStack.Screen
-        component={NotificationsScreen}
-        options={{title: "Notifications"}}
-        name={RootStackRoutes.NOTIFICATIONS}
       />
 
       <RootStack.Screen

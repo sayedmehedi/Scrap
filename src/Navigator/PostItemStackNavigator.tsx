@@ -56,8 +56,12 @@ export default function PostItemStackNavigator({
         cardStyleInterpolator: forFade,
       }}>
       {(isAuthenticated && isFirstTimeLogin) ||
-      (isAuthenticated && !profile?.location) ? (
+      (isAuthenticated && !profile?.latitude && !profile?.longitude) ? (
         <PostItemStack.Screen
+          options={{
+            headerShown: false,
+          }}
+          initialParams={{}}
           component={LocationStackNavigator}
           name={PostItemStackRoutes.LOCATION}
         />
@@ -102,6 +106,14 @@ export default function PostItemStackNavigator({
             }}
             component={ProductAddSuccessScreen}
             name={PostItemStackRoutes.SUCCESS}
+          />
+
+          <PostItemStack.Screen
+            options={{
+              headerShown: false,
+            }}
+            component={LocationStackNavigator}
+            name={PostItemStackRoutes.LOCATION2}
           />
         </React.Fragment>
       ) : (

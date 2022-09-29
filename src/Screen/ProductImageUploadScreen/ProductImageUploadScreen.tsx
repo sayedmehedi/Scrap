@@ -80,7 +80,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
       }
     }
     if (!result.didCancel) {
-      if (!coverImage) {
+      if (!coverImage && editInfoImages.length === 0) {
         setCoverImage(result.assets?.[0] ?? null);
       } else {
         if (
@@ -205,7 +205,70 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
         </TouchableOpacity>
       </View>
 
-      {!coverImage ? (
+      {editInfoImages.length > 0 ? (
+        <View style={{marginVertical: 15, position: "relative", zIndex: 0}}>
+          <View
+            style={{
+              top: 10,
+              right: 10,
+              zIndex: 3,
+              position: "absolute",
+            }}>
+            <TouchableOpacity
+              style={{
+                width: 25,
+                height: 25,
+                borderRadius: 1000,
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: theme.colors.white,
+              }}
+              onPress={() => {
+                if (!!route.params?.productEditInfo?.id) {
+                  deleteProductFile({
+                    file: editInfoImages[0].url,
+                    product_id: route.params.productEditInfo.id,
+                  })
+                    .unwrap()
+                    .then(data => {
+                      if ("success" in data) {
+                        enqueueSuccessSnackbar({
+                          text1: "Success",
+                          text2: data.success,
+                        });
+                        setEditInfoImages(prevImages => {
+                          return prevImages.filter(
+                            eachFile => eachFile.url !== editInfoImages[0].url,
+                          );
+                        });
+                      } else {
+                        enqueueErrorSnackbar({
+                          text1: "Error",
+                          text2: data.error,
+                        });
+                      }
+                    });
+                }
+              }}>
+              <EvilIcons name={"close"} size={20} />
+            </TouchableOpacity>
+          </View>
+
+          <View>
+            <Image
+              source={{
+                uri: editInfoImages[0].url,
+              }}
+              style={{
+                zIndex: 0,
+                height: 153,
+                width: "100%",
+                borderRadius: theme.roundness * 3,
+              }}
+            />
+          </View>
+        </View>
+      ) : !coverImage ? (
         <TouchableOpacity onPress={handleSelectImage}>
           <Text
             style={{
@@ -305,7 +368,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
             </View>
           ))}
 
-          {editInfoImages.map((file, i) => (
+          {editInfoImages.slice(1).map((file, i) => (
             <View
               key={file.name + i.toString()}
               style={{

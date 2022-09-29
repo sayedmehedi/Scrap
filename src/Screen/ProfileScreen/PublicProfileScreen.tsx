@@ -203,12 +203,12 @@ const PublicProfileScreen = ({route}: Props) => {
                     marginVertical: 10,
                   }}>
                   <View style={{alignItems: "center", marginRight: 5}}>
-                    <Text>{profile?.total_sold}</Text>
+                    <Text>{profile?.total_sold ?? 0}</Text>
                     <Text>Sold</Text>
                   </View>
 
                   <View style={{alignItems: "center", marginLeft: 5}}>
-                    <Text>{profile?.total_purchased}</Text>
+                    <Text>{profile?.total_purchased ?? 0}</Text>
                     <Text>Purchased</Text>
                   </View>
                 </View>

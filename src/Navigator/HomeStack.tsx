@@ -31,8 +31,8 @@ const HomeStackNavigator = () => {
         options={{
           headerShown: false,
         }}
-        name={HomeStackRoutes.HOME}
         component={HomeScreen}
+        name={HomeStackRoutes.HOME}
       />
 
       <HomeStack.Screen

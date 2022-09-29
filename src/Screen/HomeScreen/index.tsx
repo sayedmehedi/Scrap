@@ -11,7 +11,12 @@ import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
-import {HomeStackRoutes, RootStackRoutes} from "../../constants/routes";
+import {
+  ChatStackRoutes,
+  HomeStackRoutes,
+  HomeTabRoutes,
+  RootStackRoutes,
+} from "../../constants/routes";
 import {
   View,
   Image,
@@ -28,8 +33,9 @@ type Props = NativeStackScreenProps<
 
 const HomeScreen = ({navigation}: Props) => {
   const rootNavigation = useNavigation();
+
   const handleRedirectToNotificatoins = () => {
-    rootNavigation.navigate(RootStackRoutes.NOTIFICATIONS);
+    navigation.getParent()?.navigate(RootStackRoutes.NOTIFICATIONS);
   };
 
   return (

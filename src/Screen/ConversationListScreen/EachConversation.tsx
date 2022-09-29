@@ -2,7 +2,11 @@ import React from "react";
 import truncate from "lodash.truncate";
 import {Conversation} from "@src/types";
 import {useNavigation} from "@react-navigation/native";
-import {RootStackRoutes} from "../../constants/routes";
+import {
+  ChatStackRoutes,
+  HomeTabRoutes,
+  RootStackRoutes,
+} from "../../constants/routes";
 import {View, Text, Image, TouchableOpacity} from "react-native";
 
 const EachConversation = ({item}: {item: Conversation}) => {
@@ -10,16 +14,22 @@ const EachConversation = ({item}: {item: Conversation}) => {
 
   return (
     <TouchableOpacity
-      onPress={() =>
-        navigation.navigate(RootStackRoutes.SINGLE_CONVERSATION, {
-          userId: item.user_id,
-          userName: item.user_name,
-          userImage: item.user_image,
-          productPrice: item.product.price,
-          productImage: item.product.image,
-          productId: item.product.product_id,
-        })
-      }
+      onPress={() => {
+        navigation.navigate(RootStackRoutes.HOME, {
+          screen: HomeTabRoutes.CHAT,
+          params: {
+            screen: ChatStackRoutes.SINGLE_CONVERSATION,
+            params: {
+              userId: item.user_id,
+              userName: item.user_name,
+              userImage: item.user_image,
+              productPrice: item.product.price,
+              productImage: item.product.image,
+              productId: item.product.product_id,
+            },
+          },
+        });
+      }}
       style={{
         height: 80,
         width: "100%",

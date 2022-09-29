@@ -3,39 +3,35 @@ import {useAppSelector} from "@hooks/store";
 import {Overlay} from "react-native-elements";
 import {Controller, useForm} from "react-hook-form";
 import useAppSnackbar from "@hooks/useAppSnackbar";
+import {ErrorMessage} from "@hookform/error-message";
 import {View, TouchableOpacity} from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import {useNavigation} from "@react-navigation/native";
 import {ListItem, Switch} from "react-native-elements";
 import {isJoteyQueryError} from "@utils/error-handling";
+import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import AppPrimaryButton from "../Component/AppPrimaryButton";
+import {FlatList, ScrollView} from "react-native-gesture-handler";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {useUpsertProductMutation} from "@data/laravel/services/product";
 import CircularProgress from "react-native-circular-progress-indicator";
+import {LocationStackRoutes, PostItemStackRoutes} from "../constants/routes";
 import {Divider, HelperText, Text, Title, useTheme} from "react-native-paper";
 import {
-  GetPackagesResponse,
   Package,
+  RootStackParamList,
+  GetPackagesResponse,
   PaginationQueryParams,
   PostItemStackParamList,
-  RootStackParamList,
 } from "@src/types";
-import {
-  HomeTabRoutes,
-  PostItemStackRoutes,
-  RootStackRoutes,
-} from "../constants/routes";
 import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
-import {FlatList, ScrollView} from "react-native-gesture-handler";
 import {
   useGetPackagesQuery,
   useLazyGetPackagesQuery,
 } from "@data/laravel/services/package";
-import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
-import {ErrorMessage} from "@hookform/error-message";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -366,11 +362,11 @@ export default function ProductAddDeliveryMethodScreen({
                     backgroundColor: "transparent",
                   }}
                   onPress={() => {
-                    rootNavigation.navigate(RootStackRoutes.CHOOSE_LOCATION, {
-                      nextScreen: {
-                        name: HomeTabRoutes.POST_ITEM,
-                        params: {
-                          screen: route.name,
+                    navigation.navigate(PostItemStackRoutes.LOCATION2, {
+                      screen: LocationStackRoutes.CHOOSE_LOCATION,
+                      params: {
+                        nextScreen: {
+                          name: route.name,
                           params: route.params,
                         },
                       },
