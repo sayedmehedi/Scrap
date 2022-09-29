@@ -103,7 +103,7 @@ export const productApi = api.injectEndpoints({
           ? [QUERY_KEYS.UNAUTHORIZED]
           : [QUERY_KEYS.UNKNOWN_ERROR],
     }),
-    getProducEditInfo: builder.query<GetProductEditInfoResponse, number>({
+    getProductEditInfo: builder.query<GetProductEditInfoResponse, number>({
       query(productId) {
         return {
           url: `products/${productId}/edit`,
@@ -439,7 +439,7 @@ export const {
   useDeleteProductFileMutation,
   useLazyGetSellerProductsQuery,
   useLazyGetSavedProductsQuery,
-  useLazyGetProducEditInfoQuery,
+  useLazyGetProductEditInfoQuery,
   useLazyGetFilterProductsQuery,
   useLazyGetArchiveProductsQuery,
   useToggleProductFavoriteMutation,

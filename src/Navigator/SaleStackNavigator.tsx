@@ -68,7 +68,7 @@ export default function SaleStackNavigator({navigation: tabNavigation}: Props) {
                 headerRight: () => (
                   <View style={{paddingRight: 10}}>
                     <MaterialIcons
-                      size={22}
+                      size={30}
                       color={"white"}
                       name={"notifications-none"}
                       onPress={() => {

@@ -44,16 +44,16 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
 
             console.log("current location", info);
 
-            // updateProfile({
-            //   location: "",
-            //   latitude: latitude.toString(),
-            //   longitude: longitude.toString(),
-            // })
-            //   .unwrap()
-            //   .then(() => {
-            //     dispatch(setFirstTimeLoginFalse());
-            //     setIsUsingCurrentLocation(false);
-            //   });
+            updateProfile({
+              
+              latitude: latitude.toString(),
+              longitude: longitude.toString(),
+            })
+              .unwrap()
+              .then(() => {
+                dispatch(setFirstTimeLoginFalse());
+                setIsUsingCurrentLocation(false);
+              });
           },
           error => {
             setIsUsingCurrentLocation(false);

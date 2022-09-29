@@ -55,7 +55,7 @@ const ProductPreviewList = ({params}: {params?: FilterProductQueryParams}) => {
       )}
       showsHorizontalScrollIndicator={false}
       // @ts-ignore
-      renderItem={({item}) => <EachProductItem item={item} />}
+      renderItem={({item}) => <EachProductItem widthDivisor={2.5} item={item} />}
     />
   );
 };

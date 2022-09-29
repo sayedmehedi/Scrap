@@ -36,7 +36,7 @@ const EachConversation = ({item}: {item: Conversation}) => {
         marginBottom: 1,
         alignItems: "center",
         flexDirection: "row",
-        paddingHorizontal: 15,
+        paddingHorizontal: 5,
         backgroundColor: "#F7F7F7",
         justifyContent: "space-between",
       }}>

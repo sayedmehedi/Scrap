@@ -11,6 +11,8 @@ import {useAppDispatch, useAppSelector} from "@hooks/store";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import {useLogoutMutation} from "@data/laravel/services/auth";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Ionicons from 'react-native-vector-icons/Ionicons'
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
 import {ProfileStackRoutes, RootStackRoutes} from "@constants/routes";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {
@@ -78,9 +80,9 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
           </Text>
           <View
             style={{
+              marginVertical: 0,
               flexDirection: "row",
               alignItems: "center",
-              marginVertical: 5,
             }}>
             <Rating
               readonly
@@ -124,12 +126,13 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
           }}
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <Image
-              source={require("@assets/Images/users.png")}
-              style={{height: 15, width: 15}}
+            <SimpleLineIcons
+              name="user"
+              size={20}
+              color={'gray'}
             />
 
-            <Text style={{marginLeft: 10, color: "#707070"}}>
+            <Text style={{marginLeft: 10, color: "#707070",fontSize:18}}>
               Public Profile
             </Text>
           </View>
@@ -143,12 +146,12 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
           }
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <MaterialIcons
-              name="settings-input-component"
-              size={12}
+            <Ionicons
+              name="settings-outline"
+              size={18}
               color={"#707070"}
             />
-            <Text style={{marginLeft: 10, color: "#707070"}}>
+            <Text style={{marginLeft: 10, color: "#707070",fontSize:18}}>
               Account Setting
             </Text>
           </View>
@@ -162,8 +165,8 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
           }
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <Entypo name="shopping-bag" size={12} color={"#707070"} />
-            <Text style={{marginLeft: 10, color: "#707070"}}>Purchases</Text>
+            <SimpleLineIcons name="handbag" size={16} color={"#707070"} />
+            <Text style={{marginLeft: 10, color: "#707070",fontSize:18}}>Purchases History</Text>
           </View>
 
           <AntDesign name="right" size={12} color={"#707070"} />
@@ -175,8 +178,8 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
             profileNavigation.navigate(ProfileStackRoutes.TRANSACTION)
           }>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <MaterialIcons name="money" size={12} color={"#707070"} />
-            <Text style={{marginLeft: 10, color: "#707070"}}>Transactions</Text>
+            <AntDesign name="retweet" size={22} color={"#707070"} />
+            <Text style={{marginLeft: 5, color: "#707070",fontSize:18}}>Transactions</Text>
           </View>
 
           <AntDesign name="right" size={12} color={"#707070"} />
@@ -188,8 +191,8 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
           }
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <AntDesign name="hearto" size={12} color={"#707070"} />
-            <Text style={{marginLeft: 10, color: "#707070"}}>
+            <AntDesign name="hearto" size={18} color={"#707070"} />
+            <Text style={{marginLeft: 10, color: "#707070",fontSize:18}}>
               Save Products
             </Text>
           </View>
@@ -203,8 +206,8 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
           }
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <MaterialIcons name="local-offer" size={12} color={"#707070"} />
-            <Text style={{marginLeft: 10, color: "#707070"}}>
+            <MaterialIcons name="local-offer" size={18} color={"#707070"} />
+            <Text style={{marginLeft: 10, color: "#707070",fontSize:18}}>
               Offers & Bids
             </Text>
           </View>
@@ -213,23 +216,53 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => profileNavigation.navigate(ProfileStackRoutes.CONTACT)}
-          style={styles.buttonContainer}>
+          style={styles.buttonContainer}
+          onPress={() => {
+
+          }}
+          >
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <AntDesign name="questioncircleo" size={12} color={"#707070"} />
-            <Text style={{marginLeft: 10, color: "#707070"}}>Contact Us</Text>
+          <AntDesign name="questioncircleo" size={18} color={"#707070"} />
+            <Text style={{marginLeft: 10, color: "#707070",fontSize:18}}>Help & Support</Text>
           </View>
 
           <AntDesign name="right" size={12} />
         </TouchableOpacity>
+
+
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() => {
+
+          }}
+          >
+          <View style={{flexDirection: "row", alignItems: "center"}}>
+            <AntDesign name="infocirlceo" size={18} color={"#707070"} />
+            <Text style={{marginLeft: 10, color: "#707070",fontSize:18}}>Terms & Policy</Text>
+          </View>
+
+          <AntDesign name="right" size={12} />
+        </TouchableOpacity>
+
+        {/* <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() => profileNavigation.navigate(ProfileStackRoutes.CONTACT)}
+          >
+          <View style={{flexDirection: "row", alignItems: "center"}}>
+            <AntDesign name="questioncircleo" size={18} color={"#707070"} />
+            <Text style={{marginLeft: 10, color: "#707070",fontSize:18}}>Contact Us</Text>
+          </View>
+
+          <AntDesign name="right" size={12} />
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           disabled={isLoggingOut}
           onPress={signoutPress}
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <Entypo name="login" size={12} color={"#707070"} />
-            <Text style={{marginLeft: 10, color: "#707070"}}>Sign Out</Text>
+            <AntDesign name="poweroff" size={18} color={"#707070"} />
+            <Text style={{marginLeft: 10, color: "#707070",fontSize:18}}>Sign Out</Text>
           </View>
 
           <AntDesign name="right" size={12} color={"#707070"} />

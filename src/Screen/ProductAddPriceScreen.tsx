@@ -28,6 +28,7 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
+import Entypo from 'react-native-vector-icons/Entypo'
 import {
   useGetMetalsQuery,
   useLazyGetMetalsQuery,
@@ -256,7 +257,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
                     field.onChange(currencyTransform.outputFloat(price))
                   }
                   style={{
-                    padding: 15,
+                    padding: 10,
                     fontSize: 25,
                     maxHeight: 110,
                     borderWidth: 1,
@@ -296,7 +297,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
                     field.onChange(currencyTransform.outputFloat(price))
                   }
                   style={{
-                    padding: 15,
+                    padding: 10,
                     fontSize: 25,
                     maxHeight: 110,
                     borderWidth: 1,
@@ -334,7 +335,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
                   field.onChange(numberTransform.output(qntt))
                 }
                 style={{
-                  padding: 15,
+                  padding: 10,
                   fontSize: 25,
                   maxHeight: 110,
                   borderWidth: 1,
@@ -369,12 +370,24 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
                         borderRadius: 8,
                         backgroundColor: "#F7F7F7",
                         elevation: 2,
+                       
+
+                        
                       }}>
-                      <Text style={{color: "#222222", fontSize: 14}}>
+                     <View style={{
+                       flexDirection:'row',
+                       justifyContent:'space-between',
+                       
+                     }}>
+                     <Text style={{color: "#222222", fontSize: 14}}>
                         Select Duration
                       </Text>
-                      <Text>{field.value?.label}</Text>
+                     
+                      <Entypo name="chevron-small-down" size={18} color={'gray'}/>
+                     </View>
+                     <Text style={{fontWeight:'bold',fontSize:16}}>{field.value?.label}</Text>
                     </View>
+                   
                   </Pressable>
 
                   <ErrorMessage
@@ -647,7 +660,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
                 alignItems: "center",
                 justifyContent: "space-between",
               }}>
-              <Text>Do you want to show metals current/live price</Text>
+              <Text numberOfLines={2}>Do you want to show metals current/live price?</Text>
 
               <Switch
                 color={"green"}

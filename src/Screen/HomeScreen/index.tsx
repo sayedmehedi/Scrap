@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./styles";
 import CategoryList from "./CategoryList";
+import { Text } from 'react-native-paper'
 import Colors from "../../constants/Colors";
 import {HomeStackParamList} from "@src/types";
 import ProductPreviewList from "./ProductPreviewList";
@@ -20,7 +21,6 @@ import {
 import {
   View,
   Image,
-  Text,
   Pressable,
   SafeAreaView,
   TouchableOpacity,
@@ -52,18 +52,18 @@ const HomeScreen = ({navigation}: Props) => {
             />
             <Text
               style={{
-                fontFamily: "Inter-Bold",
-                fontSize: 18,
-                color: "#FFFFFF",
+                fontSize: 22,
                 marginLeft: 10,
+                color: "#FFFFFF",
+                fontFamily: "Inter-Bold",
               }}>
               ScrapApp
             </Text>
           </View>
 
           <MaterialIcons
+            size={30}
             color={"white"}
-            size={22}
             name="notifications-none"
             onPress={handleRedirectToNotificatoins}
           />
@@ -109,7 +109,7 @@ const HomeScreen = ({navigation}: Props) => {
             }}>
             <Text
               style={{
-                fontSize: 16,
+                fontSize: 20,
                 color: "#191F2B",
                 fontFamily: "Inter-Bold",
               }}>
@@ -122,8 +122,8 @@ const HomeScreen = ({navigation}: Props) => {
               style={{flexDirection: "row", alignItems: "center"}}>
               <Text
                 style={{
-                  fontSize: 12,
-                  fontFamily: "Inter-Regular",
+                  fontSize: 13,
+                  fontWeight: "600",
                   color: Colors.PRIMARY_COLOR,
                 }}>
                 View All
@@ -152,7 +152,7 @@ const HomeScreen = ({navigation}: Props) => {
             }}>
             <Text
               style={{
-                fontSize: 16,
+                fontSize: 20,
                 color: "#191F2B",
                 fontFamily: "Inter-Bold",
               }}>
@@ -173,8 +173,8 @@ const HomeScreen = ({navigation}: Props) => {
                 }}>
                 <Text
                   style={{
-                    fontFamily: "Inter-Regular",
-                    fontSize: 12,
+                    fontSize: 13,
+                    fontWeight: "600",
                     color: Colors.PRIMARY_COLOR,
                   }}>
                   View All
@@ -206,7 +206,7 @@ const HomeScreen = ({navigation}: Props) => {
             }}>
             <Text
               style={{
-                fontSize: 16,
+                fontSize: 20,
                 color: "#191F2B",
                 fontFamily: "Inter-Bold",
               }}>
@@ -227,8 +227,8 @@ const HomeScreen = ({navigation}: Props) => {
                 }}>
                 <Text
                   style={{
-                    fontSize: 12,
-                    fontFamily: "Inter-Regular",
+                    fontSize: 13,
+                    fontWeight: "600",
                     color: Colors.PRIMARY_COLOR,
                   }}>
                   View All

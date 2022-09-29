@@ -164,7 +164,7 @@ const SellerPublicProfileScreen = ({route}: Props) => {
                     fontFamily: "Inter-Regular",
                     fontSize: 12,
                     color: "#667085",
-                    marginVertical: 5,
+                    marginVertical: 0,
                   }}>
                   {sellerProductsResponse?.user.location}
                 </Text>
@@ -184,13 +184,13 @@ const SellerPublicProfileScreen = ({route}: Props) => {
                     alignItems: "center",
                     marginVertical: 10,
                   }}>
-                  <View style={{alignItems: "center", marginRight: 5}}>
-                    <Text>{sellerProductsResponse?.user.total_sold}</Text>
+                  <View style={{alignItems: "center", marginRight: 10}}>
+                    <Text>{sellerProductsResponse?.user.total_sold ?? 0}</Text>
                     <Text>Sold</Text>
                   </View>
 
-                  <View style={{alignItems: "center", marginLeft: 5}}>
-                    <Text>{sellerProductsResponse?.user.total_purchased}</Text>
+                  <View style={{alignItems: "center", marginLeft: 10}}>
+                    <Text>{sellerProductsResponse?.user.total_purchased ?? 0}</Text>
                     <Text>Purchased</Text>
                   </View>
                 </View>
@@ -285,6 +285,11 @@ const SellerPublicProfileScreen = ({route}: Props) => {
           )}
           numColumns={3}
           data={products}
+          ListEmptyComponent={() => (
+            <View>
+              <Text>No data</Text>
+            </View>
+          )}
           showsVerticalScrollIndicator={false}
           renderItem={({item}) => <EachProductItem item={item} />}
           ListFooterComponent={() =>

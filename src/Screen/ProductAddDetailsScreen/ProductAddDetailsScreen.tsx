@@ -34,6 +34,10 @@ import {
 setGlobalStyles.containerStyles = {
   backgroundColor: "#F7F7F7",
 };
+setGlobalStyles.labelStyles = {
+  fontWeight:'bold',
+  // any styles you want to generalize to your floating label
+};
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -244,10 +248,10 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                     backgroundColor: "#F7F7F7",
                   }}>
                   <View>
-                    <Text style={{color: "grey", marginBottom: 7}}>
+                    <Text style={{color: "grey", marginBottom: 7,fontWeight:'bold'}}>
                       Category*
                     </Text>
-                    <Text>{field.value?.label}</Text>
+                    <Text style={{fontWeight:"bold"}}>{field.value?.label}</Text>
                   </View>
 
                   <EvilIcons name="chevron-down" size={25} />
@@ -293,10 +297,10 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                     flexDirection: "row",
                   }}>
                   <View>
-                    <Text style={{color: "grey", marginBottom: 7}}>
+                    <Text style={{color: "grey", marginBottom: 7,fontWeight:'bold'}}>
                       Subcategory*
                     </Text>
-                    <Text>{field.value?.label}</Text>
+                    <Text style={{fontWeight:"bold"}}>{field.value?.label}</Text>
                   </View>
 
                   <EvilIcons name="chevron-down" size={25} />
@@ -346,10 +350,10 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                     flexDirection: "row",
                   }}>
                   <View>
-                    <Text style={{color: "grey", marginBottom: 7}}>
+                    <Text style={{color: "grey", marginBottom: 7,fontWeight:"bold"}}>
                       Condition*
                     </Text>
-                    <Text>{field.value?.label}</Text>
+                    <Text style={{fontWeight:"bold"}}>{field.value?.label}</Text>
                   </View>
 
                   <EvilIcons name="chevron-down" size={25} />
@@ -406,6 +410,7 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                   ) {
                     return (
                       <FloatingLabelInput
+                      labelStyles={{fontWeight:'bold'}}
                         label={item.title}
                         value={field.value as string}
                         onChangeText={field.onChange}
@@ -426,7 +431,7 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
                             justifyContent: "space-between",
                           }}>
                           <View>
-                            <Text style={{color: "grey", marginBottom: 7}}>
+                            <Text style={{color: "grey", marginBottom: 7,fontWeight:'bold'}}>
                               {item.title}
                             </Text>
                             <Text>
@@ -490,7 +495,7 @@ export default function ProductAddDetailsScreen({navigation, route}: Props) {
         render={({field}) => {
           return (
             <React.Fragment>
-              <Text style={{marginBottom: 10, color: "grey"}}>Description</Text>
+              <Text style={{marginBottom: 10, color: "grey",fontWeight:'bold'}}>Description</Text>
               <TextInput
                 multiline
                 numberOfLines={5}

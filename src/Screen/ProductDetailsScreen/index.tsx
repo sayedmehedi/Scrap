@@ -715,14 +715,14 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                   flexDirection: "row",
                 }}>
                 <Feather name="map-pin" size={14} color={"#191F2B"} />
-                <Text style={{fontFamily: "Inter-Regular", color: "#667085"}}>
+                <Text style={{fontFamily: "Inter-Regular", color: "#667085",marginLeft:5}}>
                   {productDetails.location} - {productDetails.distance}
                 </Text>
               </View>
             </View>
 
             {!!productDetails.starting_price && (
-              <View>
+              <View >
                 <Text
                   style={{
                     fontSize: 25,
@@ -746,7 +746,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
             )}
 
             {!!productDetails.buy_price && (
-              <View style={{marginTop: 5}}>
+              <View style={{marginTop: 5,marginBottom:20}}>
                 <Text
                   style={{
                     fontSize: 25,
@@ -777,6 +777,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                   borderBottomWidth: 1,
                   flexDirection: "row",
                   borderBottomColor: "#CBCBCB",
+                  marginTop:-20
                 }}>
                 <Text style={{fontFamily: "Inter-Regular", color: "#667085"}}>
                   Time Left:
@@ -963,7 +964,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
             {/* metals */}
             {productDetails.show_metal_price && (
               <View style={{marginTop: 30}}>
-                <Text style={{fontWeight: "600", marginBottom: 30}}>
+                <Text style={{fontWeight: "600", marginBottom: 15,fontSize:18}}>
                   Current/Live Metals Price
                 </Text>
 
@@ -1048,7 +1049,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
             <Text
               style={{
-                fontSize: 16,
+                fontSize: 20,
                 marginTop: 20,
                 color: "#252522",
                 fontFamily: "Inter-SemiBold",
@@ -1097,13 +1098,15 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                   marginVertical: 28,
                   alignItems: "center",
                   flexDirection: "row",
+                  
+                  justifyContent:'space-around'
                 }}>
                 <Image
                   source={{uri: productDetails.seller.image}}
                   style={{height: 75, width: 75, borderRadius: 40}}
                 />
                 <View style={{marginLeft: 10}}>
-                  <Text>{productDetails.seller.name}</Text>
+                  <Text style={{fontWeight:'700',fontSize:18}}>{productDetails.seller.name}</Text>
 
                   <View
                     style={{
@@ -1125,12 +1128,25 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
                   <Text>Member Since {productDetails.seller.join_date}</Text>
                 </View>
+
+                <AntDesign name="right" size={40} color={'rgba(0,0,0,0.5)'}/>
               </View>
             </TouchableOpacity>
 
             {/* View review button */}
 
             <Button
+              style={{
+                width: "50%",
+                borderWidth: 1,
+                borderRadius: 30,
+                marginBottom: 20,
+                paddingVertical: 5,
+                marginLeft: "auto",
+                marginRight: "auto",
+                paddingHorizontal: 15,
+                borderColor: theme.colors.primary,
+              }}
               onPress={() => {
                 navigation.navigate(RootStackRoutes.SELLER_REVIEW, {
                   sellerId: productDetails.seller.id,
@@ -1141,7 +1157,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
             <Text
               style={{
-                fontSize: 16,
+                fontSize: 20,
                 color: "#252522",
                 fontFamily: "Inter-SemiBold",
               }}>
@@ -1162,7 +1178,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                 }}
               />
             </View>
-            <View>
+            <View style={{marginTop:10}}>
               <Text style={{textAlign: "left"}}>{productDetails.about}</Text>
             </View>
 
@@ -1189,7 +1205,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
             <Text
               style={{
-                fontSize: 16,
+                fontSize: 20,
                 marginTop: 10,
                 color: "#252522",
                 fontFamily: "Inter-SemiBold",
@@ -1222,7 +1238,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                 )}
                 data={relatedProducts}
                 showsHorizontalScrollIndicator={false}
-                renderItem={({item}) => <EachProductItem item={item} />}
+                renderItem={({item}) => <EachProductItem widthDivisor={2.5} item={item} />}
               />
             </View>
           </View>

@@ -345,7 +345,7 @@ function ListHeaderComponent() {
           </Text>
         </View>
 
-        <View>
+        <View style={{alignItems:'center'}}>
           <Avatar
             rounded
             size={"large"}
@@ -365,6 +365,8 @@ function ListHeaderComponent() {
           marginLeft: "auto",
           marginRight: "auto",
           marginVertical: 25,
+          fontWeight:'700',
+          fontSize:22
         }}>
         Click a message to send or write your own question
       </Title>

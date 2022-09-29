@@ -24,6 +24,7 @@ const EachCateriesItem = ({item}: {item: HomeCategory}) => {
       style={{
         width: 90,
         justifyContent: "center",
+        alignItems:'center'
       }}>
       <View
         style={{
@@ -54,7 +55,7 @@ const EachCateriesItem = ({item}: {item: HomeCategory}) => {
       <Text
         style={{
           margin: 7,
-          fontSize: 10,
+          fontSize: 11,
           textAlign: "center",
           fontFamily: "Inter-Bold",
         }}>

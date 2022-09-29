@@ -61,32 +61,42 @@ export default function EachSellerOfferNBids({item}: {item: OfferOrBid}) {
           alignItems: "center",
         }}>
         <View>
-          <Card.Title
-            title={truncate(item.product_title, {
+          
+           
+          <Card.Content
+          
+          >
+             <Title
+            children={truncate(item.product_title, {
               length: 20,
+              
             })}
-            titleStyle={{
-              fontSize: 12,
+            style={{
+              fontSize:14
             }}
+
+            
+            
           />
-          <Card.Content>
             <Title>{item.user_name}</Title>
+            
             <Paragraph>
               {truncate(item.product_location, {
                 length: 19,
               })}
+             
             </Paragraph>
           </Card.Content>
         </View>
 
         <View style={{padding: 15}}>
           <Image
-            style={{height: 50, width: 50, borderRadius: 1000}}
+            style={{height: 50, width: 50, borderRadius:0}}
             source={{uri: item.user_image}}
           />
         </View>
       </View>
-      <Card.Actions style={{justifyContent: "space-between"}}>
+      <Card.Actions style={{justifyContent: "space-between",paddingHorizontal:15}}>
         <Text>
           {item.type === "offer" ? "Offer Price" : "Bid"}: {item.price}
         </Text>

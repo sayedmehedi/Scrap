@@ -8,7 +8,7 @@ import {View, Text, Image, Dimensions, Pressable} from "react-native";
 import {NativeStackNavigationProp} from "@react-navigation/native-stack";
 
 const {width} = Dimensions.get("window");
-const itemWidth = width / 3;
+const dimensionWidth = width;
 
 const MARGIN_RIGHT = 10;
 const BORDER_WIDTH = 6;
@@ -17,10 +17,14 @@ type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 
 const EachProductItem = ({
   item,
+  widthDivisor = 3,
 }: {
   item: (FilterProduct & {type: "data"}) | {id: number; type: "skeleton"};
+  widthDivisor?: number
 }) => {
   const navigation = useNavigation<NavigationProps>();
+
+  const itemWidth = width/ widthDivisor
 
   if (item.type === "skeleton") {
     return (
@@ -68,15 +72,18 @@ const EachProductItem = ({
           justifyContent: "space-between",
         }}>
         <Text
-          style={{fontSize: 10, fontFamily: "Inter-Regular", color: "#023047"}}>
+          style={{fontSize: 12, fontFamily: "Inter-Regular", color: "#023047"}}>
           {truncate(item.location, {
-            length: 19,
+            length: widthDivisor === 3 ? 15: 19,
           })}
         </Text>
+
+        <View style={{flex:1}}/>
+        
         {item.is_locale && (
           <Image
             resizeMode={"contain"}
-            style={{height: 10, width: 10}}
+            style={{height: 10, width: 10, marginRight: 5}}
             source={require("../assets/Images/map1.png")}
           />
         )}
@@ -90,18 +97,19 @@ const EachProductItem = ({
         )}
       </View>
       <Text
+        numberOfLines={2}
         style={{
-          fontSize: 11,
+          fontSize: 13,
           fontFamily: "Inter-Bold",
           color: "#023047",
           marginBottom: 5,
           marginTop: 3,
         }}>
         {truncate(item.title, {
-          length: 20,
+          length: 38,
         })}
       </Text>
-      <Text style={{fontSize: 11, fontFamily: "Inter-Bold", color: "#023047"}}>
+      <Text  style={{fontSize: 13, fontFamily: "Inter-Bold", color: "#023047"}}>
         ${item.price}
       </Text>
     </Pressable>

@@ -12,7 +12,7 @@ import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   useDeleteProductMutation,
-  useLazyGetProducEditInfoQuery,
+  useLazyGetProductEditInfoQuery,
 } from "@data/laravel/services/product";
 import {
   View,
@@ -36,12 +36,13 @@ const SaleOrArchiveItem = ({
   item: (FilterProduct & {type: "data"}) | {id: number; type: "skeleton"};
 }) => {
   const navigation = useNavigation();
+  
   const {enqueueErrorSnackbar, enqueueSuccessSnackbar} = useAppSnackbar();
   const [deleteProduct, {isLoading: isDeletingProduct}] =
     useDeleteProductMutation();
 
   const [getProductDetailsForEditQuery, {isLoading: isGettingProductEditInfo}] =
-    useLazyGetProducEditInfoQuery();
+    useLazyGetProductEditInfoQuery();
 
   if (item.type === "skeleton") {
     return (
@@ -77,6 +78,36 @@ const SaleOrArchiveItem = ({
         <TouchableOpacity
           disabled={isDeletingProduct || isGettingProductEditInfo}
           onPress={() => {
+            getProductDetailsForEditQuery(item.id)
+              .unwrap()
+              .then(prodData => {
+                navigation.navigate(RootStackRoutes.HOME, {
+                  screen: HomeTabRoutes.EDIT_ITEM,
+                  params: {
+                    screen: PostItemStackRoutes.UPLOAD_PHOTO,
+                    params: {
+                      productEditInfo: prodData.item,
+                    },
+                  },
+                });
+              });
+          }}
+          style={{
+            width: 30,
+            height: 30,
+            marginRight: 10,
+            borderRadius: 50,
+            alignItems: "center",
+            backgroundColor: "black",
+            justifyContent: "center",
+            
+          }}>
+          <MaterialIcons size={16} name={"edit"} color={"white"} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          disabled={isDeletingProduct || isGettingProductEditInfo}
+          onPress={() => {
             deleteProduct(item.id)
               .unwrap()
               .then(res => {
@@ -96,43 +127,14 @@ const SaleOrArchiveItem = ({
               });
           }}
           style={{
-            width: 25,
-            height: 25,
-            marginRight: 10,
-            borderRadius: 50,
+            width: 30,
+            height: 30,
+            borderRadius: 15,
             alignItems: "center",
-            backgroundColor: "red",
+            backgroundColor: "white",
             justifyContent: "center",
           }}>
-          <MaterialIcons name="delete" color={"white"} size={20} />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          disabled={isDeletingProduct || isGettingProductEditInfo}
-          onPress={() => {
-            getProductDetailsForEditQuery(item.id)
-              .unwrap()
-              .then(prodData => {
-                navigation.navigate(RootStackRoutes.HOME, {
-                  screen: HomeTabRoutes.EDIT_ITEM,
-                  params: {
-                    screen: PostItemStackRoutes.UPLOAD_PHOTO,
-                    params: {
-                      productEditInfo: prodData.item,
-                    },
-                  },
-                });
-              });
-          }}
-          style={{
-            width: 25,
-            height: 25,
-            borderRadius: 50,
-            alignItems: "center",
-            backgroundColor: "tomato",
-            justifyContent: "center",
-          }}>
-          <MaterialIcons size={20} name={"edit"} color={"white"} />
+          <MaterialIcons name="close" color={'#E62B56'} size={20} />
         </TouchableOpacity>
       </View>
 

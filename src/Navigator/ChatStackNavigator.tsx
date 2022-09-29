@@ -63,9 +63,9 @@ export default function ChatStackNavigator({navigation: tabNavigation}: Props) {
             options={({navigation}) => ({
               title: "Messages",
               headerRight: () => (
-                <View style={{paddingRight: 10}}>
+                <View style={{paddingRight: 15}}>
                   <MaterialIcons
-                    size={22}
+                    size={30}
                     color={"white"}
                     name={"notifications-none"}
                     onPress={() => {
@@ -74,6 +74,7 @@ export default function ChatStackNavigator({navigation: tabNavigation}: Props) {
                   />
                 </View>
               ),
+              headerLeft: () => null,
             })}
           />
 
@@ -98,7 +99,7 @@ export default function ChatStackNavigator({navigation: tabNavigation}: Props) {
                       <MaterialIcons
                         size={22}
                         color={"white"}
-                        name={"notifications-none"}
+                        name={"arrow-back"}
                       />
                     </View>
                   </Pressable>

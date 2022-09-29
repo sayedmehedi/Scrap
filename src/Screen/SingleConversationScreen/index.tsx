@@ -776,10 +776,12 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
             paddingHorizontal: 10,
             backgroundColor: theme.colors.white,
           }}>
-          <View style={{flex: 1, borderWidth: 1}}>
+          <View style={{flex: 1, borderWidth: 1,borderColor:'#667085',borderRadius:10}}>
             <TextInput
               style={{
                 padding: 10,
+                paddingLeft:15
+                
               }}
               multiline
               numberOfLines={2}

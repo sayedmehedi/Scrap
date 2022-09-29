@@ -139,7 +139,7 @@ const CategoryList = ({
                 style={{flexDirection: "row", justifyContent: "space-between"}}>
                 <Text
                   style={{
-                    fontSize: 14,
+                    fontSize: 16,
                     color: "#403C39",
                     fontFamily: "Inter-Medium",
                   }}>
@@ -157,7 +157,7 @@ const CategoryList = ({
                     data={item.sub_categories}
                     renderItem={({item: subcategory}) => {
                       return (
-                        <View style={{paddingLeft: 15}}>
+                        <View style={{paddingLeft: 15,marginTop:8}}>
                           <TouchableOpacity
                             activeOpacity={0.2}></TouchableOpacity>
                           <TouchableOpacity
@@ -175,7 +175,7 @@ const CategoryList = ({
                             <Text
                               numberOfLines={2}
                               style={{
-                                fontSize: 14,
+                                fontSize: 16,
                                 fontFamily: "Inter-Light",
                                 color: "#403C39",
                               }}>

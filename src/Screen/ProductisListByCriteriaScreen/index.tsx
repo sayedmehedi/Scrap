@@ -93,7 +93,6 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
               paddingEnd: 10,
             }}>
             <TouchableOpacity
-              // @ts-ignore
               onPress={() =>
                 rootNavigation.navigate(RootStackRoutes.SEARCH_PRODUCT)
               }
@@ -125,14 +124,14 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
                   minPrice: minPrice ?? undefined,
                   condition: condition ?? undefined,
                   categoryId: route.params.categoryId,
-                  categoryTitle: route.params.screenTitle,
+                  categoryTitle: route.params.screenTitle === "Local Pickup" || route.params.screenTitle === "Shipping" ? undefined :  route.params.screenTitle,
                 })
               }
               style={{padding: 5}}>
-              <Image
-                style={{height: 20, width: 20}}
-                source={require("@assets/Images/filter.png")}
-              />
+                <Image
+                  style={{height: 20, width: 20}}
+                  source={require("@assets/Images/filter.png")}
+                />
             </TouchableOpacity>
           </View>
         );

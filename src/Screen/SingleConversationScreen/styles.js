@@ -4,7 +4,7 @@ import Colors from '../../constants/Colors';
 const styles = StyleSheet.create({
   header: {
     width: '100%',
-    paddingTop: 35,
+    paddingTop: 20,
     paddingBottom: 10,
     flexDirection: 'row',
     alignItems: 'flex-start',

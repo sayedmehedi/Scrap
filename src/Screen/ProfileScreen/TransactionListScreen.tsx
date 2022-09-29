@@ -194,7 +194,7 @@ export default function TransactionsScreen() {
         renderSectionHeader={({section: {title, data}}) =>
           data.length > 0 ? (
             <React.Fragment>
-              <Title style={{marginBottom: 15}}>{title}</Title>
+              <Title style={{marginBottom: 10}}>{title}</Title>
               {data.length === 0 ? (
                 <Text style={{textAlign: "center"}}>No data</Text>
               ) : null}
@@ -237,16 +237,18 @@ export default function TransactionsScreen() {
                   style={{
                     fontSize: 14,
                     color: "#262B2E",
-                    fontFamily: "SatoshiVariable-Bold",
+                    fontWeight:'bold'
+                    
                   }}>
                   {item.product_name ?? "No product"}
                 </Text>
-                <View style={{flexDirection: "row", marginVertical: 4}}>
+                <View style={{flexDirection: "row", marginVertical: 4,}}>
                   <Text
                     style={{
                       fontSize: 12,
                       color: "#8A8D9F",
-                      fontFamily: "Satoshi-Regular",
+                      
+                     
                     }}>
                     {item.date}
                   </Text>
@@ -264,7 +266,7 @@ export default function TransactionsScreen() {
                     style={{
                       fontSize: 10,
                       color: getTransactionStatusColor(item),
-                      fontFamily: "Satoshi-Regular",
+                      
                     }}>
                     {item.status === 0 ? "Failed" : "Success"}
                   </Text>
@@ -274,10 +276,11 @@ export default function TransactionsScreen() {
               <View>
                 <Text
                   style={{
-                    fontFamily: "Satoshi-Regular",
+                   
                     fontSize: 10,
                     color: "#8A8D9F",
                     alignSelf: "flex-end",
+                    fontWeight:'bold'
                   }}>
                   {item.payment_method}
                 </Text>

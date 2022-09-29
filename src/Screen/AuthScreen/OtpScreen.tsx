@@ -119,9 +119,15 @@ const OtpScreen = ({navigation, route}: Props) => {
                       textAlignVertical={"center"}
                       onChangeText={field.onChange}
                       placeholder={"Enter your OTP here."}
+                      
+                      
                       style={{
                         textAlign: "center",
                         flex: 1,
+                        borderWidth:1,
+                        borderRadius:5,
+                        borderColor:'#D7D7D7',
+                        marginVertical:10
                       }}
                     />
                   );
@@ -170,6 +176,7 @@ const OtpScreen = ({navigation, route}: Props) => {
               <Text
                 style={{
                   textDecorationLine: "underline",
+                  color:'#E62B56'
                 }}>
                 Resend OTP
               </Text>

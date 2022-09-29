@@ -254,7 +254,7 @@ const Header = ({ from }: { from: string }) => {
           <Text
             style={{
               fontFamily: 'Inter-Bold',
-              fontSize: 18,
+              fontSize: 20,
               color: 'white',
               marginLeft: 5,
             }}>
@@ -369,10 +369,10 @@ const Header = ({ from }: { from: string }) => {
 
           <Text
             style={{
-              fontFamily: 'Inter-Bold',
-              fontSize: 18,
+              fontSize: 20,
               color: 'white',
               marginLeft: 5,
+              fontFamily: 'Inter-Bold',
             }}>
             All Categories
           </Text>

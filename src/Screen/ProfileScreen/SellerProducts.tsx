@@ -129,9 +129,10 @@ export default function SellerProducts({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingLeft: SCREEN_PADDING_HORIZONTAL,
+          paddingBottom:90
         }}
         columnWrapperStyle={{
-          paddingBottom: 90,
+         
           marginBottom: 20,
         }}
         ListEmptyComponent={() => (

@@ -1,4 +1,5 @@
 import React from "react";
+import { Divider } from 'react-native-paper'
 import EachConversation from "./EachConversation";
 import {useRefreshOnFocus} from "@hooks/useRefreshOnFocus";
 import {SafeAreaView, View, Text, FlatList} from "react-native";
@@ -105,9 +106,9 @@ const ConversationListScreen = () => {
           getConversationsResponse.total_unseen_messages > 0 && (
             <View
               style={{
-                justifyContent: "center",
-                alignItems: "center",
                 padding: 10,
+                alignItems: "center",
+                justifyContent: "center",
               }}>
               <Text
                 style={{
@@ -136,6 +137,7 @@ const ConversationListScreen = () => {
                 <Text style={{textAlign: "center"}}>No data</Text>
               </View>
             )}
+            ItemSeparatorComponent={ItemSeparatorComponent}
             renderItem={({item}) => {
               if (item.type === "skeleton") {
                 return (
@@ -155,5 +157,11 @@ const ConversationListScreen = () => {
     </SafeAreaProvider>
   );
 };
+
+function ItemSeparatorComponent() {
+  return (
+    <Divider/>
+  )
+}
 
 export default ConversationListScreen;

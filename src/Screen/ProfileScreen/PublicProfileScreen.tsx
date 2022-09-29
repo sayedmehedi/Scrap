@@ -163,7 +163,7 @@ const PublicProfileScreen = ({route}: Props) => {
                 </Text>
                 <View
                   style={{
-                    marginVertical: 5,
+                    marginVertical: 0,
                     alignItems: "center",
                     flexDirection: "row",
                   }}>
@@ -235,8 +235,8 @@ const PublicProfileScreen = ({route}: Props) => {
                       },
                     ]}>
                     <Fontisto
-                      name="email"
                       size={20}
+                      name="email"
                       color={profile?.is_email_verified ? "white" : "#707070"}
                     />
                   </View>
@@ -251,8 +251,8 @@ const PublicProfileScreen = ({route}: Props) => {
                       },
                     ]}>
                     <Feather
-                      name="phone"
                       size={20}
+                      name="phone"
                       color={profile?.is_phone_verfied ? "white" : "#707070"}
                     />
                   </View>
@@ -267,8 +267,8 @@ const PublicProfileScreen = ({route}: Props) => {
                       },
                     ]}>
                     <Feather
-                      name="facebook"
                       size={20}
+                      name="facebook"
                       color={profile?.is_fb_connected ? "white" : "#707070"}
                     />
                   </View>
@@ -287,6 +287,11 @@ const PublicProfileScreen = ({route}: Props) => {
             </React.Fragment>
           )}
           numColumns={3}
+          ListEmptyComponent={() => (
+            <View>
+              <Text>No data</Text>
+            </View>
+          )}
           data={products}
           showsVerticalScrollIndicator={false}
           renderItem={({item}) => <EachProductItem item={item} />}

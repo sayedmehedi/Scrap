@@ -15,6 +15,7 @@ import {
   TextInputProps,
   TouchableOpacity,
 } from "react-native";
+import { colors } from "react-native-elements";
 
 export default function AccountSettingsModal({
   open,
@@ -72,9 +73,9 @@ export default function AccountSettingsModal({
       <View style={styles.modalContainer}>
         <View style={styles.modalView}>
           <TouchableOpacity
-            style={{alignSelf: "flex-end", marginRight: 20, marginBottom: 20}}
+            style={{alignSelf: "center", marginBottom: 20, borderWidth: 1, borderRadius: 500, padding: 10, borderColor: theme.colors.primary}}
             onPress={onClose}>
-            <Entypo name="cross" size={30} color={"#023047"} />
+            <Entypo name="cross" size={25} color={theme.colors.primary} />
           </TouchableOpacity>
 
           <Text

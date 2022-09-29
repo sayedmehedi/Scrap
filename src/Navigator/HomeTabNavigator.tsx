@@ -1,8 +1,8 @@
 import React from "react";
 import HomeStack from "./HomeStack";
-import Colors, {defaultTabBarStyles} from "../constants/Colors";
 import {useTheme} from "react-native-paper";
 import {HomeTabParamList} from "@src/types";
+import { ChatStackRoutes } from '@constants/routes'
 import ChatStackNavigator from "./ChatStackNavigator";
 import Entypo from "react-native-vector-icons/Entypo";
 import SaleStackNavigator from "./SaleStackNavigator";
@@ -10,9 +10,10 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import ProfileStackNavigator from "./ProfileStackNavigator";
 import PostItemStackNavigator from "./PostItemStackNavigator";
-import {HomeTabRoutes, RootStackRoutes} from "../constants/routes";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Colors, {defaultTabBarStyles} from "../constants/Colors";
 import {View, Text, TouchableNativeFeedback} from "react-native";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import {HomeTabRoutes, RootStackRoutes} from "../constants/routes";
 import {
   BottomTabBarButtonProps,
   createBottomTabNavigator,
@@ -55,6 +56,14 @@ const HomeTabNavigator = () => {
       <HomeTab.Screen
         component={HomeStack}
         name={HomeTabRoutes.HOME}
+        listeners={({navigation}) => {
+          return {
+            tabPress(e) {
+              e.preventDefault();
+              navigation.navigate(HomeTabRoutes.HOME)
+            }
+          }
+        }}
         options={{
           headerShown: false,
           tabBarIcon: ({focused}) => (
@@ -65,8 +74,8 @@ const HomeTabNavigator = () => {
                 flex: 1,
               }}>
               <Entypo
-                name="home"
                 size={22}
+                name="home"
                 color={focused ? Colors.PRIMARY_COLOR : "gray"}
               />
               <Text
@@ -83,6 +92,16 @@ const HomeTabNavigator = () => {
       />
 
       <HomeTab.Screen
+        listeners={({navigation}) => {
+          return {
+            tabPress(e) {
+              e.preventDefault();
+              navigation.navigate(HomeTabRoutes.CHAT, {
+                screen: ChatStackRoutes.CONVERSATION_LIST
+              })
+            }
+          }
+        }}
         name={HomeTabRoutes.CHAT}
         component={ChatStackNavigator}
         options={{
@@ -90,9 +109,9 @@ const HomeTabNavigator = () => {
           tabBarIcon: ({focused}) => (
             <View
               style={{
-                justifyContent: "center",
-                alignItems: "center",
                 flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
               }}>
               <Entypo
                 size={22}
@@ -115,6 +134,14 @@ const HomeTabNavigator = () => {
       <HomeTab.Screen
         name={HomeTabRoutes.POST_ITEM}
         component={PostItemStackNavigator}
+        listeners={({navigation}) => {
+          return {
+            tabPress(e) {
+              e.preventDefault();
+              navigation.navigate(HomeTabRoutes.POST_ITEM)
+            }
+          }
+        }}
         options={{
           headerShown: false,
           tabBarIcon: () => (
@@ -153,6 +180,14 @@ const HomeTabNavigator = () => {
       />
 
       <HomeTab.Screen
+        listeners={({navigation}) => {
+          return {
+            tabPress(e) {
+              e.preventDefault();
+              navigation.navigate(HomeTabRoutes.SALE)
+            }
+          }
+        }}
         name={HomeTabRoutes.SALE}
         component={SaleStackNavigator}
         options={() => {
@@ -166,15 +201,15 @@ const HomeTabNavigator = () => {
                   flex: 1,
                 }}>
                 <Ionicons
-                  name="pricetag"
                   size={22}
+                  name="pricetag"
                   color={focused ? Colors.PRIMARY_COLOR : "gray"}
                 />
                 <Text
                   style={{
-                    color: focused ? Colors.PRIMARY_COLOR : "gray",
                     fontSize: 10,
                     fontFamily: "Inter-SemiBold",
+                    color: focused ? Colors.PRIMARY_COLOR : "gray",
                   }}>
                   Selling
                 </Text>
@@ -185,6 +220,14 @@ const HomeTabNavigator = () => {
       />
 
       <HomeTab.Screen
+        listeners={({navigation}) => {
+          return {
+            tabPress(e) {
+              e.preventDefault();
+              navigation.navigate(HomeTabRoutes.PROFILE)
+            }
+          }
+        }}
         name={HomeTabRoutes.PROFILE}
         component={ProfileStackNavigator}
         options={{

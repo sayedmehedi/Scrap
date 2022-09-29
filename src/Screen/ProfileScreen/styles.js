@@ -1,13 +1,15 @@
 import {StyleSheet, Dimensions} from "react-native";
 import Colors from "../../constants/Colors";
 const {width} = Dimensions.get("window");
+
 const itemWidth = width / 2;
+
 const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 15,
+    paddingVertical: 20,
     borderBottomWidth: 0.3,
     borderBottomColor: "#707070",
     
@@ -44,10 +46,10 @@ const styles = StyleSheet.create({
   },
   modalView: {
     backgroundColor: "white",
-    height: 370,
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
+    paddingVertical: 50
   },
   modalInput: {
     height: 40,
@@ -56,7 +58,7 @@ const styles = StyleSheet.create({
     borderColor: "#C9C9C9",
     borderRadius: 8,
     textAlign: "center",
-    marginVertical: 20,
+    marginVertical: 10,
   },
   updateButton: {
     width: 270,

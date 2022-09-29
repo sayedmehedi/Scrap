@@ -249,7 +249,7 @@ const ProductFilterScreen = ({route}: Props) => {
           containerStyle={{backgroundColor: "#F7F7F7F"}}
           onPress={() => setOpenCategoryModal(true)}>
           <ListItem.Content>
-            <ListItem.Title>Categories</ListItem.Title>
+            <ListItem.Title style={{fontSize:18}}>Categories</ListItem.Title>
             <ListItem.Subtitle>{categoryTitle}</ListItem.Subtitle>
           </ListItem.Content>
           {/* @ts-ignore */}
@@ -266,7 +266,7 @@ const ProductFilterScreen = ({route}: Props) => {
             setOpenLocationModal(true);
           }}>
           <ListItem.Content>
-            <ListItem.Title>Location</ListItem.Title>
+            <ListItem.Title style={{fontSize:18}}>Location</ListItem.Title>
             <ListItem.Subtitle>
               {location}: {distance ?? 0} miles
             </ListItem.Subtitle>
@@ -280,7 +280,7 @@ const ProductFilterScreen = ({route}: Props) => {
         {/* @ts-ignore */}
         <ListItem containerStyle={{backgroundColor: "#F7F7F7F"}}>
           <ListItem.Content>
-            <ListItem.Title>
+            <ListItem.Title style={{fontSize:18}}>
               Price Range (${minPrice} - ${maxPrice})
             </ListItem.Title>
 
@@ -313,7 +313,7 @@ const ProductFilterScreen = ({route}: Props) => {
           data={conditions}
           ListHeaderComponent={() => (
             <View style={{padding: 15}}>
-              <ListItem.Title>Condition</ListItem.Title>
+              <ListItem.Title style={{fontSize:18}}>Condition</ListItem.Title>
             </View>
           )}
           onEndReached={getNextConditions}

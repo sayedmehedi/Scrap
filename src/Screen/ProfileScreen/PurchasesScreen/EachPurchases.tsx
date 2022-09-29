@@ -26,12 +26,12 @@ const SellerActions = ({item}: {item: Order}) => {
           <TouchableOpacity
             disabled={isLoading}
             onPress={handleOrderShip}
-            style={[styles.offerButton, {backgroundColor: "#E62B56"}]}>
+            style={[styles.offerButton, {backgroundColor: "#E62B56",marginRight:10}]}>
             <Text
               style={{
                 fontSize: 12,
                 color: "white",
-                marginRight: 10,
+                marginRight: 0,
                 fontFamily: "Inter-Medium",
               }}>
               Make Shipment
@@ -85,12 +85,12 @@ const UserActions = ({item}: {item: Order}) => {
         <View style={{flexDirection: "row", alignItems: "center"}}>
           <TouchableOpacity
             onPress={handlePayment}
-            style={[styles.offerButton, {backgroundColor: "#E62B56"}]}>
+            style={[styles.offerButton, {backgroundColor: "#E62B56",marginRight:10}]}>
             <Text
               style={{
                 fontSize: 12,
                 color: "white",
-                marginRight: 10,
+                
                 fontFamily: "Inter-Medium",
               }}>
               Pay Now
@@ -129,6 +129,7 @@ const UserActions = ({item}: {item: Order}) => {
             padding: 10,
             borderRadius: 10,
             backgroundColor: theme.colors.success,
+
           }}>
           <Text style={{color: "white"}}>Paid</Text>
         </View>

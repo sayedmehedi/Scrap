@@ -119,12 +119,12 @@ const RegistrationScreen = ({navigation}: Props) => {
 
   return (
     <SafeAreaProvider>
-      <ScrollView contentContainerStyle={{padding: 15}}>
-        <View style={{flex: 1}}>
+      <ScrollView >
+        <View style={{flex: 1, paddingHorizontal: 15}}>
           <View style={{alignItems: "center"}}>
             <View
               style={{
-                paddingBottom: 10,
+                paddingVertical: 10,
               }}>
               <Image
                 style={{height: 100, width: 100}}

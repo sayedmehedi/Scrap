@@ -5,7 +5,7 @@ import {Controller, useForm} from "react-hook-form";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import {ErrorMessage} from "@hookform/error-message";
 import {View, TouchableOpacity} from "react-native";
-import Entypo from "react-native-vector-icons/Entypo";
+import Feather from "react-native-vector-icons/Feather";
 import {useNavigation} from "@react-navigation/native";
 import {ListItem, Switch} from "react-native-elements";
 import {isJoteyQueryError} from "@utils/error-handling";
@@ -379,7 +379,7 @@ export default function ProductAddDeliveryMethodScreen({
                     </ListItem.Title>
                   </ListItem.Content>
 
-                  <Entypo name={"edit"} size={15} />
+                  <Feather name={"edit"} size={20} />
                 </ListItem>
 
                 <Divider style={{height: 2}} />
