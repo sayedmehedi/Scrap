@@ -14,6 +14,8 @@ import Colors, {defaultTabBarStyles} from "../constants/Colors";
 import {View, Text, TouchableNativeFeedback} from "react-native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import {HomeTabRoutes, RootStackRoutes} from "../constants/routes";
+import { MessageIcon,PostIcon } from "../constants/iconPath";
+
 import {
   BottomTabBarButtonProps,
   createBottomTabNavigator,
@@ -113,15 +115,19 @@ const HomeTabNavigator = () => {
                 alignItems: "center",
                 justifyContent: "center",
               }}>
-              <Entypo
+                <MessageIcon
+                 height={24}
+                 width={24}
+                />
+              {/* <Entypo
                 size={22}
                 name="message"
                 color={focused ? Colors.PRIMARY_COLOR : "gray"}
-              />
+              /> */}
               <Text
                 style={{
                   color: focused ? Colors.PRIMARY_COLOR : "gray",
-                  fontSize: 10,
+                  fontSize: 12,
                   fontFamily: "Inter-SemiBold",
                 }}>
                 Messages
