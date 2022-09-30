@@ -103,4 +103,5 @@ export const ProfileStackRoutes = {
   TRANSACTION: "transactionScreen",
   PUBLIC_PROFILE: "publicProfile",
   ACCOUNT_SETTING: "accountSetting",
+  HELPANDSUPPORT:"helpSupport"
 } as const;

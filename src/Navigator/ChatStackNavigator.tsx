@@ -52,6 +52,9 @@ export default function ChatStackNavigator({navigation: tabNavigation}: Props) {
       }}>
       {isAuthenticated && isFirstTimeLogin ? (
         <ChatStack.Screen
+        options={{
+          headerShown:false,
+        }}
           name={ChatStackRoutes.LOCATION}
           component={LocationStackNavigator}
         />

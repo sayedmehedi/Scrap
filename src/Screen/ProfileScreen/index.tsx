@@ -22,6 +22,7 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  
 } from "react-native";
 
 type Props = NativeStackScreenProps<
@@ -206,7 +207,9 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
           }
           style={styles.buttonContainer}>
           <View style={{flexDirection: "row", alignItems: "center"}}>
-            <MaterialIcons name="local-offer" size={18} color={"#707070"} />
+            <Image source={require('../../assets/Images/tag.png')}
+            style={{height:20,width:20}}
+            />
             <Text style={{marginLeft: 10, color: "#707070",fontSize:18}}>
               Offers & Bids
             </Text>
@@ -218,6 +221,7 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
         <TouchableOpacity
           style={styles.buttonContainer}
           onPress={() => {
+            profileNavigation.navigate(ProfileStackRoutes.HELPANDSUPPORT)
 
           }}
           >
@@ -232,9 +236,10 @@ const ProfileScreen = ({navigation: profileNavigation}: Props) => {
 
         <TouchableOpacity
           style={styles.buttonContainer}
-          onPress={() => {
+        
+            onPress={() => profileNavigation.navigate(ProfileStackRoutes.CONTACT)}
 
-          }}
+      
           >
           <View style={{flexDirection: "row", alignItems: "center"}}>
             <AntDesign name="infocirlceo" size={18} color={"#707070"} />

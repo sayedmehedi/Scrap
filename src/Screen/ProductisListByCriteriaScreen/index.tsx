@@ -105,7 +105,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
               style={{padding: 5}}>
               <View style={{flexDirection: "row", paddingHorizontal: 10}}>
                 <Image
-                  source={require("@assets/Images/Arrow.png")}
+                  source={require("../../assets/Images/Arrow.png")}
                   style={{
                     height: 20,
                     width: 20,
@@ -130,7 +130,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
               style={{padding: 5}}>
                 <Image
                   style={{height: 20, width: 20}}
-                  source={require("@assets/Images/filter.png")}
+                  source={require("../../assets/Images/filter.png")}
                 />
             </TouchableOpacity>
           </View>

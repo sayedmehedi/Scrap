@@ -12,6 +12,7 @@ import LocationStackNavigator from "./LocationStackNavigator";
 import {HomeTabParamList, ProfileStackParamList} from "@src/types";
 import PurchasesScreen from "../Screen/ProfileScreen/PurchasesScreen";
 import ContactUsScreen from "@src/Screen/ProfileScreen/ContactUsScreen";
+import HelpAndSupportScreen from "@src/Screen/ProfileScreen/HelpAndSupportScreen";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import OfferAndBidScreen from "../Screen/ProfileScreen/OfferAndBidScreen";
 import SaveProductScreen from "../Screen/ProfileScreen/SaveProductScreen";
@@ -112,10 +113,17 @@ const ProfileStackNavigator = ({navigation: tabNavigation}: Props) => {
           />
           <ProfileStack.Screen
             options={{
-              title: "Contact",
+              title: "Terms & Policy",
             }}
             name={ProfileStackRoutes.CONTACT}
             component={ContactUsScreen}
+          />
+          <ProfileStack.Screen
+            options={{
+              title: "Help & Support",
+            }}
+            name={ProfileStackRoutes.HELPANDSUPPORT}
+            component={HelpAndSupportScreen}
           />
 
           <ProfileStack.Screen
