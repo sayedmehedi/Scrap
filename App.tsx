@@ -11,7 +11,7 @@ import AuthProvider from "@src/Providers/AuthProvider";
 import {useNetInfo} from "@react-native-community/netinfo";
 import {ActivityIndicator, Text} from "react-native-paper";
 import {PersistGate} from "redux-persist/integration/react";
-import {useNavigationContainerRef} from "@react-navigation/native";
+//import {useNavigationContainerRef} from "@react-navigation/native";
 import RootStackNavigator from "./src/Navigator/RootStackNavigator";
 import PreferencesProvider from "./src/Providers/PreferencesProvider";
 import HttpClientConfigure from "@src/Providers/HttpClientConfigure";
@@ -30,11 +30,11 @@ GoogleSignin.configure({
 
 const App = () => {
   const state = useNetInfo();
-  const navigationRef = useNavigationContainerRef();
+ // const navigationRef = useNavigationContainerRef();
   const [hasInternet, setHasInternet] = React.useState<boolean | null>(true);
 
-  useFlipper(navigationRef);
-  useReduxDevToolsExtension(navigationRef);
+  ///useFlipper(navigationRef);
+ // useReduxDevToolsExtension(navigationRef);
 
   React.useEffect(() => {
     SplashScreen.hide();

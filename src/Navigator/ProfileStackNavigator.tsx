@@ -59,6 +59,9 @@ const ProfileStackNavigator = ({navigation: tabNavigation}: Props) => {
       }}>
       {isAuthenticated && isFirstTimeLogin ? (
         <ProfileStack.Screen
+        options={{
+          headerShown: false,
+        }}
           component={LocationStackNavigator}
           name={ProfileStackRoutes.LOCATION}
         />

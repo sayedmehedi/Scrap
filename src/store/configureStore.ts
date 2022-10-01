@@ -1,4 +1,3 @@
-import createDebugger from "redux-flipper";
 import {api} from "@data/laravel/services/api";
 import rootReducer from "./reducers/rootReducer";
 import {configureStore} from "@reduxjs/toolkit";
@@ -62,7 +61,7 @@ export function createStore(
         conditionApi.middleware,
         offerNBidsApi.middleware,
         rtkQueryErrorLogger,
-        createDebugger(),
+       // createDebugger(),
       ),
   });
 

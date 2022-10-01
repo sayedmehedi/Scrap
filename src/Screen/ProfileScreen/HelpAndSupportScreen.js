@@ -4,7 +4,7 @@ import { WebView } from 'react-native-webview';
 
 const HelpAndSupportScreen = () => {
   return (
-    <WebView source={{ uri: 'https://beta.thescrapapp.com/faq' }} />
+    <WebView source={{ uri: 'https://beta.thescrapapp.com/help/' }} />
   )
 }
 

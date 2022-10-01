@@ -54,6 +54,9 @@ export default function SaleStackNavigator({navigation: tabNavigation}: Props) {
       }}>
       {isAuthenticated && isFirstTimeLogin ? (
         <SaleStack.Screen
+        options={{
+          headerShown: false,
+        }}
           name={SaleStackRoutes.LOCATION}
           component={LocationStackNavigator}
         />
