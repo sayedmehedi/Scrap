@@ -16,10 +16,7 @@ import RootStackNavigator from "./src/Navigator/RootStackNavigator";
 import PreferencesProvider from "./src/Providers/PreferencesProvider";
 import HttpClientConfigure from "@src/Providers/HttpClientConfigure";
 import {GoogleSignin} from "@react-native-google-signin/google-signin";
-import {
-  useFlipper,
-  useReduxDevToolsExtension,
-} from "@react-navigation/devtools";
+
 
 enableLatestRenderer();
 
@@ -33,8 +30,8 @@ const App = () => {
   const navigationRef = useNavigationContainerRef();
   const [hasInternet, setHasInternet] = React.useState<boolean | null>(true);
 
-  useFlipper(navigationRef);
-  useReduxDevToolsExtension(navigationRef);
+  
+
 
   React.useEffect(() => {
     SplashScreen.hide();
