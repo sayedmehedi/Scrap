@@ -4,7 +4,7 @@ import {useTheme} from "react-native-paper";
 import {HomeTabParamList} from "@src/types";
 import { ChatStackRoutes } from '@constants/routes'
 import ChatStackNavigator from "./ChatStackNavigator";
-import Entypo from "react-native-vector-icons/Entypo";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import SaleStackNavigator from "./SaleStackNavigator";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
@@ -74,9 +74,9 @@ const HomeTabNavigator = () => {
                 alignItems: "center",
                 flex: 1,
               }}>
-              <Entypo
+              <Ionicons
                 size={22}
-                name="home"
+                name="ios-home-outline"
                 color={focused ? Colors.PRIMARY_COLOR : "gray"}
               />
               <Text
@@ -114,9 +114,9 @@ const HomeTabNavigator = () => {
                 justifyContent: "center",
                 flex: 1,
               }}>
-              <Entypo
+              <AntDesign
                 size={22}
-                name="message"
+                name="message1"
                 color={focused ? Colors.PRIMARY_COLOR : "gray"}
               />
               <Text
@@ -157,7 +157,7 @@ const HomeTabNavigator = () => {
                 justifyContent: "center",
                 backgroundColor: Colors.PRIMARY_COLOR,
               }}>
-              <FontAwesome5 name="edit" size={20} color={"white"} />
+              <AntDesign name="pluscircleo" size={20} color={"white"} />
               <Text
                 style={{
                   color: "white",
@@ -203,7 +203,7 @@ const HomeTabNavigator = () => {
                 }}>
                 <Ionicons
                   size={22}
-                  name="pricetag"
+                  name="copy-outline"
                   color={focused ? Colors.PRIMARY_COLOR : "gray"}
                 />
                 <Text
