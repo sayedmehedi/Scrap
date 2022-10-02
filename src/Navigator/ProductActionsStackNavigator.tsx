@@ -38,6 +38,9 @@ export default function ProductActionsStackNavigator() {
       }}>
       {isAuthenticated && isFirstTimeLogin ? (
         <ProductActionsStack.Screen
+        options={{
+          headerShown:false
+        }}
           component={LocationStackNavigator}
           name={ProductActionsStackRoutes.LOCATION}
         />

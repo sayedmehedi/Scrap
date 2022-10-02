@@ -44,7 +44,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
   const theme = useTheme();
   const rootNavigation = useNavigation();
   const profile = useAppSelector(state => state.auth.profile);
-  const [distance, setDistance] = React.useState<number>(30);
+  const [distance, setDistance] = React.useState<number | null>(null);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [location, setLocation] = React.useState<string | null>(null);
   const [maxPrice, setMaxPrice] = React.useState<number | null>(null);
@@ -118,7 +118,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
               // @ts-ignore
               onPress={() =>
                 rootNavigation.navigate(RootStackRoutes.PRODUCT_FILTER, {
-                  distance,
+                  distance:distance ?? undefined,
                   location: location ?? undefined,
                   maxPrice: maxPrice ?? undefined,
                   minPrice: minPrice ?? undefined,
@@ -453,7 +453,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
                 fontFamily: "Inter-Regular",
               }}>
               {!!location ? `${location}, ` : ""}
-              {distance} Miles + Shipping
+              {distance??0} Miles + Shipping
             </Text>
           ) : productType === "is_locale" ? (
             <Text
@@ -464,7 +464,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
                 fontFamily: "Inter-Regular",
               }}>
               {!!location ? `${location}, ` : ""}
-              {distance} Miles
+              {distance??0} Miles
             </Text>
           ) : (
             <Text

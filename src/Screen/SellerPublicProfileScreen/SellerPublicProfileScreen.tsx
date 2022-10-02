@@ -11,6 +11,7 @@ import {SCREEN_PADDING_HORIZONTAL} from "@constants/spacing";
 import EachProductItem from "@src/Component/EachProductItem";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import ProfileImageUploader from "../ProfileScreen/ProfileImageUploader";
+import {Avatar} from 'react-native-elements'
 import {
   RootStackParamList,
   PaginationQueryParams,
@@ -139,7 +140,22 @@ const SellerPublicProfileScreen = ({route}: Props) => {
                   alignItems: "center",
                   paddingHorizontal: 10,
                 }}>
-                <ProfileImageUploader />
+              
+     
+        <Avatar
+          rounded
+          size={"large"}
+          source={{
+            uri: sellerProductsResponse?.user.profile_image,
+          }}
+        />
+     
+
+    
+
+      {/* @ts-ignore */}
+    
+   
                 <Text style={{fontFamily: "Inter-Bold", fontSize: 20}}>
                   {sellerProductsResponse?.user.name}
                 </Text>
