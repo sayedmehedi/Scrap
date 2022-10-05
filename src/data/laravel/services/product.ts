@@ -119,23 +119,26 @@ export const productApi = api.injectEndpoints({
       queryFn({onUploadProgress, image}, {getState}) {
         const authToken = (getState() as RootState).auth.token;
 
-        return RNFetchBlob.fetch(
-          "POST",
-          "https://backend.thescrapapp.com/api/image-upload",
-          {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "multipart/form-data",
-          },
-          [
-            // element with property `filename` will be transformed into `file` in form data
+        return RNFetchBlob.config({
+          timeout: 5000,
+        })
+          .fetch(
+            "POST",
+            "https://backend.thescrapapp.com/api/image-upload",
             {
-              name: "image",
-              type: image.type,
-              filename: image.name,
-              data: RNFetchBlob.wrap(image.uri),
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "multipart/form-data",
             },
-          ],
-        )
+            [
+              // element with property `filename` will be transformed into `file` in form data
+              {
+                name: "image",
+                type: image.type,
+                filename: image.name,
+                data: RNFetchBlob.wrap(image.uri),
+              },
+            ],
+          )
           .uploadProgress((sent, total) => {
             onUploadProgress?.(sent, total);
           })

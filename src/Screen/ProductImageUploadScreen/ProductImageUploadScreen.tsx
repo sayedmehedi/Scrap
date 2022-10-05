@@ -56,6 +56,8 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
     ProductEditInfoImage[]
   >([]);
 
+  console.log("galleryImagesToUpload", [...galleryImagesToUpload.values()]);
+
   React.useEffect(() => {
     if (route.params?.productEditInfo) {
       if (route.params?.productEditInfo.files) {
@@ -130,6 +132,8 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
       // You can also use as a promise without 'callback':
       const result = await launchImageLibrary({
         mediaType: "photo",
+        maxHeight: 960,
+        maxWidth: 960,
         selectionLimit:
           editInfoImages.length > 0
             ? MAX_ALLOWED_NUM_IMAGE - editInfoImages.length
@@ -149,6 +153,8 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
       // You can also use as a promise without 'callback':
       const result = await launchCamera({
         mediaType: "photo",
+        maxHeight: 960,
+        maxWidth: 960,
       });
 
       handleImageResult(result);
