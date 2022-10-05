@@ -1,9 +1,11 @@
 import React from "react";
 import dayjs from "dayjs";
 import styles from "./styles";
+import utc from "dayjs/plugin/utc";
 import truncate from "lodash.truncate";
 import Share from "react-native-share";
 import {useTimer} from "react-timer-hook";
+import timezone from "dayjs/plugin/timezone";
 import Colors from "../../constants/Colors";
 import {metalNameToCode} from "@utils/metal";
 import {Rating} from "react-native-elements";
@@ -21,15 +23,10 @@ import AppPrimaryButton from "@src/Component/AppPrimaryButton";
 import {selectIsAuthenticated} from "@store/slices/authSlice";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MapView, {PROVIDER_GOOGLE, Marker} from "react-native-maps";
-import {useCreateCartMutation} from "@data/laravel/services/order";
+import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {
-  NativeStackScreenProps,
-  NativeStackNavigationProp,
-} from "@react-navigation/native-stack";
-import {
-  AuthStackRoutes,
-  ProductActionsStackRoutes,
   RootStackRoutes,
+  ProductActionsStackRoutes,
 } from "../../constants/routes";
 import {ActivityIndicator, Button, useTheme} from "react-native-paper";
 import {Table, TableWrapper, Row, Cell} from "react-native-table-component";
@@ -53,6 +50,11 @@ type Props = NativeStackScreenProps<
 >;
 
 const metalsTableHeadData = ["Metal", "Current Price", "Changes"];
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const NY_TZ = "America/New_York";
 
 const ProductDetailsScreen = ({route, navigation}: Props) => {
   const theme = useTheme();
@@ -100,16 +102,17 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
   useRefreshOnFocus(refetch);
 
   const [toggleFavorite] = useToggleProductFavoriteMutation();
-  const [createCart, {isLoading: isCreatingCart}] = useCreateCartMutation();
 
   React.useEffect(() => {
     let actionCreator: ReturnType<typeof getProductmetalsLivePrice> | null;
 
     if (!isLoading && !!productDetails && productDetails.metals.length > 0) {
+      const todayInUsa = dayjs().tz(NY_TZ);
+
       actionCreator = getProductmetalsLivePrice({
         base: "USD",
-        end_date: dayjs().format("YYYY-MM-DD"),
-        start_date: dayjs().subtract(3, "days").format("YYYY-MM-DD"),
+        end_date: todayInUsa.format("YYYY-MM-DD"),
+        start_date: todayInUsa.subtract(1, "days").format("YYYY-MM-DD"),
         symbols: productDetails.metals.map(metal =>
           metalNameToCode(metal.title),
         ),
@@ -260,8 +263,8 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
           timeLeftToBid: productDetails.time_left,
           productImage: productDetails.images.small[0] ?? undefined,
           bidStartingPrice: !!productDetails.starting_price
-            ? +productDetails.starting_price
-            : 0,
+            ? productDetails.starting_price
+            : "$ 1.00",
           isInitial: false,
         },
       });
@@ -324,7 +327,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
   const metalsChangesCell = (data: [number, number]) => (
     <View style={{flexDirection: "row", flex: 1}}>
-      <Text
+      {/* <Text
         style={{
           margin: 6,
           fontWeight: "700",
@@ -332,7 +335,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
           color: data[0] <= data[1] ? theme.colors.error : theme.colors.success,
         }}>
         ${data[0]}
-      </Text>
+      </Text> */}
       <Text
         style={{
           margin: 6,
@@ -715,14 +718,19 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                   flexDirection: "row",
                 }}>
                 <Feather name="map-pin" size={14} color={"#191F2B"} />
-                <Text style={{fontFamily: "Inter-Regular", color: "#667085",marginLeft:5}}>
+                <Text
+                  style={{
+                    fontFamily: "Inter-Regular",
+                    color: "#667085",
+                    marginLeft: 5,
+                  }}>
                   {productDetails.location} - {productDetails.distance}
                 </Text>
               </View>
             </View>
 
             {!!productDetails.starting_price && (
-              <View >
+              <View>
                 <Text
                   style={{
                     fontSize: 25,
@@ -746,7 +754,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
             )}
 
             {!!productDetails.buy_price && (
-              <View style={{marginTop: 5,marginBottom:20}}>
+              <View style={{marginTop: 5, marginBottom: 20}}>
                 <Text
                   style={{
                     fontSize: 25,
@@ -777,7 +785,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                   borderBottomWidth: 1,
                   flexDirection: "row",
                   borderBottomColor: "#CBCBCB",
-                  marginTop:-20
+                  marginTop: -20,
                 }}>
                 <Text style={{fontFamily: "Inter-Regular", color: "#667085"}}>
                   Time Left:
@@ -933,7 +941,6 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
             {!!productDetails.buy_price && (
               <TouchableOpacity
-                disabled={isCreatingCart}
                 onPress={handleBuyProduct}
                 style={styles.makeofferButton}>
                 <View></View>
@@ -964,7 +971,8 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
             {/* metals */}
             {productDetails.show_metal_price && (
               <View style={{marginTop: 30}}>
-                <Text style={{fontWeight: "600", marginBottom: 15,fontSize:18}}>
+                <Text
+                  style={{fontWeight: "600", marginBottom: 15, fontSize: 18}}>
                   Current/Live Metals Price
                 </Text>
 
@@ -1020,8 +1028,8 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                           />
 
                           <Cell
-                            data={rowData[1]}
                             flex={1.5}
+                            data={rowData[1]}
                             textStyle={{
                               margin: 6,
                               color: "#252522",
@@ -1030,13 +1038,13 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                           />
 
                           <Cell
+                            flex={1}
                             data={metalsChangesCell(rowData[2])}
                             textStyle={{
                               margin: 6,
                               color: "#252522",
                               // textAlign: "center",
                             }}
-                            flex={2}
                           />
                         </TableWrapper>
                       ))
@@ -1098,15 +1106,17 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                   marginVertical: 28,
                   alignItems: "center",
                   flexDirection: "row",
-                  
-                  justifyContent:'space-around'
+
+                  justifyContent: "space-around",
                 }}>
                 <Image
                   source={{uri: productDetails.seller.image}}
                   style={{height: 75, width: 75, borderRadius: 40}}
                 />
                 <View style={{marginLeft: 10}}>
-                  <Text style={{fontWeight:'700',fontSize:18}}>{productDetails.seller.name}</Text>
+                  <Text style={{fontWeight: "700", fontSize: 18}}>
+                    {productDetails.seller.name}
+                  </Text>
 
                   <View
                     style={{
@@ -1129,7 +1139,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                   <Text>Member Since {productDetails.seller.join_date}</Text>
                 </View>
 
-                <AntDesign name="right" size={40} color={'rgba(0,0,0,0.5)'}/>
+                <AntDesign name="right" size={40} color={"rgba(0,0,0,0.5)"} />
               </View>
             </TouchableOpacity>
 
@@ -1178,7 +1188,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                 }}
               />
             </View>
-            <View style={{marginTop:10}}>
+            <View style={{marginTop: 10}}>
               <Text style={{textAlign: "left"}}>{productDetails.about}</Text>
             </View>
 
@@ -1238,7 +1248,9 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                 )}
                 data={relatedProducts}
                 showsHorizontalScrollIndicator={false}
-                renderItem={({item}) => <EachProductItem widthDivisor={2.5} item={item} />}
+                renderItem={({item}) => (
+                  <EachProductItem widthDivisor={2.5} item={item} />
+                )}
               />
             </View>
           </View>

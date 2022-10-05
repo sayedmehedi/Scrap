@@ -1,4 +1,5 @@
 import {api} from "./api";
+import RNFetchBlob from "rn-fetch-blob";
 import {container} from "@src/appEngine";
 import {QUERY_KEYS} from "@constants/query";
 import {AxiosError, AxiosInstance} from "axios";
@@ -6,6 +7,7 @@ import {ApplicationError} from "@core/domain/ApplicationError";
 import {REACT_APP_METALS_API_TOKEN} from "react-native-dotenv";
 import {ServiceProviderTypes} from "@core/serviceProviderTypes";
 import {
+  RootState,
   ProductDetails,
   MetalsApiErrorCode,
   MetalsApiErrorMessage,
@@ -16,6 +18,8 @@ import {
   GetSavedProductsReponse,
   GetSellerProductsReponse,
   GetProductEditInfoResponse,
+  ProductImageUploadResponse,
+  ProductImageUploadRequest,
   GetSaleOrArchivedProductsReponse,
   GetProductMetalsLivePriceResponse,
   GetProductMetalsLivePriceRequest,
@@ -24,8 +28,6 @@ import {
 const metalsApiClient = container.get<AxiosInstance>(
   ServiceProviderTypes.MetalsApiClient,
 );
-
-const apiClient = container.get<AxiosInstance>(ServiceProviderTypes.HttpClient);
 
 // Define a service using a base URL and expected endpoints
 export const productApi = api.injectEndpoints({
@@ -110,89 +112,112 @@ export const productApi = api.injectEndpoints({
         };
       },
     }),
+    uploadProductImage: builder.mutation<
+      ProductImageUploadResponse,
+      ProductImageUploadRequest
+    >({
+      queryFn({onUploadProgress, image}, {getState}) {
+        const authToken = (getState() as RootState).auth.token;
+
+        return RNFetchBlob.fetch(
+          "POST",
+          "https://backend.thescrapapp.com/api/image-upload",
+          {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+          [
+            // element with property `filename` will be transformed into `file` in form data
+            {
+              name: "image",
+              type: image.type,
+              filename: image.name,
+              data: RNFetchBlob.wrap(image.uri),
+            },
+          ],
+        )
+          .uploadProgress((sent, total) => {
+            onUploadProgress?.(sent, total);
+          })
+          .then(res => res.json() as Promise<ProductImageUploadResponse>)
+          .then(data => {
+            return {
+              data,
+            };
+          })
+          .catch(err => {
+            const error = err as ApplicationError;
+            console.log("image upload e error khaisee", error);
+            return {
+              error: {
+                status: error.status,
+                data: {
+                  field_errors: {},
+                  non_field_error: error.message,
+                },
+              },
+            };
+          });
+      },
+    }),
     upsertProduct: builder.mutation<
       {success: string} | {error: string},
-      UpsertProductRequest & {onUploadProgress?: (event: ProgressEvent) => void}
+      UpsertProductRequest
     >({
-      queryFn({onUploadProgress, ...body}) {
-        console.log("body data is", body.attributes);
+      query(body) {
+        const formData: Record<string, any> = {};
+        formData["title"] = body.title;
+        formData["category_id"] = body.category_id;
+        formData["sub_category_id"] = body.sub_category_id;
+        formData["condition_id"] = body.condition_id;
+        formData["details"] = body.details;
+        formData["is_list_now"] = body.is_list_now;
+        formData["expected_date_for_list"] = body.expected_date_for_list;
+        formData["package_id"] = body.package_id;
+        formData["is_locale"] = body.is_locale;
+        formData["is_shipping"] = body.is_shipping;
 
-        const formData = new FormData();
-
-        formData.append("title", body.title);
-        formData.append("category_id", body.category_id);
-        formData.append("sub_category_id", body.sub_category_id);
-        formData.append("condition_id", body.condition_id);
-        formData.append("details", body.details);
-        formData.append("is_list_now", body.is_list_now);
-        formData.append("expected_date_for_list", body.expected_date_for_list);
-        formData.append("package_id", body.package_id);
-        formData.append("is_locale", body.is_locale);
-        formData.append("is_shipping", body.is_shipping);
-
-        formData.append("location", body.location);
+        formData["location"] = body.location;
         //? location dile egulao lagbe
-        formData.append("latitude", body.latitude);
-        formData.append("longitude", body.longitude);
+        formData["latitude"] = body.latitude;
+        formData["longitude"] = body.longitude;
 
         console.log("selected metals", body.selected_metals);
 
         if (body.show_metal_price === "1") {
-          formData.append("show_metal_price", body.show_metal_price);
+          formData["show_metal_price"] = body.show_metal_price;
           // ? show_metal_price dile egula lagbe
-          body.selected_metals.forEach(metal => {
-            console.log("appending metal", metal.toString());
-
-            formData.append("selected_metals[]", metal.toString());
-          });
+          formData.selected_metals = body.selected_metals;
         }
 
         Object.entries(body.attributes).forEach(([attrId, termId]) => {
-          formData.append(`attributes[${attrId}]`, termId);
+          formData[`attributes[${attrId}]`] = termId;
         });
 
         if (!!body.starting_price) {
-          formData.append("starting_price", body.starting_price);
-          formData.append("duration", body.duration);
+          formData["starting_price"] = body.starting_price;
+          formData["duration"] = body.duration;
         }
 
-        formData.append("buy_price", body.buy_price);
-        formData.append("quantity", body.quantity);
+        formData["buy_price"] = body.buy_price;
+        formData["quantity"] = body.quantity;
 
-        body.images.forEach(img => {
-          console.log("appending image", img);
-          formData.append("images[]", {
-            uri: img.uri,
-            type: img.type,
-            name: img.fileName,
-          });
-        });
+        formData["images"] = body.images.map(img => ({
+          small_image: img.small_image,
+          large_image: img.large_image,
+          medium_image: img.medium_image,
+          original_image: img.original_image,
+        }));
 
         const endpoint = !!body.product_id
           ? `products/${body.product_id}`
           : "products";
 
-        return apiClient
-          .postForm<{success: string}>(endpoint, formData, {
-            onUploadProgress,
-          })
-          .then(res => {
-            return {
-              data: {
-                success: res.data.success,
-              },
-            };
-          })
-          .catch((error: ApplicationError) => {
-            console.log("error khaisee", error);
-            return {
-              error: {
-                status: error.status,
-                data: error.getFormattedMessage(),
-              },
-              meta: error.response,
-            };
-          });
+        return {
+          url: endpoint,
+          body: formData,
+          method: "POST",
+        };
       },
       invalidatesTags: () => [QUERY_KEYS.PRODUCT],
     }),
@@ -335,18 +360,17 @@ export const productApi = api.injectEndpoints({
                   fluctuation: response.data.fluctuation,
                 },
               };
-            } else {
-              return {
-                error: {
-                  status: response.data.error.code,
-                  data: {
-                    non_field_error: response.data.error.info,
-                    field_errors: {},
-                  },
-                },
-                meta: response.config,
-              };
             }
+
+            return {
+              error: {
+                status: response.data.error.code,
+                data: {
+                  non_field_error: response.data.error.info,
+                  field_errors: {},
+                },
+              },
+            };
           })
           .catch(err => {
             const error: AxiosError<{
@@ -356,10 +380,10 @@ export const productApi = api.injectEndpoints({
                 info: MetalsApiErrorMessage;
               };
             }> = err;
-            console.log("error is", error);
+
             return {
               error: {
-                status: error.response?.data.error.code ?? error.status,
+                status: error.response?.data.error.code ?? 400,
                 data: {
                   non_field_error:
                     error.response?.data.error.info ?? error.message,
@@ -439,6 +463,7 @@ export const {
   useDeleteProductFileMutation,
   useLazyGetSellerProductsQuery,
   useLazyGetSavedProductsQuery,
+  useUploadProductImageMutation,
   useLazyGetProductEditInfoQuery,
   useLazyGetFilterProductsQuery,
   useLazyGetArchiveProductsQuery,

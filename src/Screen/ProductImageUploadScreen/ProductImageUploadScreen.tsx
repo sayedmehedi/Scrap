@@ -1,22 +1,27 @@
 import React from "react";
+import {nanoid} from "@reduxjs/toolkit";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import Entypo from "react-native-vector-icons/Entypo";
+import ProductImageUploader from "./ProductImageUploader";
 import {PostItemStackRoutes} from "../../constants/routes";
-import {useFocusEffect} from "@react-navigation/native";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import {HelperText, Text, useTheme} from "react-native-paper";
 import {TouchableOpacity} from "react-native-gesture-handler";
 import AppPrimaryButton from "../../Component/AppPrimaryButton";
 import {NativeStackScreenProps} from "@react-navigation/native-stack";
 import {TextInput, View, Alert, ScrollView, Image} from "react-native";
-import {ProductEditInfoImage, PostItemStackParamList} from "@src/types";
+import {useDeleteProductFileMutation} from "@data/laravel/services/product";
+import {
+  ProductEditInfoImage,
+  PostItemStackParamList,
+  ProductUploadedImage,
+} from "@src/types";
 import {
   Asset,
   launchCamera,
   launchImageLibrary,
   ImagePickerResponse,
 } from "react-native-image-picker";
-import {useDeleteProductFileMutation} from "@data/laravel/services/product";
 
 type Props = NativeStackScreenProps<
   PostItemStackParamList,
@@ -29,26 +34,27 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
   const theme = useTheme();
   const [productTitle, setProductTitle] = React.useState("");
   const {enqueueErrorSnackbar, enqueueSuccessSnackbar} = useAppSnackbar();
-  const [galleryImages, setGalleryImages] = React.useState<Asset[]>([]);
-  const [coverImage, setCoverImage] = React.useState<Asset | null>(null);
+  const [galleryImagesToUpload, setGalleryImagesToUpload] = React.useState<
+    Map<string, Asset>
+  >(() => new Map());
+  const [uploadedGalleryImages, setUploadedGalleryImages] = React.useState<
+    Map<string, ProductUploadedImage>
+  >(() => new Map());
+
+  const [coverImageToUpload, setCoverImageToUpload] =
+    React.useState<Asset | null>(null);
+
+  const [galleryImages, setGalleryImages] = React.useState<
+    (ProductUploadedImage & {id: string})[]
+  >([]);
+  const [coverImage, setCoverImage] =
+    React.useState<ProductUploadedImage | null>(null);
+
   const [deleteProductFile, {isLoading: isDeletingProductFile}] =
     useDeleteProductFileMutation();
   const [editInfoImages, setEditInfoImages] = React.useState<
     ProductEditInfoImage[]
   >([]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      console.log("edit info", route.params);
-      // Do something when the screen is focused
-
-      return () => {
-        navigation.setParams({
-          productEditInfo: undefined,
-        });
-      };
-    }, [navigation]),
-  );
 
   React.useEffect(() => {
     if (route.params?.productEditInfo) {
@@ -61,6 +67,19 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
       }
     }
   }, [route.params]);
+
+  React.useEffect(() => {
+    const galleryImagesWithId = Array.from(uploadedGalleryImages.entries()).map(
+      ([id, image]) => {
+        return {
+          id,
+          ...image,
+        };
+      },
+    );
+
+    setGalleryImages(galleryImagesWithId);
+  }, [uploadedGalleryImages]);
 
   const handleImageResult = (result: ImagePickerResponse) => {
     if (result.errorCode) {
@@ -81,10 +100,10 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
     }
     if (!result.didCancel) {
       if (!coverImage && editInfoImages.length === 0) {
-        setCoverImage(result.assets?.[0] ?? null);
+        setCoverImageToUpload(result.assets?.[0] ?? null);
       } else {
         if (
-          galleryImages.length +
+          galleryImagesToUpload.size +
             (result.assets?.length ?? 0) +
             editInfoImages.length >
           MAX_ALLOWED_NUM_IMAGE
@@ -93,10 +112,15 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
           return;
         }
 
-        setGalleryImages(prevImages => [
-          ...prevImages,
-          ...(result.assets ?? []),
-        ]);
+        setGalleryImagesToUpload(prevImagesSet => {
+          const newImagesMap = new Map<string, Asset>(prevImagesSet);
+
+          result.assets?.forEach(asset => {
+            newImagesMap.set(nanoid(), asset);
+          });
+
+          return newImagesMap;
+        });
       }
     }
   };
@@ -106,7 +130,12 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
       // You can also use as a promise without 'callback':
       const result = await launchImageLibrary({
         mediaType: "photo",
-        selectionLimit: !!coverImage ? 0 : MAX_ALLOWED_NUM_IMAGE,
+        selectionLimit:
+          editInfoImages.length > 0
+            ? MAX_ALLOWED_NUM_IMAGE - editInfoImages.length
+            : !coverImage
+            ? 1
+            : MAX_ALLOWED_NUM_IMAGE,
       });
 
       handleImageResult(result);
@@ -132,8 +161,12 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
     setCoverImage(null);
   };
 
-  const handleRemoveGalleryImage = (index: number) => {
-    setGalleryImages(prevImages => prevImages.filter((_, i) => i !== index));
+  const handleRemoveGalleryImage = (id: string) => {
+    setUploadedGalleryImages(prevImages => {
+      const newImagesMap = new Map<string, ProductUploadedImage>(prevImages);
+      newImagesMap.delete(id);
+      return newImagesMap;
+    });
   };
 
   const handleNextScreen = () => {
@@ -165,6 +198,26 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
       productEditInfo: route.params?.productEditInfo,
     });
   };
+
+  const handleImageUploadSuccess = React.useCallback((id: string) => {
+    return (uploadedImage?: ProductUploadedImage) => {
+      console.log("handling image upload success", uploadedImage);
+
+      setGalleryImagesToUpload(prevImages => {
+        const newSet = new Map<string, Asset>(prevImages);
+        newSet.delete(id);
+        return newSet;
+      });
+
+      if (uploadedImage) {
+        setUploadedGalleryImages(prevImages => {
+          const newSet = new Map<string, ProductUploadedImage>(prevImages);
+          newSet.set(id, uploadedImage);
+          return newSet;
+        });
+      }
+    };
+  }, []);
 
   return (
     <ScrollView style={{paddingHorizontal: 15}}>
@@ -307,7 +360,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
           <View>
             <Image
               source={{
-                uri: coverImage.uri ?? "",
+                uri: `https://backend.thescrapapp.com/${coverImage.large_image}`,
               }}
               style={{
                 zIndex: 0,
@@ -320,11 +373,50 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
         </View>
       )}
 
+      {!!coverImageToUpload && (
+        <View
+          style={{
+            width: "100%",
+            marginVertical: 10,
+          }}>
+          <View style={{marginBottom: 5}}>
+            <ProductImageUploader
+              image={coverImageToUpload}
+              onUploadSuccess={uploadedImage => {
+                setCoverImageToUpload(null);
+
+                if (uploadedImage) {
+                  setCoverImage(uploadedImage);
+                }
+              }}
+            />
+          </View>
+        </View>
+      )}
+
+      {galleryImagesToUpload.size > 0 && (
+        <View
+          style={{
+            width: "100%",
+            marginVertical: 10,
+          }}>
+          {Array.from(galleryImagesToUpload.entries()).map(([id, asset]) => (
+            <View style={{marginBottom: 5}}>
+              <ProductImageUploader
+                key={id}
+                image={asset}
+                onUploadSuccess={handleImageUploadSuccess(id)}
+              />
+            </View>
+          ))}
+        </View>
+      )}
+
       {(galleryImages.length > 0 || editInfoImages.length > 0) && (
         <View style={{flexDirection: "row", flexWrap: "wrap"}}>
           {galleryImages.map((image, i) => (
             <View
-              key={i}
+              key={image.id}
               style={{
                 width: "25%",
                 marginBottom: 15,
@@ -348,7 +440,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
                     justifyContent: "center",
                     backgroundColor: theme.colors.white,
                   }}
-                  onPress={handleRemoveGalleryImage.bind(null, i)}>
+                  onPress={handleRemoveGalleryImage.bind(null, image.id)}>
                   <EvilIcons name={"close"} size={20} />
                 </TouchableOpacity>
               </View>
@@ -356,10 +448,11 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
               <View>
                 <Image
                   source={{
-                    uri: image.uri,
+                    uri: `https://backend.thescrapapp.com/${image.small_image}`,
                   }}
                   style={{
                     zIndex: 0,
+                    width: 50,
                     height: 50,
                     borderRadius: theme.roundness * 3,
                   }}

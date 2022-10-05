@@ -1,21 +1,12 @@
 export const currencyTransform = {
-  input: (value: number) =>
-    isNaN(value) || value === 0 ? "$1.00" : `$${value}`,
-  output: (value: string) => {
-    const [, price] = value.split("$");
-    const output = parseInt(price, 10);
-    return isNaN(output) ? 0 : output;
-  },
-
-  inputFloat: (value: string) => {
+  input: (value: number) => {
     return `$${value}`;
   },
-  outputFloat: (value: string) => {
-    if (!/^\$\d*\.?\d*$/.test(value)) {
-      return 0;
-    }
+  output: (currency: string) => {
+    let replaced = currency.replace(/[^0-9.-]+/g, "");
 
-    return value.replace(/\$/, "");
+    // @ts-ignore
+    return replaced as number;
   },
 };
 

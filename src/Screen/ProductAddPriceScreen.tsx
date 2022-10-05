@@ -28,7 +28,7 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import Entypo from 'react-native-vector-icons/Entypo'
+import Entypo from "react-native-vector-icons/Entypo";
 import {
   useGetMetalsQuery,
   useLazyGetMetalsQuery,
@@ -49,8 +49,8 @@ type FormValues = {
   beginDay: Date;
   quantity: number;
   isListNow: boolean;
-  buynowprice: string;
-  startingPrice: string;
+  buynowprice: number | null;
+  startingPrice: number | null;
   showMetalPrice: boolean;
   metals: {id: number; value: Metal}[];
   beginHour: {id: number; value: number; label: string} | null;
@@ -76,8 +76,8 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
       quantity: 0,
       duration: null,
       isListNow: true,
-      buynowprice: "",
-      startingPrice: "",
+      buynowprice: null,
+      startingPrice: null,
 
       beginHour: {
         id: 0,
@@ -121,8 +121,8 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
       } = route.params.productEditInfo;
 
       setValue("quantity", quantity);
-      setValue("buynowprice", buy_price.toString());
-      setValue("startingPrice", starting_price.toString());
+      setValue("buynowprice", buy_price);
+      setValue("startingPrice", starting_price);
 
       if (!!expected_date_for_list) {
         const listDate = dayjs(expected_date_for_list, "YYYY-MM-DD HH:mm:ss");
@@ -224,11 +224,9 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
       isListNow: values.isListNow,
       duration: values.duration?.value ?? 0,
       showMetalPrice: values.showMetalPrice,
-      startingPrice: !!values.startingPrice
-        ? parseInt(values.startingPrice)
-        : 0,
       metals: values.metals.map(({value}) => value.id),
-      buynowprice: !!values.buynowprice ? parseInt(values.buynowprice) : 0,
+      buynowprice: !!values.buynowprice ? values.buynowprice : 0,
+      startingPrice: !!values.startingPrice ? values.startingPrice : 0,
     });
   });
 
@@ -252,9 +250,9 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
 
                 <TextInput
                   keyboardType="numeric"
-                  value={currencyTransform.inputFloat(field.value)}
+                  value={currencyTransform.input(field.value ?? 0)}
                   onChangeText={price =>
-                    field.onChange(currencyTransform.outputFloat(price))
+                    field.onChange(currencyTransform.output(price))
                   }
                   style={{
                     padding: 10,
@@ -292,9 +290,9 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
 
                 <TextInput
                   keyboardType="numeric"
-                  value={currencyTransform.inputFloat(field.value)}
+                  value={currencyTransform.input(field.value ?? 0)}
                   onChangeText={price =>
-                    field.onChange(currencyTransform.outputFloat(price))
+                    field.onChange(currencyTransform.output(price))
                   }
                   style={{
                     padding: 10,
@@ -370,24 +368,26 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
                         borderRadius: 8,
                         backgroundColor: "#F7F7F7",
                         elevation: 2,
-                       
-
-                        
                       }}>
-                     <View style={{
-                       flexDirection:'row',
-                       justifyContent:'space-between',
-                       
-                     }}>
-                     <Text style={{color: "#222222", fontSize: 14}}>
-                        Select Duration
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}>
+                        <Text style={{color: "#222222", fontSize: 14}}>
+                          Select Duration
+                        </Text>
+
+                        <Entypo
+                          name="chevron-small-down"
+                          size={18}
+                          color={"gray"}
+                        />
+                      </View>
+                      <Text style={{fontWeight: "bold", fontSize: 16}}>
+                        {field.value?.label}
                       </Text>
-                     
-                      <Entypo name="chevron-small-down" size={18} color={'gray'}/>
-                     </View>
-                     <Text style={{fontWeight:'bold',fontSize:16}}>{field.value?.label}</Text>
                     </View>
-                   
                   </Pressable>
 
                   <ErrorMessage
@@ -660,7 +660,9 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
                 alignItems: "center",
                 justifyContent: "space-between",
               }}>
-              <Text numberOfLines={2}>Do you want to show metals current/live price?</Text>
+              <Text numberOfLines={2}>
+                Do you want to show metals current/live price?
+              </Text>
 
               <Switch
                 color={"green"}

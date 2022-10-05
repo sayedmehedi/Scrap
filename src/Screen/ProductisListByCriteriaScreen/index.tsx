@@ -44,8 +44,8 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
   const theme = useTheme();
   const rootNavigation = useNavigation();
   const profile = useAppSelector(state => state.auth.profile);
-  const [distance, setDistance] = React.useState<number | null>(null);
   const [modalVisible, setModalVisible] = React.useState(false);
+  const [distance, setDistance] = React.useState<number | null>(null);
   const [location, setLocation] = React.useState<string | null>(null);
   const [maxPrice, setMaxPrice] = React.useState<number | null>(null);
   const [minPrice, setMinPrice] = React.useState<number | null>(null);
@@ -118,20 +118,24 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
               // @ts-ignore
               onPress={() =>
                 rootNavigation.navigate(RootStackRoutes.PRODUCT_FILTER, {
-                  distance:distance ?? undefined,
+                  distance: distance ?? undefined,
                   location: location ?? undefined,
                   maxPrice: maxPrice ?? undefined,
                   minPrice: minPrice ?? undefined,
                   condition: condition ?? undefined,
                   categoryId: route.params.categoryId,
-                  categoryTitle: route.params.screenTitle === "Local Pickup" || route.params.screenTitle === "Shipping" ? undefined :  route.params.screenTitle,
+                  categoryTitle:
+                    route.params.screenTitle === "Local Pickup" ||
+                    route.params.screenTitle === "Shipping"
+                      ? undefined
+                      : route.params.screenTitle,
                 })
               }
               style={{padding: 5}}>
-                <Image
-                  style={{height: 20, width: 20}}
-                  source={require("../../assets/Images/filter.png")}
-                />
+              <Image
+                style={{height: 20, width: 20}}
+                source={require("../../assets/Images/filter.png")}
+              />
             </TouchableOpacity>
           </View>
         );
@@ -453,7 +457,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
                 fontFamily: "Inter-Regular",
               }}>
               {!!location ? `${location}, ` : ""}
-              {distance??0} Miles + Shipping
+              {distance ?? 0} Miles + Shipping
             </Text>
           ) : productType === "is_locale" ? (
             <Text
@@ -464,7 +468,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
                 fontFamily: "Inter-Regular",
               }}>
               {!!location ? `${location}, ` : ""}
-              {distance??0} Miles
+              {distance ?? 0} Miles
             </Text>
           ) : (
             <Text

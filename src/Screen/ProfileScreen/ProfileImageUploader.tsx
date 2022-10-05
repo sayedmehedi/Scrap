@@ -64,8 +64,6 @@ export default function ProfileImageUploader() {
           setUploadProgress(progress);
         },
         image: result.assets?.[0],
-        city_id: "4000",
-        state_id: "348",
       });
     }
   };
