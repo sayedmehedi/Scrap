@@ -33,16 +33,16 @@ export default function MakeOfferScreen({navigation, route}: Props) {
     handleSubmit,
   } = useForm({
     defaultValues: {
-      offerPrice: "1.00",
+      offerPrice: 1,
     },
   });
 
   const handleMakeOffer = handleSubmit(values => {
     navigation.navigate(ProductActionsStackRoutes.REVIEW_OFFER, {
+      isInitial: false,
+      offerPrice: values.offerPrice,
       productId: route.params.productId,
       shippingCost: route.params.shippingCost,
-      offerPrice: parseFloat(values.offerPrice),
-      isInitial: false,
     });
   });
 
@@ -110,13 +110,12 @@ export default function MakeOfferScreen({navigation, route}: Props) {
                 fontSize: 45,
                 textAlign: "center",
                 borderBottomWidth: 2,
-                // @ts-ignore
                 borderBottomColor: theme.colors.black,
               }}
               keyboardType={"numeric"}
-              value={currencyTransform.inputFloat(field.value)}
+              value={currencyTransform.input(field.value)}
               onChangeText={price =>
-                field.onChange(currencyTransform.outputFloat(price))
+                field.onChange(currencyTransform.output(price))
               }
             />
           );

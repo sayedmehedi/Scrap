@@ -73,7 +73,7 @@ export type ProductActionsStackParamList = {
     productName: string;
     timeLeftToBid: string;
     productImage?: string;
-    bidStartingPrice: number;
+    bidStartingPrice: string;
     productId: number;
 
     isInitial: boolean;
@@ -186,15 +186,15 @@ export type PostItemStackParamList = {
     description: string;
     subCategoryId: number;
     productTitle: string;
-    productCoverImage?: Asset;
-    productGalleryImages: Asset[];
+    productCoverImage?: ProductUploadedImage;
+    productGalleryImages: ProductUploadedImage[];
     attributes: Record<number, string | number>;
   };
   [PostItemStackRoutes.ADD_DETAILS]: {
     productTitle: string;
-    productCoverImage?: Asset;
-    productGalleryImages: Asset[];
     productEditInfo?: ProductEditInfo;
+    productCoverImage?: ProductUploadedImage;
+    productGalleryImages: ProductUploadedImage[];
   };
   [PostItemStackRoutes.UPLOAD_PHOTO]:
     | {
@@ -215,9 +215,9 @@ export type PostItemStackParamList = {
     buynowprice: number;
     subCategoryId: number;
     showMetalPrice: boolean;
-    productCoverImage?: Asset;
     expectedDateForList: string;
-    productGalleryImages: Asset[];
+    productCoverImage?: ProductUploadedImage;
+    productGalleryImages: ProductUploadedImage[];
     attributes: Record<number, string | number>;
   };
 };
@@ -1046,6 +1046,31 @@ export type GetPackagesResponse = {
   items: SimplePaginatedResponse<Package>;
 };
 
+export type ProductImageUploadRequest = {
+  onUploadProgress?: (sent: number, total: number) => void;
+  image: {
+    uri: string;
+    type: string;
+    name: string;
+  };
+};
+
+export type ProductUploadedImage = {
+  small_image: string;
+  large_image: string;
+  medium_image: string;
+  original_image: string;
+};
+
+export type ProductImageUploadSuccessResponse = {
+  success: string;
+  images: ProductUploadedImage;
+};
+
+export type ProductImageUploadResponse =
+  | ProductImageUploadSuccessResponse
+  | {error: string};
+
 export type UpsertProductRequest = {
   product_id?: number;
   title: string;
@@ -1068,7 +1093,7 @@ export type UpsertProductRequest = {
   buy_price: number;
   duration?: number;
   quantity: number;
-  images: Asset[];
+  images: ProductUploadedImage[];
 };
 
 export interface Duration {

@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./styles";
 import CategoryList from "./CategoryList";
-import { Text } from 'react-native-paper'
+import {Text} from "react-native-paper";
 import Colors from "../../constants/Colors";
 import {HomeStackParamList} from "@src/types";
 import ProductPreviewList from "./ProductPreviewList";
@@ -164,7 +164,6 @@ const HomeScreen = ({navigation}: Props) => {
                   navigation.navigate(
                     HomeStackRoutes.PRODUCT_LIST_BY_CRITERIA,
                     {
-                      distance: 30,
                       isLocale: true,
                       hideFilterActions: true,
                       screenTitle: "Local Pickup",

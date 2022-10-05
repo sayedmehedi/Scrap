@@ -36,13 +36,13 @@ export default function PlaceBidScreen({route, navigation}: Props) {
 
   const {
     control,
-    formState: {errors},
     setValue,
-    handleSubmit,
     setError,
+    handleSubmit,
+    formState: {errors},
   } = useForm({
     defaultValues: {
-      bidPrice: "1.00",
+      bidPrice: 1,
     },
   });
 
@@ -72,13 +72,16 @@ export default function PlaceBidScreen({route, navigation}: Props) {
   }, [enqueueSuccessSnackbar, data, isSuccess, navigation]);
 
   React.useEffect(() => {
-    setValue("bidPrice", route.params.bidStartingPrice.toString());
+    setValue(
+      "bidPrice",
+      currencyTransform.output(route.params.bidStartingPrice),
+    );
   }, [route]);
 
   const handlePlaceBid = handleSubmit(values => {
     makeBid({
       type: "1",
-      price: parseFloat(values.bidPrice),
+      price: values.bidPrice,
       product_id: route.params.productId,
     });
   });
@@ -111,7 +114,9 @@ export default function PlaceBidScreen({route, navigation}: Props) {
         )}
 
         <View style={{flex: 1}}>
-          <Text style={{fontWeight: "600", fontSize: 16}}>Gents Shoes</Text>
+          <Text style={{fontWeight: "600", fontSize: 16}}>
+            {route.params.productName}
+          </Text>
           <Text style={{fontWeight: "600", fontSize: 15}}>
             ${route.params.bidStartingPrice}
           </Text>
@@ -152,9 +157,9 @@ export default function PlaceBidScreen({route, navigation}: Props) {
                 borderBottomColor: theme.colors.black,
               }}
               keyboardType={"numeric"}
-              value={currencyTransform.inputFloat(field.value)}
+              value={currencyTransform.input(field.value)}
               onChangeText={price =>
-                field.onChange(currencyTransform.outputFloat(price))
+                field.onChange(currencyTransform.output(price))
               }
             />
           );
@@ -168,9 +173,9 @@ export default function PlaceBidScreen({route, navigation}: Props) {
           <Text
             style={{
               marginTop: 5,
-              color: theme.colors.error,
               fontWeight: "700",
               textAlign: "center",
+              color: theme.colors.error,
             }}>
             {message}
           </Text>
