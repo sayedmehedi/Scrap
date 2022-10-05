@@ -3,16 +3,15 @@ import styles from "../styles";
 import {useForm} from "react-hook-form";
 import {useTheme} from "react-native-paper";
 import {useAppSelector} from "@hooks/store";
-import {Overlay} from "react-native-elements"
+import {Overlay} from "react-native-elements";
 import Toast from "react-native-toast-message";
 import useAppSnackbar from "@hooks/useAppSnackbar";
 import Entypo from "react-native-vector-icons/Entypo";
 import {REAC_APP_GOOGLE_MAPS_API_KEY} from "react-native-dotenv";
-import {View, Text, Modal, TouchableOpacity,Dimensions} from "react-native";
+import {View, Text, Modal, TouchableOpacity, Dimensions} from "react-native";
 import AppPrimaryButton from "../../../Component/AppPrimaryButton";
 import {useUpdateProfileMutation} from "@data/laravel/services/auth";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
-
 
 export default function ChangeLocationModal({
   open,
@@ -37,10 +36,10 @@ export default function ChangeLocationModal({
       setValue("location", profile.location);
     }
     if (profile?.latitude) {
-      setValue("latitude", profile.latitude);
+      setValue("latitude", profile.latitude.toString());
     }
     if (profile?.longitude) {
-      setValue("longitude", profile.longitude);
+      setValue("longitude", profile.longitude.toString());
     }
   }, [profile, setValue]);
 
@@ -73,14 +72,26 @@ export default function ChangeLocationModal({
   });
 
   return (
-    <Modal      visible={open}
+    <Modal
+      visible={open}
       transparent={true}
       animationType={"slide"}
       onRequestClose={onClose}>
       <View style={styles.modalContainer}>
-        <View style={[styles.modalView,{height:Dimensions.get('window').height,paddingHorizontal:20}]}>
-        <TouchableOpacity
-            style={{alignSelf: "center", marginBottom: 20, borderWidth: 1, borderRadius: 500, padding: 10, borderColor: theme.colors.primary}}
+        <View
+          style={[
+            styles.modalView,
+            {height: Dimensions.get("window").height, paddingHorizontal: 20},
+          ]}>
+          <TouchableOpacity
+            style={{
+              alignSelf: "center",
+              marginBottom: 20,
+              borderWidth: 1,
+              borderRadius: 500,
+              padding: 10,
+              borderColor: theme.colors.primary,
+            }}
             onPress={onClose}>
             <Entypo name="cross" size={25} color={theme.colors.primary} />
           </TouchableOpacity>

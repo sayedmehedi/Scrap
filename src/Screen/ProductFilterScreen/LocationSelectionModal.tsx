@@ -81,6 +81,7 @@ export default function LocationSelectionModal({
           }}>
           <GooglePlacesAutocomplete
             fetchDetails
+            currentLocation
             placeholder={"Enter your location"}
             currentLocationLabel="Use Current Location"
             onPress={(data, details) => {

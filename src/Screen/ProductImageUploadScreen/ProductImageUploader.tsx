@@ -1,7 +1,5 @@
 import React from "react";
-import axios from "axios";
 import {View, Image} from "react-native";
-import {useAppSelector} from "@hooks/store";
 import {Asset} from "react-native-image-picker";
 import {ProductUploadedImage} from "@src/types";
 import {LinearProgress} from "react-native-elements";
@@ -14,8 +12,6 @@ interface Props {
 
 export default function ProductImageUploader({image, onUploadSuccess}: Props) {
   const [progress, setProgress] = React.useState(0);
-  const authToken = useAppSelector(state => state.auth.token);
-
   const [uploadProductImage] = useUploadProductImageMutation();
 
   React.useEffect(() => {
@@ -40,7 +36,7 @@ export default function ProductImageUploader({image, onUploadSuccess}: Props) {
           onUploadSuccess();
         });
     }
-  }, [uploadProductImage, image, onUploadSuccess, authToken]);
+  }, [uploadProductImage, image, onUploadSuccess]);
 
   return (
     <View

@@ -107,7 +107,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
     let actionCreator: ReturnType<typeof getProductmetalsLivePrice> | null;
 
     if (!isLoading && !!productDetails && productDetails.metals.length > 0) {
-      const todayInUsa = dayjs().tz(NY_TZ);
+      const todayInUsa = dayjs().utc();
 
       actionCreator = getProductmetalsLivePrice({
         base: "USD",
@@ -983,7 +983,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                 ) : (
                   <Table>
                     <Row
-                      flexArr={[1, 1.5, 2]}
+                      flexArr={[1, 1.5, 1]}
                       data={metalsTableHeadData}
                       textStyle={{margin: 6, color: "#252522"}}
                       style={{

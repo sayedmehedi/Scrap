@@ -32,6 +32,7 @@ const MAX_ALLOWED_NUM_IMAGE = 8;
 
 export default function ProductImageUploadScreen({navigation, route}: Props) {
   const theme = useTheme();
+
   const [productTitle, setProductTitle] = React.useState("");
   const {enqueueErrorSnackbar, enqueueSuccessSnackbar} = useAppSnackbar();
   const [galleryImagesToUpload, setGalleryImagesToUpload] = React.useState<
@@ -55,6 +56,8 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
   const [editInfoImages, setEditInfoImages] = React.useState<
     ProductEditInfoImage[]
   >([]);
+
+  console.log("galleryImagesToUpload", galleryImagesToUpload);
 
   React.useEffect(() => {
     if (route.params?.productEditInfo) {
@@ -103,7 +106,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
         setCoverImageToUpload(result.assets?.[0] ?? null);
       } else {
         if (
-          galleryImagesToUpload.size +
+          galleryImages.length +
             (result.assets?.length ?? 0) +
             editInfoImages.length >
           MAX_ALLOWED_NUM_IMAGE
@@ -130,13 +133,12 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
       // You can also use as a promise without 'callback':
       const result = await launchImageLibrary({
         mediaType: "photo",
-        selectionLimit:
-          editInfoImages.length > 0
-            ? MAX_ALLOWED_NUM_IMAGE - editInfoImages.length
-            : !coverImage
-            ? 1
-            : MAX_ALLOWED_NUM_IMAGE,
+        maxHeight: 800,
+        maxWidth: 800,
+        quality: 0.8,
       });
+
+      console.log("image selecing result is", result);
 
       handleImageResult(result);
     } catch (error) {
@@ -149,6 +151,9 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
       // You can also use as a promise without 'callback':
       const result = await launchCamera({
         mediaType: "photo",
+        maxHeight: 800,
+        maxWidth: 800,
+        quality: 0.8,
       });
 
       handleImageResult(result);
@@ -416,7 +421,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
         <View style={{flexDirection: "row", flexWrap: "wrap"}}>
           {galleryImages.map((image, i) => (
             <View
-              key={image.id}
+              key={image.id + i.toString()}
               style={{
                 width: "25%",
                 marginBottom: 15,

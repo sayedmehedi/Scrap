@@ -21,6 +21,9 @@ import {
   useReduxDevToolsExtension,
 } from "@react-navigation/devtools";
 
+// @ts-ignore
+navigator.geolocation = require("@react-native-community/geolocation");
+
 enableLatestRenderer();
 
 GoogleSignin.configure({

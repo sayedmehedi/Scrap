@@ -14,7 +14,6 @@ import AppPrimaryButton from "../Component/AppPrimaryButton";
 import {FlatList, ScrollView} from "react-native-gesture-handler";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {useUpsertProductMutation} from "@data/laravel/services/product";
-import CircularProgress from "react-native-circular-progress-indicator";
 import {LocationStackRoutes, PostItemStackRoutes} from "../constants/routes";
 import {Divider, HelperText, Text, Title, useTheme} from "react-native-paper";
 import {
@@ -54,7 +53,6 @@ export default function ProductAddDeliveryMethodScreen({
   const theme = useTheme();
   const rootNavigation = useNavigation<RootNavigationProps>();
   const profile = useAppSelector(state => state.auth.profile);
-  const [uploadProgress, setUploadProgress] = React.useState(0);
   const [showFieldErrors, setShowFieldErrors] = React.useState(false);
   const {enqueueSuccessSnackbar, enqueueErrorSnackbar} = useAppSnackbar();
   const [getPackages, {isFetching: isFetchingNextPage}] =
@@ -90,15 +88,6 @@ export default function ProductAddDeliveryMethodScreen({
       setShowFieldErrors(true);
     }
   }, [isUpsertProductError, upsertProductError]);
-
-  React.useEffect(() => {
-    if (
-      (!isUpsertingProduct && isProductUpsertSuccess) ||
-      isUpsertProductError
-    ) {
-      setUploadProgress(0);
-    }
-  }, [isProductUpsertSuccess, isUpsertingProduct, isUpsertProductError]);
 
   const [packagePages, setPackagePages] = React.useState<
     Array<GetPackagesResponse["items"]>
@@ -278,38 +267,11 @@ export default function ProductAddDeliveryMethodScreen({
       is_list_now: route.params.isListNow ? "1" : "0",
       show_metal_price: route.params.showMetalPrice ? "1" : "0",
       expected_date_for_list: route.params.expectedDateForList,
-      onUploadProgress(event) {
-        const progress = Math.round(event.loaded / event.total) * 100;
-        setUploadProgress(progress);
-      },
     });
   });
 
   return (
     <ScrollView style={{padding: 15}}>
-      <Overlay
-        isVisible={
-          isUpsertingProduct && !isProductUpsertSuccess && !isUpsertProductError
-        }
-        overlayStyle={{
-          width: "80%",
-          elevation: 0,
-          height: "50%",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "transparent",
-        }}>
-        <CircularProgress
-          radius={50}
-          maxValue={100}
-          duration={2000}
-          titleColor={"black"}
-          value={uploadProgress}
-          activeStrokeColor={"white"}
-          progressValueColor={"white"}
-        />
-      </Overlay>
-
       <Overlay
         overlayStyle={{
           width: "80%",
