@@ -165,15 +165,13 @@ function UserAction({product}: {product: ProductDetails}) {
         navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
           screen: ProductActionsStackRoutes.PLACE_BID,
           params: {
+            isInitial: false,
             productId: product.id,
             productName: product.title,
             totalBids: product.total_bids,
             timeLeftToBid: product.time_left,
+            bidStartingPrice: product.starting_price,
             productImage: product.images.small[0] ?? undefined,
-            bidStartingPrice: !!product.starting_price
-              ? +product.starting_price
-              : 0,
-            isInitial: false,
           },
         });
       }}
@@ -202,10 +200,10 @@ function UserAction({product}: {product: ProductDetails}) {
           params: {
             productId: product.id,
             productName: product.title,
+            buyPrice: product.buy_price,
             totalOffers: product.total_offers,
             shippingCost: +product.shipping_cost,
             productImage: product.images.small[0] ?? undefined,
-            buyPrice: !!product.buy_price ? +product.buy_price : 0,
             isInitial: false,
           },
         });
@@ -233,15 +231,13 @@ function UserAction({product}: {product: ProductDetails}) {
         navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
           screen: ProductActionsStackRoutes.PLACE_BID,
           params: {
+            isInitial: false,
             productId: product.id,
             productName: product.title,
             totalBids: product.total_bids,
             timeLeftToBid: product.time_left,
+            bidStartingPrice: product.starting_price,
             productImage: product.images.small[0] ?? undefined,
-            bidStartingPrice: !!product.starting_price
-              ? +product.starting_price
-              : 0,
-            isInitial: false,
           },
         });
       }}
@@ -270,10 +266,10 @@ function UserAction({product}: {product: ProductDetails}) {
           params: {
             productId: product.id,
             productName: product.title,
+            buyPrice: product.buy_price,
             totalOffers: product.total_offers,
             shippingCost: +product.shipping_cost,
             productImage: product.images.small[0] ?? undefined,
-            buyPrice: !!product.buy_price ? +product.buy_price : 0,
             isInitial: false,
           },
         });
@@ -693,12 +689,13 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
                 <View
                   style={{
                     width: "100%",
+                    marginBottom: 10,
                     alignSelf: "flex-end",
                     alignItems: "flex-end",
                   }}>
                   <View
                     style={{
-                      padding: 20,
+                      padding: 10,
                       width: "auto",
                       maxWidth: "100%",
                       backgroundColor: "#667085",
@@ -751,7 +748,7 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
                 <View style={{flex: 1}}>
                   <View
                     style={{
-                      padding: 20,
+                      padding: 10,
                       alignSelf: "flex-start",
                       backgroundColor: "#EAECF2",
                       borderRadius: theme.roundness * 3,
@@ -776,12 +773,17 @@ const SingleConversationScreen = ({navigation, route}: Props) => {
             paddingHorizontal: 10,
             backgroundColor: theme.colors.white,
           }}>
-          <View style={{flex: 1, borderWidth: 1,borderColor:'#667085',borderRadius:10}}>
+          <View
+            style={{
+              flex: 1,
+              borderWidth: 1,
+              borderColor: "#667085",
+              borderRadius: 10,
+            }}>
             <TextInput
               style={{
                 padding: 10,
-                paddingLeft:15
-                
+                paddingLeft: 15,
               }}
               multiline
               numberOfLines={2}

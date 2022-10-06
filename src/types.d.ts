@@ -59,7 +59,7 @@ export type LocationStackParamList = {
 
 export type ProductActionsStackParamList = {
   [ProductActionsStackRoutes.MAKE_OFFER]: {
-    buyPrice: number;
+    buyPrice: string;
     productId: number;
     totalOffers: number;
     productName: string;
@@ -93,7 +93,7 @@ export type ProductActionsStackParamList = {
     productId: number;
     productName: string;
     productImage: string;
-    productPrice: number;
+    productPrice: string;
 
     isInitial: boolean;
   };

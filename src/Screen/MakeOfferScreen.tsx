@@ -40,9 +40,9 @@ export default function MakeOfferScreen({navigation, route}: Props) {
   const handleMakeOffer = handleSubmit(values => {
     navigation.navigate(ProductActionsStackRoutes.REVIEW_OFFER, {
       isInitial: false,
-      offerPrice: values.offerPrice,
+      offerPrice: +values.offerPrice,
       productId: route.params.productId,
-      shippingCost: route.params.shippingCost,
+      shippingCost: +route.params.shippingCost,
     });
   });
 
@@ -75,7 +75,7 @@ export default function MakeOfferScreen({navigation, route}: Props) {
             {route.params.productName}
           </Text>
           <Text style={{fontWeight: "600", fontSize: 15}}>
-            Buy it now price ${route.params.buyPrice}
+            Price ${route.params.buyPrice}
           </Text>
           <Text style={{fontWeight: "600", fontSize: 15}}>
             {route.params.totalOffers} Offers

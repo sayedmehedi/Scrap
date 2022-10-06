@@ -278,10 +278,10 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
         params: {
           productId: productDetails.id,
           productName: productDetails.title,
+          buyPrice: productDetails.buy_price,
           totalOffers: productDetails.total_offers,
           shippingCost: +productDetails.shipping_cost,
           productImage: productDetails.images.small[0] ?? undefined,
-          buyPrice: !!productDetails.buy_price ? +productDetails.buy_price : 0,
           isInitial: false,
         },
       });
@@ -475,9 +475,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                               sellerId: productDetails.seller.id,
                               sellerName: productDetails.seller.name,
                               sellerImage: productDetails.seller.image,
-                              productPrice: !!productDetails.buy_price
-                                ? +productDetails.buy_price
-                                : 0,
+                              productPrice: productDetails.buy_price,
                               isInitial: false,
                             },
                           });
@@ -568,7 +566,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
 
               {productDetails.has_offer && (
                 <Text style={{textAlign: "center", fontSize: 14, marginTop: 5}}>
-                  Your max bid: $
+                  Your offer: $
                   {typeof productDetails.offer === "object" &&
                     productDetails.offer.price}
                 </Text>
@@ -599,9 +597,7 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
                               sellerId: productDetails.seller.id,
                               sellerName: productDetails.seller.name,
                               sellerImage: productDetails.seller.image,
-                              productPrice: !!productDetails.buy_price
-                                ? +productDetails.buy_price
-                                : 0,
+                              productPrice: productDetails.buy_price,
                               isInitial: false,
                             },
                           });
@@ -1091,7 +1087,9 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
             {!Array.isArray(productDetails.attributes) &&
               Object.entries(productDetails.attributes).map(([attr, val]) => (
                 <Text key={attr}>
-                  {attr}: {val}
+                  <>
+                    {attr}: {val}
+                  </>
                 </Text>
               ))}
 
@@ -1262,16 +1260,14 @@ const ProductDetailsScreen = ({route, navigation}: Props) => {
             navigation.navigate(RootStackRoutes.PRODUCT_ACTIONS, {
               screen: ProductActionsStackRoutes.ASK_QUESTION,
               params: {
+                isInitial: false,
                 productImage: image,
                 productId: productDetails.id,
                 productName: productDetails.title,
                 sellerId: productDetails.seller.id,
                 sellerName: productDetails.seller.name,
+                productPrice: productDetails.buy_price,
                 sellerImage: productDetails.seller.image,
-                productPrice: !!productDetails.buy_price
-                  ? +productDetails.buy_price
-                  : 0,
-                isInitial: false,
               },
             });
           }}>

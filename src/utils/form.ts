@@ -3,7 +3,7 @@ export const currencyTransform = {
     return `$${value}`;
   },
   output: (currency: string) => {
-    let replaced = currency.replace(/[^0-9.-]+/g, "");
+    let replaced = currency.replace(/[^0-9\.-]+/g, "");
 
     // @ts-ignore
     return replaced as number;

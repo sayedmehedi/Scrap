@@ -655,14 +655,15 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
               style={{
                 marginTop: 40,
                 marginBottom: 20,
-                flexWrap: "wrap",
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
               }}>
-              <Text numberOfLines={2}>
-                Do you want to show metals current/live price?
-              </Text>
+              <View style={{flex: 1}}>
+                <Text numberOfLines={3}>
+                  Do you want to show metals current/live price?
+                </Text>
+              </View>
 
               <Switch
                 color={"green"}
