@@ -136,6 +136,12 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
         maxHeight: 800,
         maxWidth: 800,
         quality: 0.8,
+        // selectionLimit:
+        //   editInfoImages.length > 0
+        //     ? MAX_ALLOWED_NUM_IMAGE - editInfoImages.length
+        //     : !coverImage
+        //     ? 1
+        //     : MAX_ALLOWED_NUM_IMAGE,
       });
 
       console.log("image selecing result is", result);
@@ -399,7 +405,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
         </View>
       )}
 
-      {galleryImagesToUpload.size > 0 && (
+      {Object.keys(galleryImagesToUpload).length > 0 && (
         <View
           style={{
             width: "100%",
