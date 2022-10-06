@@ -36,11 +36,11 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
   const [productTitle, setProductTitle] = React.useState("");
   const {enqueueErrorSnackbar, enqueueSuccessSnackbar} = useAppSnackbar();
   const [galleryImagesToUpload, setGalleryImagesToUpload] = React.useState<
-    Map<string, Asset>
-  >(() => new Map());
+    Record<string, Asset>
+  >({});
   const [uploadedGalleryImages, setUploadedGalleryImages] = React.useState<
-    Map<string, ProductUploadedImage>
-  >(() => new Map());
+    Record<string, ProductUploadedImage>
+  >({});
 
   const [coverImageToUpload, setCoverImageToUpload] =
     React.useState<Asset | null>(null);
@@ -72,7 +72,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
   }, [route.params]);
 
   React.useEffect(() => {
-    const galleryImagesWithId = Array.from(uploadedGalleryImages.entries()).map(
+    const galleryImagesWithId = Object.entries(uploadedGalleryImages).map(
       ([id, image]) => {
         return {
           id,
@@ -116,10 +116,10 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
         }
 
         setGalleryImagesToUpload(prevImagesSet => {
-          const newImagesMap = new Map<string, Asset>(prevImagesSet);
+          const newImagesMap = {...prevImagesSet};
 
           result.assets?.forEach(asset => {
-            newImagesMap.set(nanoid(), asset);
+            newImagesMap[nanoid()] = asset;
           });
 
           return newImagesMap;
@@ -168,8 +168,8 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
 
   const handleRemoveGalleryImage = (id: string) => {
     setUploadedGalleryImages(prevImages => {
-      const newImagesMap = new Map<string, ProductUploadedImage>(prevImages);
-      newImagesMap.delete(id);
+      const newImagesMap = {...prevImages};
+      delete newImagesMap[id];
       return newImagesMap;
     });
   };
@@ -209,15 +209,15 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
       console.log("handling image upload success", uploadedImage);
 
       setGalleryImagesToUpload(prevImages => {
-        const newSet = new Map<string, Asset>(prevImages);
-        newSet.delete(id);
+        const newSet = {...prevImages};
+        delete newSet[id];
         return newSet;
       });
 
       if (uploadedImage) {
         setUploadedGalleryImages(prevImages => {
-          const newSet = new Map<string, ProductUploadedImage>(prevImages);
-          newSet.set(id, uploadedImage);
+          const newSet = {...prevImages};
+          newSet[id] = uploadedImage;
           return newSet;
         });
       }
@@ -405,7 +405,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
             width: "100%",
             marginVertical: 10,
           }}>
-          {Array.from(galleryImagesToUpload.entries()).map(([id, asset]) => (
+          {Object.entries(galleryImagesToUpload).map(([id, asset]) => (
             <View style={{marginBottom: 5}}>
               <ProductImageUploader
                 key={id}
