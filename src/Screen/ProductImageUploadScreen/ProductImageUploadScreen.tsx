@@ -13,8 +13,8 @@ import {TextInput, View, Alert, ScrollView, Image} from "react-native";
 import {useDeleteProductFileMutation} from "@data/laravel/services/product";
 import {
   ProductEditInfoImage,
-  PostItemStackParamList,
   ProductUploadedImage,
+  PostItemStackParamList,
 } from "@src/types";
 import {
   Asset,
