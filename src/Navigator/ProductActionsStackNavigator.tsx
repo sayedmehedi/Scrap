@@ -38,9 +38,9 @@ export default function ProductActionsStackNavigator() {
       }}>
       {isAuthenticated && isFirstTimeLogin ? (
         <ProductActionsStack.Screen
-        options={{
-          headerShown:false
-        }}
+          options={{
+            headerShown: false,
+          }}
           component={LocationStackNavigator}
           name={ProductActionsStackRoutes.LOCATION}
         />
@@ -51,11 +51,11 @@ export default function ProductActionsStackNavigator() {
             initialParams={{
               productId: 0,
               totalBids: 0,
+              isInitial: true,
               productName: "",
               productImage: "",
               timeLeftToBid: "",
-              bidStartingPrice: 0,
-              isInitial: true,
+              bidStartingPrice: "0",
             }}
             name={ProductActionsStackRoutes.PLACE_BID}
             options={{
@@ -68,7 +68,7 @@ export default function ProductActionsStackNavigator() {
             component={MakeOfferScreen}
             name={ProductActionsStackRoutes.MAKE_OFFER}
             initialParams={{
-              buyPrice: 0,
+              buyPrice: "0",
               productId: 0,
               totalOffers: 0,
               productName: "",
@@ -103,7 +103,7 @@ export default function ProductActionsStackNavigator() {
               productId: 0,
               productName: "",
               productImage: "",
-              productPrice: 0,
+              productPrice: "0",
 
               isInitial: true,
             }}

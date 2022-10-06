@@ -5,9 +5,9 @@ import {TouchableOpacity, Alert} from "react-native";
 import {useUpdateProfileMutation} from "@data/laravel/services/auth";
 import {Avatar, BottomSheet, ListItem, Text} from "react-native-elements";
 import {
-  ImagePickerResponse,
   launchCamera,
   launchImageLibrary,
+  ImagePickerResponse,
 } from "react-native-image-picker";
 
 export default function ProfileImageUploader() {
@@ -59,8 +59,9 @@ export default function ProfileImageUploader() {
     }
     if (!result.didCancel) {
       uploadImage({
-        onUploadProgress(event) {
-          const progress = Math.round(event.loaded / event.total) * 100;
+        onUploadProgress(sent, total) {
+          const progress = Math.round(sent / total) * 100;
+
           setUploadProgress(progress);
         },
         image: result.assets?.[0],

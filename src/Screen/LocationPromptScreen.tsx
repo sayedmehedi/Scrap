@@ -45,7 +45,6 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
             console.log("current location", info);
 
             updateProfile({
-              
               latitude: latitude.toString(),
               longitude: longitude.toString(),
             })
@@ -76,8 +75,6 @@ const LocationPropmtScreen = ({navigation, route}: Props) => {
 
   return (
     <SafeAreaProvider>
-      {isUsingCurrentLocation && <Text>Updating...</Text>}
-
       <View style={{justifyContent: "space-around", flex: 1}}>
         <View
           style={{

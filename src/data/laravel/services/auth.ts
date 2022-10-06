@@ -415,9 +415,9 @@ export const authApi = api.injectEndpoints({
             "POST",
             `${config.apiBaseURL}/update-profile`,
             {
+              Accept: "application/json",
               Authorization: `Bearer ${authToken}`,
               "Content-Type": "multipart/form-data",
-              Accept: "application/json",
             },
             payload,
           )

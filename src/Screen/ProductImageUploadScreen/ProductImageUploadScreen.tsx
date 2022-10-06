@@ -57,8 +57,6 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
     ProductEditInfoImage[]
   >([]);
 
-  console.log("galleryImagesToUpload", galleryImagesToUpload);
-
   React.useEffect(() => {
     if (route.params?.productEditInfo) {
       if (route.params?.productEditInfo.files) {
@@ -121,6 +119,8 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
           result.assets?.forEach(asset => {
             newImagesMap[nanoid()] = asset;
           });
+
+          console.log("galleryImagesToUpload", newImagesMap);
 
           return newImagesMap;
         });
@@ -411,10 +411,10 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
             width: "100%",
             marginVertical: 10,
           }}>
-          {Object.entries(galleryImagesToUpload).map(([id, asset]) => (
+          {Object.entries(galleryImagesToUpload).map(([id, asset], index) => (
             <View style={{marginBottom: 5}}>
               <ProductImageUploader
-                key={id}
+                key={index}
                 image={asset}
                 onUploadSuccess={handleImageUploadSuccess(id)}
               />
@@ -427,7 +427,7 @@ export default function ProductImageUploadScreen({navigation, route}: Props) {
         <View style={{flexDirection: "row", flexWrap: "wrap"}}>
           {galleryImages.map((image, i) => (
             <View
-              key={image.id + i.toString()}
+              key={i.toString()}
               style={{
                 width: "25%",
                 marginBottom: 15,
