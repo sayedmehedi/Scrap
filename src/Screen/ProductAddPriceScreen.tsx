@@ -222,7 +222,7 @@ export default function ProductAddPriceScreen({navigation, route}: Props) {
       expectedDateForList,
       quantity: values.quantity,
       isListNow: values.isListNow,
-      duration: values.duration?.value ?? 0,
+      duration: values.duration?.id ?? 0,
       showMetalPrice: values.showMetalPrice,
       metals: values.metals.map(({value}) => value.id),
       buynowprice: !!values.buynowprice ? values.buynowprice : 0,

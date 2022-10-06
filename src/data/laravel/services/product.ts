@@ -3,6 +3,7 @@ import RNFetchBlob from "rn-fetch-blob";
 import {container} from "@src/appEngine";
 import {QUERY_KEYS} from "@constants/query";
 import {AxiosError, AxiosInstance} from "axios";
+import {ConfigService} from "@config/ConfigService";
 import {ApplicationError} from "@core/domain/ApplicationError";
 import {REACT_APP_METALS_API_TOKEN} from "react-native-dotenv";
 import {ServiceProviderTypes} from "@core/serviceProviderTypes";
@@ -24,6 +25,8 @@ import {
   GetProductMetalsLivePriceResponse,
   GetProductMetalsLivePriceRequest,
 } from "@src/types";
+
+const config = container.get<ConfigService>(ConfigService);
 
 const metalsApiClient = container.get<AxiosInstance>(
   ServiceProviderTypes.MetalsApiClient,
@@ -125,7 +128,8 @@ export const productApi = api.injectEndpoints({
         })
           .fetch(
             "POST",
-            "https://backend.thescrapapp.com/api/image-upload",
+            `${config.apiBaseURL}/image-upload`,
+
             {
               Authorization: `Bearer ${authToken}`,
               "Content-Type": "multipart/form-data",

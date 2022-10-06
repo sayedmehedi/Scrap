@@ -27,9 +27,9 @@ import {
 } from "react-native";
 import {
   Condition,
-  FilterProductQueryParams,
-  FilterProductsResponse,
   HomeStackParamList,
+  FilterProductsResponse,
+  FilterProductQueryParams,
 } from "@src/types";
 
 const {width} = Dimensions.get("window");
@@ -58,7 +58,7 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
     number
   > | null>(null);
   const [sortBy, setSortBy] =
-    React.useState<FilterProductQueryParams["sort_by"]>("oldest");
+    React.useState<FilterProductQueryParams["sort_by"]>("newest");
   const [productType, setProductType] = React.useState<
     "all" | "is_locale" | "is_shipping"
   >("all");
@@ -76,10 +76,8 @@ const ProductisListByCriteriaScreen = ({route, navigation}: Props) => {
       headerTitleStyle: {
         fontSize: 18,
         fontFamily: "Inter-Bold",
-        // @ts-ignore
         color: theme.colors.white,
       },
-      // @ts-ignore
       headerTintColor: theme.colors.white,
       title: truncate(route.params.screenTitle, {
         length: 20,

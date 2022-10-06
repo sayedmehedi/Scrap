@@ -1,21 +1,23 @@
 import {api} from "./api";
-import {Axios} from "axios";
+import RNFetchBlob from "rn-fetch-blob";
 import {container} from "@src/appEngine";
 import {QUERY_KEYS} from "@constants/query";
+import auth from "@react-native-firebase/auth";
+import {ConfigService} from "@config/ConfigService";
 import LoginUserDto from "@core/domain/dto/LoginUserDto";
 import RegisterUserDto from "@core/domain/dto/RegisterUserDto";
 import {ApplicationError} from "@core/domain/ApplicationError";
-import {ServiceProviderTypes} from "@core/serviceProviderTypes";
 import {AccessToken, LoginManager} from "react-native-fbsdk-next";
-import auth, {FirebaseAuthTypes} from "@react-native-firebase/auth";
 import {isErrorWithMessage, isNativeModuleError} from "@utils/error-handling";
 import {
   statusCodes,
   GoogleSignin,
 } from "@react-native-google-signin/google-signin";
 import {
+  RootState,
   LoginResponse,
   RegisterResponse,
+  VerifyEmailRequest,
   SocialLoginResponse,
   SocialLoginRequest,
   ResetPasswordRequest,
@@ -25,10 +27,9 @@ import {
   GetUserProfileReponse,
   GetTransactionsResponse,
   GetNotificationsResponse,
-  VerifyEmailRequest,
 } from "@src/types";
 
-const apiClient = container.get<Axios>(ServiceProviderTypes.HttpClient);
+const config = container.get<ConfigService>(ConfigService);
 
 // Define a service using a base URL and expected endpoints
 export const authApi = api.injectEndpoints({
@@ -324,75 +325,124 @@ export const authApi = api.injectEndpoints({
     }),
     updateProfile: builder.mutation<
       {success: string} | {error: string},
-      UpdateProfileRequest & {onUploadProgress?: (event: ProgressEvent) => void}
+      UpdateProfileRequest & {
+        onUploadProgress?: (sent: number, total: number) => void;
+      }
     >({
       invalidatesTags: () => [QUERY_KEYS.AUTH],
-      queryFn({onUploadProgress, ...data}) {
-        const body = new FormData();
+      queryFn({onUploadProgress, ...data}, {getState}) {
+        const authToken = (getState() as RootState).auth.token;
+
+        const payload = [];
 
         if (!!data.name) {
-          body.append("name", data.name);
+          payload.push({
+            name: "name",
+            data: data.name,
+          });
         }
 
         if (!!data.email) {
-          body.append("email", data.email);
+          payload.push({
+            name: "email",
+            data: data.email,
+          });
         }
 
         if (!!data.phone) {
-          body.append("phone", data.phone);
+          payload.push({
+            name: "phone",
+            data: data.phone,
+          });
         }
 
         if (!!data.location) {
-          body.append("location", data.location);
+          payload.push({
+            name: "location",
+            data: data.location,
+          });
         }
 
         if (!!data.latitude) {
-          body.append("latitude", data.latitude);
+          payload.push({
+            name: "latitude",
+            data: data.latitude,
+          });
         }
 
         if (!!data.longitude) {
-          body.append("longitude", data.longitude);
+          payload.push({
+            name: "longitude",
+            data: data.longitude,
+          });
         }
 
         if (!!data.image) {
-          body.append("image", {
-            uri: data.image.uri,
+          payload.push({
+            name: "image",
             type: data.image.type,
-            name: data.image.fileName,
+            filename: data.image.fileName,
+            data: RNFetchBlob.wrap(data.image.uri!),
           });
         }
 
         if (!!data.country_id) {
-          body.append("country_id", data.country_id);
+          payload.push({
+            name: "country_id",
+            data: data.country_id,
+          });
         }
 
         if (!!data.state_id) {
-          body.append("state_id", data.state_id);
+          payload.push({
+            name: "state_id",
+            data: data.state_id,
+          });
         }
 
         if (!!data.city_id) {
-          body.append("city_id", data.city_id);
+          payload.push({
+            name: "city_id",
+            data: data.city_id,
+          });
         }
 
-        return apiClient
-          .postForm<{success: string}>("update-profile", body, {
-            onUploadProgress,
+        return RNFetchBlob.config({
+          trusty: true,
+          timeout: 5000,
+        })
+          .fetch(
+            "POST",
+            `${config.apiBaseURL}/update-profile`,
+            {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "multipart/form-data",
+              Accept: "application/json",
+            },
+            payload,
+          )
+          .uploadProgress((sent, total) => {
+            onUploadProgress?.(sent, total);
           })
-          .then(res => {
+          .then(
+            res => res.json() as Promise<{success: string} | {error: string}>,
+          )
+          .then(data => {
             return {
-              data: res.data,
+              data,
             };
           })
-          .catch((error: ApplicationError) => {
+          .catch(err => {
+            const error = err as ApplicationError;
+            console.log("image upload e error khaisee", error);
             return {
               error: {
                 status: error.status,
                 data: {
-                  field_errors: error.field_errors,
-                  non_field_error: error.non_field_error,
+                  field_errors: {},
+                  non_field_error: error.message,
                 },
               },
-              meta: error.request,
             };
           });
       },
